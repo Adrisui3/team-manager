@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:14.18
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_DB: team_manager
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
