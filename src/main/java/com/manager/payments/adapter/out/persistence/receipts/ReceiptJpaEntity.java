@@ -1,22 +1,23 @@
 package com.manager.payments.adapter.out.persistence.receipts;
 
-import com.manager.payments.model.receipts.ReceiptStatus;
 import com.manager.payments.adapter.out.persistence.users.UserJpaEntity;
+import com.manager.payments.model.receipts.ReceiptStatus;
 import jakarta.persistence.*;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Entity
+@Table(name = "receipt")
 public class ReceiptJpaEntity {
     @Id
     @GeneratedValue
     private UUID id;
 
     private double amount;
-    private LocalDateTime issuedDate;
-    private LocalDateTime paymentDate;
-    private LocalDateTime expiryDate;
+    private LocalDate issuedDate;
+    private LocalDate paymentDate;
+    private LocalDate expiryDate;
 
     private int paymentPeriodInDays;
 
@@ -51,11 +52,11 @@ public class ReceiptJpaEntity {
         this.user = userJpaEntity;
     }
 
-    public LocalDateTime getIssuedDate() {
+    public LocalDate getIssuedDate() {
         return issuedDate;
     }
 
-    public void setIssuedDate(LocalDateTime issuedDate) {
+    public void setIssuedDate(LocalDate issuedDate) {
         this.issuedDate = issuedDate;
     }
 
@@ -67,11 +68,11 @@ public class ReceiptJpaEntity {
         this.amount = amount;
     }
 
-    public LocalDateTime getExpiryDate() {
+    public LocalDate getExpiryDate() {
         return expiryDate;
     }
 
-    public void setExpiryDate(LocalDateTime expiryDate) {
+    public void setExpiryDate(LocalDate expiryDate) {
         this.expiryDate = expiryDate;
     }
 
@@ -83,11 +84,11 @@ public class ReceiptJpaEntity {
         this.paymentPeriodInDays = paymentPeriodInDays;
     }
 
-    public LocalDateTime getPaymentDate() {
+    public LocalDate getPaymentDate() {
         return paymentDate;
     }
 
-    public void setPaymentDate(LocalDateTime paymentDate) {
+    public void setPaymentDate(LocalDate paymentDate) {
         this.paymentDate = paymentDate;
     }
 }

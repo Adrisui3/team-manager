@@ -4,12 +4,13 @@ import com.manager.payments.adapter.out.persistence.users.UserJpaEntity;
 import com.manager.payments.model.payments.PaymentStatus;
 import jakarta.persistence.*;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 @Entity
+@Table(name = "payment")
 public class PaymentJpaEntity {
     @Id
     @GeneratedValue
@@ -20,9 +21,9 @@ public class PaymentJpaEntity {
     private String name;
     private String description;
 
-    private LocalDateTime startDate;
-    private LocalDateTime nextPaymentDate;
-    private LocalDateTime endDate;
+    private LocalDate startDate;
+    private LocalDate nextPaymentDate;
+    private LocalDate endDate;
 
     private int periodDays;
 
@@ -56,19 +57,19 @@ public class PaymentJpaEntity {
         this.description = description;
     }
 
-    public LocalDateTime getEndDate() {
+    public LocalDate getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(LocalDateTime endDate) {
+    public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
     }
 
-    public LocalDateTime getStartDate() {
+    public LocalDate getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(LocalDateTime startDate) {
+    public void setStartDate(LocalDate startDate) {
         this.startDate = startDate;
     }
 
@@ -96,11 +97,11 @@ public class PaymentJpaEntity {
         this.status = paymentStatus;
     }
 
-    public LocalDateTime getNextPaymentDate() {
+    public LocalDate getNextPaymentDate() {
         return nextPaymentDate;
     }
 
-    public void setNextPaymentDate(LocalDateTime nextPaymentDate) {
+    public void setNextPaymentDate(LocalDate nextPaymentDate) {
         this.nextPaymentDate = nextPaymentDate;
     }
 
