@@ -18,6 +18,9 @@ public class UserJpaEntity {
     @GeneratedValue
     private UUID id;
 
+    @Column(unique = true)
+    private String personalId;
+
     private String name;
     private String surname;
 
@@ -112,5 +115,13 @@ public class UserJpaEntity {
 
     public void setPayments(List<PaymentJpaEntity> paymentJpaEntities) {
         this.payments = paymentJpaEntities;
+    }
+
+    public String getPersonalId() {
+        return personalId;
+    }
+
+    public void setPersonalId(String personalId) {
+        this.personalId = personalId;
     }
 }
