@@ -1,15 +1,19 @@
 package com.manager.payments.adapter.out.persistence.users;
 
-import com.manager.payments.adapter.out.persistence.payments.Receipt;
+import com.manager.payments.adapter.out.persistence.payments.PaymentJpaEntity;
+import com.manager.payments.adapter.out.persistence.receipts.ReceiptJpaEntity;
+import com.manager.payments.model.users.Category;
+import com.manager.payments.model.users.UserStatus;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 @Entity
 @Table(name = "users")
-public class User {
+public class UserJpaEntity {
     @Id
     @GeneratedValue
     private UUID id;
@@ -27,8 +31,16 @@ public class User {
     @Enumerated(EnumType.STRING)
     private UserStatus status = UserStatus.ENABLED;
 
+    @ManyToMany
+    @JoinTable(
+            name = "user_payment",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "payment_id")
+    )
+    private List<PaymentJpaEntity> payments = new ArrayList<>();
+
     @OneToMany(mappedBy = "user")
-    private List<Receipt> receipts;
+    private List<ReceiptJpaEntity> receiptJpaEntities = new ArrayList<>();
 
     public String getName() {
         return name;
@@ -86,11 +98,19 @@ public class User {
         this.status = status;
     }
 
-    public List<Receipt> getReceipts() {
-        return receipts;
+    public List<ReceiptJpaEntity> getReceipts() {
+        return receiptJpaEntities;
     }
 
-    public void setReceipts(List<Receipt> receipts) {
-        this.receipts = receipts;
+    public void setReceipts(List<ReceiptJpaEntity> receiptJpaEntities) {
+        this.receiptJpaEntities = receiptJpaEntities;
+    }
+
+    public List<PaymentJpaEntity> getPayments() {
+        return payments;
+    }
+
+    public void setPayments(List<PaymentJpaEntity> paymentJpaEntities) {
+        this.payments = paymentJpaEntities;
     }
 }

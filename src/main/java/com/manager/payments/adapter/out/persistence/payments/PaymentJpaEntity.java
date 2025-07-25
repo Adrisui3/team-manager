@@ -1,13 +1,16 @@
 package com.manager.payments.adapter.out.persistence.payments;
 
+import com.manager.payments.adapter.out.persistence.users.UserJpaEntity;
+import com.manager.payments.model.payments.PaymentStatus;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 @Entity
-public class Payment {
+public class PaymentJpaEntity {
     @Id
     @GeneratedValue
     private UUID id;
@@ -26,8 +29,8 @@ public class Payment {
     @Enumerated(EnumType.STRING)
     private PaymentStatus status = PaymentStatus.ACTIVE;
 
-    @OneToMany(mappedBy = "payment")
-    private List<Receipt> receipts;
+    @ManyToMany(mappedBy = "payments")
+    private List<UserJpaEntity> users = new ArrayList<>();
 
     public void setId(UUID id) {
         this.id = id;
@@ -101,11 +104,11 @@ public class Payment {
         this.nextPaymentDate = nextPaymentDate;
     }
 
-    public List<Receipt> getReceipts() {
-        return receipts;
+    public List<UserJpaEntity> getUsers() {
+        return users;
     }
 
-    public void setReceipts(List<Receipt> receipts) {
-        this.receipts = receipts;
+    public void setUsers(List<UserJpaEntity> userJpaEntities) {
+        this.users = userJpaEntities;
     }
 }

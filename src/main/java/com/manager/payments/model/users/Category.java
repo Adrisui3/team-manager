@@ -1,4 +1,4 @@
-package com.manager.payments.adapter.out.persistence.users;
+package com.manager.payments.model.users;
 
 public enum Category {
     NONE,

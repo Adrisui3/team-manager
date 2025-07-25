@@ -2,7 +2,6 @@ services:
   postgres:
     image: postgres:14.18
     container_name: postgres
-    restart: always
     environment:
       POSTGRES_DB: team_manager
       POSTGRES_USER: admin

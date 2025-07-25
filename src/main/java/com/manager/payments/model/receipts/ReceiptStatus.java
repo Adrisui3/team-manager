@@ -1,4 +1,4 @@
-package com.manager.payments.adapter.out.persistence.payments;
+package com.manager.payments.model.receipts;
 
 public enum ReceiptStatus {
     PENDING,
