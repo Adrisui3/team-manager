@@ -26,13 +26,13 @@ public class UserRepositoryAdapter implements UserRepository {
     }
 
     @Override
-    public Optional<User> getById(UUID id) {
+    public Optional<User> findById(UUID id) {
         Optional<UserJpaEntity> userJpaEntity = userJpaRepository.findById(id);
         return userJpaEntity.map(userMapper::toUser);
     }
 
     @Override
-    public Optional<User> getByPersonalId(String personalId) {
+    public Optional<User> findByPersonalId(String personalId) {
         Optional<UserJpaEntity> userJpaEntity = userJpaRepository.findByPersonalId(personalId);
         return userJpaEntity.map(userMapper::toUser);
     }

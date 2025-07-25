@@ -21,7 +21,7 @@ public class UserService implements CreateUserUseCase {
 
     @Override
     public User createUser(CreateUserRequestDTO requestDTO) {
-        Optional<User> existingUser = userRepository.getByPersonalId(requestDTO.personalId());
+        Optional<User> existingUser = userRepository.findByPersonalId(requestDTO.personalId());
         if (existingUser.isPresent()) {
             throw new UserAlreadyExistsException(requestDTO.personalId());
         }

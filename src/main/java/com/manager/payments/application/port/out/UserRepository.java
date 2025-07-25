@@ -9,8 +9,8 @@ public interface UserRepository {
 
     User save(User user);
 
-    Optional<User> getById(UUID id);
+    Optional<User> findById(UUID id);
 
-    Optional<User> getByPersonalId(String personalId);
+    Optional<User> findByPersonalId(String personalId);
 
 }
