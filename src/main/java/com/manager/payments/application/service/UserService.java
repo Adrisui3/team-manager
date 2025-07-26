@@ -1,21 +1,32 @@
 package com.manager.payments.application.service;
 
 import com.manager.payments.adapter.in.rest.dto.CreateUserRequestDTO;
+import com.manager.payments.application.exception.PaymentNotFoundException;
 import com.manager.payments.application.exception.UserAlreadyExistsException;
+import com.manager.payments.application.exception.UserNotFoundException;
+import com.manager.payments.application.port.in.AssignPaymentToUserUseCase;
 import com.manager.payments.application.port.in.CreateUserUseCase;
+import com.manager.payments.application.port.in.FindUserUseCase;
+import com.manager.payments.application.port.out.PaymentRepository;
 import com.manager.payments.application.port.out.UserRepository;
+import com.manager.payments.model.payments.Payment;
 import com.manager.payments.model.users.User;
 import com.manager.payments.model.users.UserStatus;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
-public class UserService implements CreateUserUseCase {
+public class UserService implements CreateUserUseCase, AssignPaymentToUserUseCase, FindUserUseCase {
 
+    private final PaymentRepository paymentRepository;
     private final UserRepository userRepository;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(PaymentRepository paymentRepository, UserRepository userRepository) {
+        this.paymentRepository = paymentRepository;
         this.userRepository = userRepository;
     }
 
@@ -26,7 +37,39 @@ public class UserService implements CreateUserUseCase {
             throw new UserAlreadyExistsException(requestDTO.personalId());
         }
 
-        User newUser = new User(null, requestDTO.personalId(), requestDTO.name(), requestDTO.surname(), requestDTO.email(), requestDTO.birthDate(), requestDTO.category(), UserStatus.ENABLED);
+        User newUser = new User(null, requestDTO.personalId(), requestDTO.name(), requestDTO.surname(), requestDTO.email(), requestDTO.birthDate(), requestDTO.category(), UserStatus.ENABLED, Collections.emptyList());
         return userRepository.save(newUser);
+    }
+
+    @Override
+    @Transactional
+    public User assignPaymentToUser(UUID userId, UUID paymentId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException(userId));
+
+        Payment payment = paymentRepository.findById(paymentId)
+                .orElseThrow(() -> new PaymentNotFoundException(paymentId));
+
+        if (!user.paymentIds().contains(paymentId)) {
+            user.paymentIds().add(paymentId);
+            userRepository.save(user);
+        }
+
+        if (!payment.userIds().contains(userId)) {
+            payment.userIds().add(userId);
+            paymentRepository.save(payment);
+        }
+
+        return user;
+    }
+
+    @Override
+    public User findById(UUID id) {
+        return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
+    }
+
+    @Override
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException(email));
     }
 }
