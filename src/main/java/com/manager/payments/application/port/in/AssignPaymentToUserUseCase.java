@@ -6,6 +6,6 @@ import java.util.UUID;
 
 public interface AssignPaymentToUserUseCase {
 
-    public User assignPaymentToUser(UUID userId, UUID paymentId);
+    User assignPaymentToUser(UUID userId, UUID paymentId);
 
 }

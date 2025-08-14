@@ -7,6 +7,7 @@ import com.manager.payments.application.exception.UserAlreadyExistsException;
 import com.manager.payments.application.exception.UserNotFoundException;
 import com.manager.payments.application.port.in.AssignPaymentToUserUseCase;
 import com.manager.payments.application.port.in.CreateUserUseCase;
+import com.manager.payments.application.port.in.DeleteUserUseCase;
 import com.manager.payments.application.port.in.FindUserUseCase;
 import com.manager.payments.application.port.out.PaymentRepository;
 import com.manager.payments.application.port.out.UserRepository;
@@ -23,7 +24,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class UserService implements CreateUserUseCase, AssignPaymentToUserUseCase, FindUserUseCase {
+public class UserService implements CreateUserUseCase, AssignPaymentToUserUseCase, FindUserUseCase, DeleteUserUseCase {
 
     private final PaymentRepository paymentRepository;
     private final UserRepository userRepository;
@@ -76,5 +77,10 @@ public class UserService implements CreateUserUseCase, AssignPaymentToUserUseCas
     @Override
     public User findByEmail(String email) {
         return userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException(email));
+    }
+
+    @Override
+    public void deleteUserById(UUID id) {
+        userRepository.deleteById(id);
     }
 }

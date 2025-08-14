@@ -45,4 +45,9 @@ public class UserRepositoryAdapter implements UserRepository {
         Optional<UserJpaEntity> userJpaEntity = userJpaRepository.findByEmail(email);
         return userJpaEntity.map(userMapper::toUser);
     }
+
+    @Override
+    public void deleteById(UUID id) {
+        userJpaRepository.deleteById(id);
+    }
 }
