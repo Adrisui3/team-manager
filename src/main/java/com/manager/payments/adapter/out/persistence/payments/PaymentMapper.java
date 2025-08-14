@@ -5,44 +5,35 @@ import com.manager.payments.adapter.out.persistence.users.UserJpaRepository;
 import com.manager.payments.application.exception.PaymentNotFoundException;
 import com.manager.payments.application.exception.UserNotFoundException;
 import com.manager.payments.model.payments.Payment;
+import com.manager.payments.model.payments.PaymentMinInfo;
+import com.manager.payments.model.users.UserMinInfo;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 
 import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring")
 public interface PaymentMapper {
 
-    @Mapping(source = "users", target = "userIds")
     Payment toPayment(PaymentJpaEntity paymentJpaEntity);
 
-    @Mapping(source = "userIds", target = "users")
     PaymentJpaEntity toPaymentJpaEntity(Payment payment, @Context UserJpaRepository userJpaRepository);
 
-    default List<PaymentJpaEntity> mapIdsToPaymentJpaEntities(List<UUID> paymentIds, @Context PaymentJpaRepository paymentJpaRepository) {
-        return paymentIds.stream().map(id -> mapIdToPaymentJpaEntity(id, paymentJpaRepository)).toList();
+    PaymentMinInfo toPaymentMinInfo(PaymentJpaEntity paymentJpaEntity);
+
+    default List<PaymentJpaEntity> mapIdsToPaymentJpaEntities(List<PaymentMinInfo> paymentMinInfos, @Context PaymentJpaRepository paymentJpaRepository) {
+        return paymentMinInfos.stream().map(payment -> mapIdToPaymentJpaEntity(payment, paymentJpaRepository)).toList();
     }
 
-    default PaymentJpaEntity mapIdToPaymentJpaEntity(UUID paymentId, @Context PaymentJpaRepository paymentJpaRepository) {
-        return paymentJpaRepository.findById(paymentId).orElseThrow(() -> new PaymentNotFoundException(paymentId));
+    default PaymentJpaEntity mapIdToPaymentJpaEntity(PaymentMinInfo paymentMinInfo, @Context PaymentJpaRepository paymentJpaRepository) {
+        return paymentJpaRepository.findById(paymentMinInfo.id()).orElseThrow(() -> new PaymentNotFoundException(paymentMinInfo.id()));
     }
 
-    default List<UUID> mapPaymentJpaEntitiesToIds(List<PaymentJpaEntity> paymentJpaEntities) {
-        return paymentJpaEntities.stream().map(PaymentJpaEntity::getId).collect(Collectors.toList());
+    default List<UserJpaEntity> mapIdsToUserJpaEntities(List<UserMinInfo> userMinInfos, @Context UserJpaRepository userJpaRepository) {
+        return userMinInfos.stream().map(user -> mapUserMinInfoToUserJpaEntity(user, userJpaRepository)).toList();
     }
 
-    default List<UserJpaEntity> mapIdsToUserJpaEntities(List<UUID> userIds, @Context UserJpaRepository userJpaRepository) {
-        return userIds.stream().map(id -> mapIdToUserJpaEntity(id, userJpaRepository)).toList();
-    }
-
-    default UserJpaEntity mapIdToUserJpaEntity(UUID userId, @Context UserJpaRepository userJpaRepository) {
-        return userJpaRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
-    }
-
-    default List<UUID> mapUserJpaEntitiesToIds(List<UserJpaEntity> userJpaEntities) {
-        return userJpaEntities.stream().map(UserJpaEntity::getId).collect(Collectors.toList());
+    default UserJpaEntity mapUserMinInfoToUserJpaEntity(UserMinInfo userMinInfo, @Context UserJpaRepository userJpaRepository) {
+        return userJpaRepository.findById(userMinInfo.id()).orElseThrow(() -> new UserNotFoundException(userMinInfo.id()));
     }
 }

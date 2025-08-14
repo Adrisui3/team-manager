@@ -1,6 +1,7 @@
 package com.manager.payments.application.service;
 
 import com.manager.payments.adapter.in.rest.dto.CreateUserRequestDTO;
+import com.manager.payments.adapter.out.persistence.payments.PaymentMapper;
 import com.manager.payments.application.exception.PaymentNotFoundException;
 import com.manager.payments.application.exception.UserAlreadyExistsException;
 import com.manager.payments.application.exception.UserNotFoundException;
@@ -10,7 +11,9 @@ import com.manager.payments.application.port.in.FindUserUseCase;
 import com.manager.payments.application.port.out.PaymentRepository;
 import com.manager.payments.application.port.out.UserRepository;
 import com.manager.payments.model.payments.Payment;
+import com.manager.payments.model.payments.PaymentMinInfo;
 import com.manager.payments.model.users.User;
+import com.manager.payments.model.users.UserMinInfo;
 import com.manager.payments.model.users.UserStatus;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
@@ -25,7 +28,7 @@ public class UserService implements CreateUserUseCase, AssignPaymentToUserUseCas
     private final PaymentRepository paymentRepository;
     private final UserRepository userRepository;
 
-    public UserService(PaymentRepository paymentRepository, UserRepository userRepository) {
+    public UserService(PaymentMapper paymentMapper, PaymentRepository paymentRepository, UserRepository userRepository) {
         this.paymentRepository = paymentRepository;
         this.userRepository = userRepository;
     }
@@ -46,17 +49,19 @@ public class UserService implements CreateUserUseCase, AssignPaymentToUserUseCas
     public User assignPaymentToUser(UUID userId, UUID paymentId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException(userId));
+        UserMinInfo userMinInfo = UserMinInfo.from(user);
 
         Payment payment = paymentRepository.findById(paymentId)
                 .orElseThrow(() -> new PaymentNotFoundException(paymentId));
+        PaymentMinInfo paymentMinInfo = PaymentMinInfo.from(payment);
 
-        if (!user.paymentIds().contains(paymentId)) {
-            user.paymentIds().add(paymentId);
+        if (!user.payments().contains(paymentMinInfo)) {
+            user.payments().add(paymentMinInfo);
             userRepository.save(user);
         }
 
-        if (!payment.userIds().contains(userId)) {
-            payment.userIds().add(userId);
+        if (!payment.users().contains(userMinInfo)) {
+            payment.users().add(userMinInfo);
             paymentRepository.save(payment);
         }
 
