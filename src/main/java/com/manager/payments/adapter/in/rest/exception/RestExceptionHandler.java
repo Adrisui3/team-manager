@@ -1,9 +1,6 @@
 package com.manager.payments.adapter.in.rest.exception;
 
-import com.manager.payments.application.exception.PaymentNotFoundException;
-import com.manager.payments.application.exception.ReceiptNotFoundException;
-import com.manager.payments.application.exception.UserAlreadyExistsException;
-import com.manager.payments.application.exception.UserNotFoundException;
+import com.manager.payments.application.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -30,5 +27,15 @@ public class RestExceptionHandler {
     @ExceptionHandler(ReceiptNotFoundException.class)
     public ResponseEntity<String> handleReceiptNotFoundException(ReceiptNotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+    }
+
+    @ExceptionHandler(UserNotAssignedException.class)
+    public ResponseEntity<String> handleUserNotAssignedException(UserNotAssignedException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    }
+
+    @ExceptionHandler(PaymentNotAssignedException.class)
+    public ResponseEntity<String> handlePaymentNotAssignedException(PaymentNotAssignedException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
 }

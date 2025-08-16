@@ -1,12 +1,10 @@
 package com.manager.payments.adapter.out.persistence.users;
 
 import com.manager.payments.adapter.out.persistence.payments.PaymentJpaRepository;
-import com.manager.payments.adapter.out.persistence.receipts.ReceiptJpaEntity;
 import com.manager.payments.adapter.out.persistence.receipts.ReceiptJpaRepository;
 import com.manager.payments.adapter.out.persistence.receipts.ReceiptMapper;
 import com.manager.payments.application.exception.UserNotFoundException;
 import com.manager.payments.application.port.out.UserRepository;
-import com.manager.payments.model.receipts.Receipt;
 import com.manager.payments.model.receipts.ReceiptMinInfo;
 import com.manager.payments.model.users.User;
 import org.springframework.stereotype.Component;
@@ -54,27 +52,8 @@ public class UserRepositoryAdapter implements UserRepository {
     }
 
     @Override
-    public Optional<User> findByEmail(String email) {
-        Optional<UserJpaEntity> userJpaEntity = userJpaRepository.findByEmail(email);
-        return userJpaEntity.map(userMapper::toUser);
-    }
-
-    @Override
     public void deleteById(UUID id) {
         userJpaRepository.deleteById(id);
-    }
-
-    @Override
-    public Receipt addReceiptToUser(UUID userId, Receipt receipt) {
-        UserJpaEntity userJpaEntity =
-                userJpaRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
-        ReceiptJpaEntity receiptJpaEntity = receiptMapper.toReceiptJpaEntity(receipt);
-
-        userJpaEntity.getReceipts().add(receiptJpaEntity);
-        receiptJpaEntity.setUser(userJpaEntity);
-        UserJpaEntity savedUser = userJpaRepository.save(userJpaEntity);
-
-        return receiptMapper.toReceipt(savedUser.getReceipts().getLast());
     }
 
     @Override

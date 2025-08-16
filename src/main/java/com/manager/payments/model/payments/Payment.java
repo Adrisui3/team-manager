@@ -9,4 +9,8 @@ import java.util.UUID;
 public record Payment(UUID id, double amount, String name, String description, LocalDate startDate,
                       LocalDate nextPaymentDate, LocalDate endDate, int periodDays, PaymentStatus status,
                       List<UserMinInfo> users) {
+
+    public boolean hasUser(UUID userId) {
+        return users.stream().anyMatch(user -> user.id().equals(userId));
+    }
 }
