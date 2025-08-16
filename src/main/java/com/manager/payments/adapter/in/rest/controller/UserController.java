@@ -1,33 +1,39 @@
 package com.manager.payments.adapter.in.rest.controller;
 
 import com.manager.payments.adapter.in.rest.dto.CreateUserRequestDTO;
+import com.manager.payments.application.exception.UserNotFoundException;
 import com.manager.payments.application.port.in.AssignPaymentToUserUseCase;
 import com.manager.payments.application.port.in.CreateUserUseCase;
-import com.manager.payments.application.port.in.DeleteUserUseCase;
-import com.manager.payments.application.port.in.FindUserUseCase;
+import com.manager.payments.application.port.out.UserRepository;
+import com.manager.payments.model.receipts.ReceiptMinInfo;
 import com.manager.payments.model.users.User;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
 public class UserController {
 
-    private final FindUserUseCase findUserUseCase;
     private final CreateUserUseCase createUserUseCase;
-    private final DeleteUserUseCase deleteUserUseCase;
+    private final UserRepository userRepository;
     private final AssignPaymentToUserUseCase assignPaymentToUserUseCase;
 
-    public UserController(FindUserUseCase findUserUseCase, CreateUserUseCase createUserUseCase, DeleteUserUseCase deleteUserUseCase, AssignPaymentToUserUseCase assignPaymentToUserUseCase) {
-        this.findUserUseCase = findUserUseCase;
+    public UserController(CreateUserUseCase createUserUseCase, UserRepository userRepository,
+                          AssignPaymentToUserUseCase assignPaymentToUserUseCase) {
         this.createUserUseCase = createUserUseCase;
-        this.deleteUserUseCase = deleteUserUseCase;
+        this.userRepository = userRepository;
         this.assignPaymentToUserUseCase = assignPaymentToUserUseCase;
     }
 
     @GetMapping("/user/{userId}")
     public User getUser(@PathVariable("userId") UUID userId) {
-        return findUserUseCase.findById(userId);
+        return userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
+    }
+
+    @GetMapping("/user/{userId}/receipts")
+    public List<ReceiptMinInfo> getUserReceipts(@PathVariable("userId") UUID userId) {
+        return userRepository.findAllReceipts(userId);
     }
 
     @PostMapping("/user")
@@ -42,6 +48,6 @@ public class UserController {
 
     @DeleteMapping("/user/{userId}")
     public void deleteUser(@PathVariable UUID userId) {
-        deleteUserUseCase.deleteUserById(userId);
+        userRepository.deleteById(userId);
     }
 }

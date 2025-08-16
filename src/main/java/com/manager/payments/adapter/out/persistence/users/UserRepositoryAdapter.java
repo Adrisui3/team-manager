@@ -7,9 +7,11 @@ import com.manager.payments.adapter.out.persistence.receipts.ReceiptMapper;
 import com.manager.payments.application.exception.UserNotFoundException;
 import com.manager.payments.application.port.out.UserRepository;
 import com.manager.payments.model.receipts.Receipt;
+import com.manager.payments.model.receipts.ReceiptMinInfo;
 import com.manager.payments.model.users.User;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -73,5 +75,12 @@ public class UserRepositoryAdapter implements UserRepository {
         UserJpaEntity savedUser = userJpaRepository.save(userJpaEntity);
 
         return receiptMapper.toReceipt(savedUser.getReceipts().getLast());
+    }
+
+    @Override
+    public List<ReceiptMinInfo> findAllReceipts(UUID userId) {
+        UserJpaEntity userJpaEntity =
+                userJpaRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
+        return userJpaEntity.getReceipts().stream().map(receiptMapper::toReceiptMinInfo).toList();
     }
 }

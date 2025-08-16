@@ -23,7 +23,9 @@ public class PaymentService implements CreatePaymentUseCase, FindPaymentUseCase 
 
     @Override
     public Payment createPayment(CreatePaymentRequestDTO requestDTO) {
-        Payment newPayment = new Payment(null, requestDTO.amount(), requestDTO.name(), requestDTO.description(), requestDTO.startDate(), requestDTO.startDate(), requestDTO.endDate(), requestDTO.periodDays(), PaymentStatus.ACTIVE, Collections.emptyList());
+        Payment newPayment = new Payment(null, requestDTO.amount(), requestDTO.name(), requestDTO.description(),
+                requestDTO.startDate(), requestDTO.startDate(), requestDTO.endDate(), requestDTO.periodDays(),
+                PaymentStatus.ACTIVE, Collections.emptyList());
         return paymentRepository.save(newPayment);
     }
 
