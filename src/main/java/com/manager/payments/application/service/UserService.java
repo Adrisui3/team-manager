@@ -24,36 +24,41 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class UserService implements CreateUserUseCase, AssignPaymentToUserUseCase, FindUserUseCase, DeleteUserUseCase {
+public class UserService implements CreateUserUseCase,
+        AssignPaymentToUserUseCase, FindUserUseCase, DeleteUserUseCase {
 
     private final PaymentRepository paymentRepository;
     private final UserRepository userRepository;
 
-    public UserService(PaymentMapper paymentMapper, PaymentRepository paymentRepository, UserRepository userRepository) {
+    public UserService(PaymentMapper paymentMapper,
+                       PaymentRepository paymentRepository,
+                       UserRepository userRepository) {
         this.paymentRepository = paymentRepository;
         this.userRepository = userRepository;
     }
 
     @Override
     public User createUser(CreateUserRequestDTO requestDTO) {
-        Optional<User> existingUser = userRepository.findByPersonalId(requestDTO.personalId());
+        Optional<User> existingUser =
+                userRepository.findByPersonalId(requestDTO.personalId());
         if (existingUser.isPresent()) {
             throw new UserAlreadyExistsException(requestDTO.personalId());
         }
 
-        User newUser = new User(null, requestDTO.personalId(), requestDTO.name(), requestDTO.surname(), requestDTO.email(), requestDTO.birthDate(), requestDTO.category(), UserStatus.ENABLED, Collections.emptyList());
+        User newUser = new User(null, requestDTO.personalId(), requestDTO.name(), requestDTO.surname(),
+                requestDTO.email(), requestDTO.birthDate(), requestDTO.category(), UserStatus.ENABLED,
+                Collections.emptyList(), Collections.emptyList());
         return userRepository.save(newUser);
     }
 
     @Override
     @Transactional
     public User assignPaymentToUser(UUID userId, UUID paymentId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException(userId));
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
         UserMinInfo userMinInfo = UserMinInfo.from(user);
 
-        Payment payment = paymentRepository.findById(paymentId)
-                .orElseThrow(() -> new PaymentNotFoundException(paymentId));
+        Payment payment =
+                paymentRepository.findById(paymentId).orElseThrow(() -> new PaymentNotFoundException(paymentId));
         PaymentMinInfo paymentMinInfo = PaymentMinInfo.from(payment);
 
         if (!user.payments().contains(paymentMinInfo)) {

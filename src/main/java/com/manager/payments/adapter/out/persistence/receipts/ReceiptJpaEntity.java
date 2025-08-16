@@ -19,8 +19,6 @@ public class ReceiptJpaEntity {
     private LocalDate paymentDate;
     private LocalDate expiryDate;
 
-    private int paymentPeriodInDays;
-
     @Enumerated(EnumType.STRING)
     private ReceiptStatus status = ReceiptStatus.PENDING;
 
@@ -74,14 +72,6 @@ public class ReceiptJpaEntity {
 
     public void setExpiryDate(LocalDate expiryDate) {
         this.expiryDate = expiryDate;
-    }
-
-    public int getPaymentPeriodInDays() {
-        return paymentPeriodInDays;
-    }
-
-    public void setPaymentPeriodInDays(int paymentPeriodInDays) {
-        this.paymentPeriodInDays = paymentPeriodInDays;
     }
 
     public LocalDate getPaymentDate() {

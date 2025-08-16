@@ -38,7 +38,6 @@ public class UserController {
     @PutMapping("/user/{userId}/assign/{paymentId}")
     public User assignPaymentToUser(@PathVariable UUID userId, @PathVariable UUID paymentId) {
         return assignPaymentToUserUseCase.assignPaymentToUser(userId, paymentId);
-
     }
 
     @DeleteMapping("/user/{userId}")

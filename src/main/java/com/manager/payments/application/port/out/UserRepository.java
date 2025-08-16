@@ -1,5 +1,6 @@
 package com.manager.payments.application.port.out;
 
+import com.manager.payments.model.receipts.Receipt;
 import com.manager.payments.model.users.User;
 
 import java.util.Optional;
@@ -16,4 +17,6 @@ public interface UserRepository {
     Optional<User> findByEmail(String email);
 
     void deleteById(UUID id);
+
+    Receipt addReceiptToUser(UUID user, Receipt receipt);
 }

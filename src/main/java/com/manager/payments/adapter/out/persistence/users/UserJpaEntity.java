@@ -42,7 +42,7 @@ public class UserJpaEntity {
     )
     private List<PaymentJpaEntity> payments = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ReceiptJpaEntity> receiptJpaEntities = new ArrayList<>();
 
     public String getName() {

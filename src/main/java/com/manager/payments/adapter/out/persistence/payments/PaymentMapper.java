@@ -21,15 +21,19 @@ public interface PaymentMapper {
 
     PaymentMinInfo toPaymentMinInfo(PaymentJpaEntity paymentJpaEntity);
 
-    default List<PaymentJpaEntity> mapIdsToPaymentJpaEntities(List<PaymentMinInfo> paymentMinInfos, @Context PaymentJpaRepository paymentJpaRepository) {
-        return paymentMinInfos.stream().map(payment -> mapIdToPaymentJpaEntity(payment, paymentJpaRepository)).toList();
+    default List<PaymentJpaEntity> mapPaymentMinInfosToPaymentJpaEntities(List<PaymentMinInfo> paymentMinInfos,
+                                                                          @Context PaymentJpaRepository paymentJpaRepository) {
+        return paymentMinInfos.stream().map(payment -> mapPaymentMinInfoToPaymentJpaEntity(payment,
+                paymentJpaRepository)).toList();
     }
 
-    default PaymentJpaEntity mapIdToPaymentJpaEntity(PaymentMinInfo paymentMinInfo, @Context PaymentJpaRepository paymentJpaRepository) {
+    default PaymentJpaEntity mapPaymentMinInfoToPaymentJpaEntity(PaymentMinInfo paymentMinInfo,
+                                                                 @Context PaymentJpaRepository paymentJpaRepository) {
         return paymentJpaRepository.findById(paymentMinInfo.id()).orElseThrow(() -> new PaymentNotFoundException(paymentMinInfo.id()));
     }
 
-    default List<UserJpaEntity> mapIdsToUserJpaEntities(List<UserMinInfo> userMinInfos, @Context UserJpaRepository userJpaRepository) {
+    default List<UserJpaEntity> mapUserMinInfosToUserJpaEntities(List<UserMinInfo> userMinInfos,
+                                                                 @Context UserJpaRepository userJpaRepository) {
         return userMinInfos.stream().map(user -> mapUserMinInfoToUserJpaEntity(user, userJpaRepository)).toList();
     }
 
