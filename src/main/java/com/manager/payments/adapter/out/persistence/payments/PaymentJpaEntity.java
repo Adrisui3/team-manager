@@ -1,6 +1,6 @@
 package com.manager.payments.adapter.out.persistence.payments;
 
-import com.manager.payments.adapter.out.persistence.users.UserJpaEntity;
+import com.manager.payments.adapter.out.persistence.players.PlayerJpaEntity;
 import com.manager.payments.model.payments.PaymentStatus;
 import jakarta.persistence.*;
 
@@ -31,7 +31,7 @@ public class PaymentJpaEntity {
     private PaymentStatus status = PaymentStatus.ACTIVE;
 
     @ManyToMany(mappedBy = "payments")
-    private List<UserJpaEntity> users = new ArrayList<>();
+    private List<PlayerJpaEntity> users = new ArrayList<>();
 
     public void setId(UUID id) {
         this.id = id;
@@ -105,11 +105,11 @@ public class PaymentJpaEntity {
         this.nextPaymentDate = nextPaymentDate;
     }
 
-    public List<UserJpaEntity> getUsers() {
+    public List<PlayerJpaEntity> getUsers() {
         return users;
     }
 
-    public void setUsers(List<UserJpaEntity> userJpaEntities) {
+    public void setUsers(List<PlayerJpaEntity> userJpaEntities) {
         this.users = userJpaEntities;
     }
 }

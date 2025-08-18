@@ -1,6 +1,6 @@
 package com.manager.payments.adapter.out.persistence.receipts;
 
-import com.manager.payments.adapter.out.persistence.users.UserJpaEntity;
+import com.manager.payments.adapter.out.persistence.players.PlayerJpaEntity;
 import com.manager.payments.model.receipts.ReceiptStatus;
 import jakarta.persistence.*;
 
@@ -23,8 +23,8 @@ public class ReceiptJpaEntity {
     private ReceiptStatus status = ReceiptStatus.PENDING;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private UserJpaEntity user;
+    @JoinColumn(name = "player_id")
+    private PlayerJpaEntity player;
 
     public void setId(UUID id) {
         this.id = id;
@@ -42,12 +42,12 @@ public class ReceiptJpaEntity {
         this.status = status;
     }
 
-    public UserJpaEntity getUser() {
-        return user;
+    public PlayerJpaEntity getPlayer() {
+        return player;
     }
 
-    public void setUser(UserJpaEntity userJpaEntity) {
-        this.user = userJpaEntity;
+    public void setPlayer(PlayerJpaEntity playerJpaEntity) {
+        this.player = playerJpaEntity;
     }
 
     public LocalDate getIssuedDate() {

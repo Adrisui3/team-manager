@@ -1,9 +1,9 @@
-package com.manager.payments.adapter.out.persistence.users;
+package com.manager.payments.adapter.out.persistence.players;
 
 import com.manager.payments.adapter.out.persistence.payments.PaymentJpaEntity;
 import com.manager.payments.adapter.out.persistence.receipts.ReceiptJpaEntity;
 import com.manager.payments.model.users.Category;
-import com.manager.payments.model.users.UserStatus;
+import com.manager.payments.model.users.PlayerStatus;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -12,8 +12,8 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "users")
-public class UserJpaEntity {
+@Table(name = "player")
+public class PlayerJpaEntity {
     @Id
     @GeneratedValue
     private UUID id;
@@ -32,17 +32,17 @@ public class UserJpaEntity {
     private Category category = Category.NONE;
 
     @Enumerated(EnumType.STRING)
-    private UserStatus status = UserStatus.ENABLED;
+    private PlayerStatus status = PlayerStatus.ENABLED;
 
     @ManyToMany
     @JoinTable(
-            name = "user_payment",
-            joinColumns = @JoinColumn(name = "user_id"),
+            name = "player_payment",
+            joinColumns = @JoinColumn(name = "player_id"),
             inverseJoinColumns = @JoinColumn(name = "payment_id")
     )
     private List<PaymentJpaEntity> payments = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "player", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ReceiptJpaEntity> receiptJpaEntities = new ArrayList<>();
 
     public String getName() {
@@ -93,11 +93,11 @@ public class UserJpaEntity {
         this.category = category;
     }
 
-    public UserStatus getStatus() {
+    public PlayerStatus getStatus() {
         return status;
     }
 
-    public void setStatus(UserStatus status) {
+    public void setStatus(PlayerStatus status) {
         this.status = status;
     }
 

@@ -1,12 +1,12 @@
 package com.manager.payments.adapter.out.persistence.receipts;
 
-import com.manager.payments.adapter.out.persistence.users.UserJpaEntity;
-import com.manager.payments.adapter.out.persistence.users.UserJpaRepository;
+import com.manager.payments.adapter.out.persistence.players.PlayerJpaEntity;
+import com.manager.payments.adapter.out.persistence.players.PlayerJpaRepository;
+import com.manager.payments.application.exception.PlayerNotFoundException;
 import com.manager.payments.application.exception.ReceiptNotFoundException;
-import com.manager.payments.application.exception.UserNotFoundException;
 import com.manager.payments.model.receipts.Receipt;
 import com.manager.payments.model.receipts.ReceiptMinInfo;
-import com.manager.payments.model.users.UserMinInfo;
+import com.manager.payments.model.users.PlayerMinInfo;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 
@@ -17,7 +17,7 @@ public interface ReceiptMapper {
 
     Receipt toReceipt(ReceiptJpaEntity receiptJpaEntity);
 
-    ReceiptJpaEntity toReceiptJpaEntity(Receipt receipt, @Context UserJpaRepository userJpaRepository);
+    ReceiptJpaEntity toReceiptJpaEntity(Receipt receipt, @Context PlayerJpaRepository playerJpaRepository);
 
     ReceiptMinInfo toReceiptMinInfo(ReceiptJpaEntity receiptJpaEntity);
 
@@ -42,8 +42,8 @@ public interface ReceiptMapper {
         return receiptJpaRepository.findById(receiptMinInfo.id()).orElseThrow(() -> new ReceiptNotFoundException(receiptMinInfo.id()));
     }
 
-    default UserJpaEntity mapUserMinInfoToUserJpaEntity(UserMinInfo userMinInfo,
-                                                        @Context UserJpaRepository userJpaRepository) {
-        return userJpaRepository.findById(userMinInfo.id()).orElseThrow(() -> new UserNotFoundException(userMinInfo.id()));
+    default PlayerJpaEntity mapPlayerMinInfoToUserJpaEntity(PlayerMinInfo playerMinInfo,
+                                                            @Context PlayerJpaRepository playerJpaRepository) {
+        return playerJpaRepository.findById(playerMinInfo.id()).orElseThrow(() -> new PlayerNotFoundException(playerMinInfo.id()));
     }
 }

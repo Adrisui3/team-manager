@@ -1,12 +1,12 @@
 package com.manager.payments.adapter.out.persistence.payments;
 
-import com.manager.payments.adapter.out.persistence.users.UserJpaEntity;
-import com.manager.payments.adapter.out.persistence.users.UserJpaRepository;
+import com.manager.payments.adapter.out.persistence.players.PlayerJpaEntity;
+import com.manager.payments.adapter.out.persistence.players.PlayerJpaRepository;
 import com.manager.payments.application.exception.PaymentNotFoundException;
-import com.manager.payments.application.exception.UserNotFoundException;
+import com.manager.payments.application.exception.PlayerNotFoundException;
 import com.manager.payments.model.payments.Payment;
 import com.manager.payments.model.payments.PaymentMinInfo;
-import com.manager.payments.model.users.UserMinInfo;
+import com.manager.payments.model.users.PlayerMinInfo;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 
@@ -17,7 +17,7 @@ public interface PaymentMapper {
 
     Payment toPayment(PaymentJpaEntity paymentJpaEntity);
 
-    PaymentJpaEntity toPaymentJpaEntity(Payment payment, @Context UserJpaRepository userJpaRepository);
+    PaymentJpaEntity toPaymentJpaEntity(Payment payment, @Context PlayerJpaRepository playerJpaRepository);
 
     PaymentMinInfo toPaymentMinInfo(PaymentJpaEntity paymentJpaEntity);
 
@@ -32,12 +32,13 @@ public interface PaymentMapper {
         return paymentJpaRepository.findById(paymentMinInfo.id()).orElseThrow(() -> new PaymentNotFoundException(paymentMinInfo.id()));
     }
 
-    default List<UserJpaEntity> mapUserMinInfosToUserJpaEntities(List<UserMinInfo> userMinInfos,
-                                                                 @Context UserJpaRepository userJpaRepository) {
-        return userMinInfos.stream().map(user -> mapUserMinInfoToUserJpaEntity(user, userJpaRepository)).toList();
+    default List<PlayerJpaEntity> mapPlayerMinInfosToPlayerJpaEntities(List<PlayerMinInfo> playerMinInfos,
+                                                                       @Context PlayerJpaRepository playerJpaRepository) {
+        return playerMinInfos.stream().map(player -> mapPlayerMinInfoToPlayerJpaEntity(player, playerJpaRepository)).toList();
     }
 
-    default UserJpaEntity mapUserMinInfoToUserJpaEntity(UserMinInfo userMinInfo, @Context UserJpaRepository userJpaRepository) {
-        return userJpaRepository.findById(userMinInfo.id()).orElseThrow(() -> new UserNotFoundException(userMinInfo.id()));
+    default PlayerJpaEntity mapPlayerMinInfoToPlayerJpaEntity(PlayerMinInfo playerMinInfo,
+                                                              @Context PlayerJpaRepository playerJpaRepository) {
+        return playerJpaRepository.findById(playerMinInfo.id()).orElseThrow(() -> new PlayerNotFoundException(playerMinInfo.id()));
     }
 }

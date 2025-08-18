@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class RestExceptionHandler {
 
-    @ExceptionHandler(UserAlreadyExistsException.class)
-    public ResponseEntity<String> handleUserAlreadyExistsException(UserAlreadyExistsException e) {
+    @ExceptionHandler(PlayerAlreadyExistsException.class)
+    public ResponseEntity<String> handleUserAlreadyExistsException(PlayerAlreadyExistsException e) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
     }
 
@@ -19,8 +19,8 @@ public class RestExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
 
-    @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<String> handleUserNotFoundException(UserNotFoundException e) {
+    @ExceptionHandler(PlayerNotFoundException.class)
+    public ResponseEntity<String> handleUserNotFoundException(PlayerNotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
 
@@ -29,8 +29,8 @@ public class RestExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
 
-    @ExceptionHandler(UserNotAssignedException.class)
-    public ResponseEntity<String> handleUserNotAssignedException(UserNotAssignedException e) {
+    @ExceptionHandler(PlayerNotAssignedException.class)
+    public ResponseEntity<String> handleUserNotAssignedException(PlayerNotAssignedException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
 

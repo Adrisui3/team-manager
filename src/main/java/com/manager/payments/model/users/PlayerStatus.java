@@ -1,6 +1,6 @@
 package com.manager.payments.model.users;
 
-public enum UserStatus {
+public enum PlayerStatus {
     ENABLED,
     DISABLED
 }
