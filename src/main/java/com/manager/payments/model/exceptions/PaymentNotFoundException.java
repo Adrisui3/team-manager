@@ -1,4 +1,4 @@
-package com.manager.payments.application.exception;
+package com.manager.payments.model.exceptions;
 
 import java.util.UUID;
 

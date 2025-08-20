@@ -1,4 +1,4 @@
-package com.manager.payments.application.exception;
+package com.manager.payments.model.exceptions;
 
 public class PlayerAlreadyExistsException extends RuntimeException {
     public PlayerAlreadyExistsException(String personalId) {

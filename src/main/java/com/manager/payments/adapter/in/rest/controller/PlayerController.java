@@ -1,10 +1,10 @@
 package com.manager.payments.adapter.in.rest.controller;
 
 import com.manager.payments.adapter.in.rest.dto.CreatePlayerRequestDTO;
-import com.manager.payments.application.exception.PlayerNotFoundException;
-import com.manager.payments.application.port.in.AssignPaymentToUserUseCase;
-import com.manager.payments.application.port.in.CreateUserUseCase;
+import com.manager.payments.application.port.in.AssignPaymentToPlayerUseCase;
+import com.manager.payments.application.port.in.CreatePlayerUseCase;
 import com.manager.payments.application.port.out.PlayerRepository;
+import com.manager.payments.model.exceptions.PlayerNotFoundException;
 import com.manager.payments.model.receipts.ReceiptMinInfo;
 import com.manager.payments.model.users.Player;
 import org.springframework.web.bind.annotation.*;
@@ -15,39 +15,39 @@ import java.util.UUID;
 @RestController
 public class PlayerController {
 
-    private final CreateUserUseCase createUserUseCase;
+    private final CreatePlayerUseCase createPlayerUseCase;
     private final PlayerRepository playerRepository;
-    private final AssignPaymentToUserUseCase assignPaymentToUserUseCase;
+    private final AssignPaymentToPlayerUseCase assignPaymentToPlayerUseCase;
 
-    public PlayerController(CreateUserUseCase createUserUseCase, PlayerRepository playerRepository,
-                            AssignPaymentToUserUseCase assignPaymentToUserUseCase) {
-        this.createUserUseCase = createUserUseCase;
+    public PlayerController(CreatePlayerUseCase createPlayerUseCase, PlayerRepository playerRepository,
+                            AssignPaymentToPlayerUseCase assignPaymentToPlayerUseCase) {
+        this.createPlayerUseCase = createPlayerUseCase;
         this.playerRepository = playerRepository;
-        this.assignPaymentToUserUseCase = assignPaymentToUserUseCase;
+        this.assignPaymentToPlayerUseCase = assignPaymentToPlayerUseCase;
     }
 
-    @GetMapping("/user/{userId}")
-    public Player getUser(@PathVariable("userId") UUID userId) {
-        return playerRepository.findById(userId).orElseThrow(() -> new PlayerNotFoundException(userId));
+    @GetMapping("/player/{playerId}")
+    public Player getUser(@PathVariable("playerId") UUID playerId) {
+        return playerRepository.findById(playerId).orElseThrow(() -> new PlayerNotFoundException(playerId));
     }
 
-    @GetMapping("/user/{userId}/receipts")
-    public List<ReceiptMinInfo> getUserReceipts(@PathVariable("userId") UUID userId) {
-        return playerRepository.findAllReceipts(userId);
+    @GetMapping("/player/{playerId}/receipts")
+    public List<ReceiptMinInfo> getUserReceipts(@PathVariable("playerId") UUID playerId) {
+        return playerRepository.findAllReceipts(playerId);
     }
 
-    @PostMapping("/user")
+    @PostMapping("/player")
     public Player createUser(@RequestBody CreatePlayerRequestDTO requestDTO) {
-        return createUserUseCase.createUser(requestDTO);
+        return createPlayerUseCase.createPlayer(requestDTO);
     }
 
-    @PutMapping("/user/{userId}/assign/{paymentId}")
-    public Player assignPaymentToUser(@PathVariable UUID userId, @PathVariable UUID paymentId) {
-        return assignPaymentToUserUseCase.assignPaymentToPlayer(userId, paymentId);
+    @PutMapping("/player/{playerId}/assign/{paymentId}")
+    public Player assignPaymentToPlayer(@PathVariable UUID playerId, @PathVariable UUID paymentId) {
+        return assignPaymentToPlayerUseCase.assignPaymentToPlayer(playerId, paymentId);
     }
 
-    @DeleteMapping("/user/{userId}")
-    public void deleteUser(@PathVariable UUID userId) {
-        playerRepository.deleteById(userId);
+    @DeleteMapping("/player/{playerId}")
+    public void deleteUser(@PathVariable UUID playerId) {
+        playerRepository.deleteById(playerId);
     }
 }

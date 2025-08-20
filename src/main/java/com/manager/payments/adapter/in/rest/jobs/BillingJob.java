@@ -1,24 +1,44 @@
 package com.manager.payments.adapter.in.rest.jobs;
 
 import com.manager.payments.application.port.in.CreateReceiptUseCase;
+import com.manager.payments.application.port.out.PaymentRepository;
+import com.manager.payments.model.payments.Payment;
 import com.manager.payments.model.receipts.ReceiptMinInfo;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.manager.payments.model.users.PlayerMinInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.UUID;
+import java.time.LocalDate;
+import java.util.List;
 
-@RestController
+@Component
 public class BillingJob {
 
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final CreateReceiptUseCase createReceiptUseCase;
+    private final PaymentRepository paymentRepository;
 
-    public BillingJob(CreateReceiptUseCase createReceiptUseCase) {
+    public BillingJob(CreateReceiptUseCase createReceiptUseCase, PaymentRepository paymentRepository) {
         this.createReceiptUseCase = createReceiptUseCase;
+        this.paymentRepository = paymentRepository;
     }
 
-    @PostMapping("/receipt/{userId}/{paymentId}")
-    public ReceiptMinInfo createReceipt(@PathVariable UUID userId, @PathVariable UUID paymentId) {
-        return createReceiptUseCase.createReceipt(userId, paymentId);
+    @Scheduled(cron = "0 0 0 * * *")
+    @Transactional
+    public void billing() {
+        LocalDate now = LocalDate.now();
+        List<Payment> payments = paymentRepository.findAllActiveByNextPaymentDateBefore(now);
+        for (Payment payment : payments) {
+            LocalDate newNextPaymentDate = payment.nextPaymentDate().plusDays(payment.periodDays());
+            paymentRepository.updateNextPaymentDate(payment.id(), newNextPaymentDate);
+
+            for (PlayerMinInfo player : payment.players()) {
+                ReceiptMinInfo newReceipt = createReceiptUseCase.createReceipt(player.id(), payment.id());
+                logger.info("Created receipt {} for player {}", newReceipt.id(), player.id());
+            }
+        }
     }
 }

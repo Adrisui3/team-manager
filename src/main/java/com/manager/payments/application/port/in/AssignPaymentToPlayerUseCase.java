@@ -4,8 +4,8 @@ import com.manager.payments.model.users.Player;
 
 import java.util.UUID;
 
-public interface AssignPaymentToUserUseCase {
+public interface AssignPaymentToPlayerUseCase {
 
-    Player assignPaymentToPlayer(UUID userId, UUID paymentId);
+    Player assignPaymentToPlayer(UUID playerId, UUID paymentId);
 
 }

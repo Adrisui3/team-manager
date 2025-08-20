@@ -5,5 +5,5 @@ import com.manager.payments.model.receipts.ReceiptMinInfo;
 import java.util.UUID;
 
 public interface CreateReceiptUseCase {
-    ReceiptMinInfo createReceipt(UUID userId, UUID paymentId);
+    ReceiptMinInfo createReceipt(UUID playerId, UUID paymentId);
 }

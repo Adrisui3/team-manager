@@ -31,7 +31,7 @@ public class PaymentJpaEntity {
     private PaymentStatus status = PaymentStatus.ACTIVE;
 
     @ManyToMany(mappedBy = "payments")
-    private List<PlayerJpaEntity> users = new ArrayList<>();
+    private List<PlayerJpaEntity> players = new ArrayList<>();
 
     public void setId(UUID id) {
         this.id = id;
@@ -105,11 +105,11 @@ public class PaymentJpaEntity {
         this.nextPaymentDate = nextPaymentDate;
     }
 
-    public List<PlayerJpaEntity> getUsers() {
-        return users;
+    public List<PlayerJpaEntity> getPlayers() {
+        return players;
     }
 
-    public void setUsers(List<PlayerJpaEntity> userJpaEntities) {
-        this.users = userJpaEntities;
+    public void setPlayers(List<PlayerJpaEntity> userJpaEntities) {
+        this.players = userJpaEntities;
     }
 }

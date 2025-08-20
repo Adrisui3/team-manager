@@ -1,10 +1,10 @@
 package com.manager.payments.application.service;
 
-import com.manager.payments.application.exception.PaymentNotFoundException;
-import com.manager.payments.application.exception.PlayerNotFoundException;
 import com.manager.payments.application.port.in.CreateReceiptUseCase;
 import com.manager.payments.application.port.out.PaymentRepository;
 import com.manager.payments.application.port.out.PlayerRepository;
+import com.manager.payments.model.exceptions.PaymentNotFoundException;
+import com.manager.payments.model.exceptions.PlayerNotFoundException;
 import com.manager.payments.model.payments.Payment;
 import com.manager.payments.model.receipts.ReceiptMinInfo;
 import com.manager.payments.model.users.Player;
@@ -24,8 +24,8 @@ public class BillingService implements CreateReceiptUseCase {
     }
 
     @Override
-    public ReceiptMinInfo createReceipt(UUID userId, UUID paymentId) {
-        Player player = playerRepository.findById(userId).orElseThrow(() -> new PlayerNotFoundException(userId));
+    public ReceiptMinInfo createReceipt(UUID playerId, UUID paymentId) {
+        Player player = playerRepository.findById(playerId).orElseThrow(() -> new PlayerNotFoundException(playerId));
         Payment payment =
                 paymentRepository.findById(paymentId).orElseThrow(() -> new PaymentNotFoundException(paymentId));
 

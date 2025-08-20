@@ -1,6 +1,6 @@
 package com.manager.payments.adapter.in.rest.exception;
 
-import com.manager.payments.application.exception.*;
+import com.manager.payments.model.exceptions.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;

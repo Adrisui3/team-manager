@@ -1,13 +1,13 @@
 package com.manager.payments.application.service;
 
 import com.manager.payments.adapter.in.rest.dto.CreatePlayerRequestDTO;
-import com.manager.payments.application.exception.PaymentNotFoundException;
-import com.manager.payments.application.exception.PlayerAlreadyExistsException;
-import com.manager.payments.application.exception.PlayerNotFoundException;
-import com.manager.payments.application.port.in.AssignPaymentToUserUseCase;
-import com.manager.payments.application.port.in.CreateUserUseCase;
+import com.manager.payments.application.port.in.AssignPaymentToPlayerUseCase;
+import com.manager.payments.application.port.in.CreatePlayerUseCase;
 import com.manager.payments.application.port.out.PaymentRepository;
 import com.manager.payments.application.port.out.PlayerRepository;
+import com.manager.payments.model.exceptions.PaymentNotFoundException;
+import com.manager.payments.model.exceptions.PlayerAlreadyExistsException;
+import com.manager.payments.model.exceptions.PlayerNotFoundException;
 import com.manager.payments.model.payments.Payment;
 import com.manager.payments.model.payments.PaymentMinInfo;
 import com.manager.payments.model.users.Player;
@@ -21,7 +21,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class PlayerService implements CreateUserUseCase, AssignPaymentToUserUseCase {
+public class PlayerService implements CreatePlayerUseCase, AssignPaymentToPlayerUseCase {
 
     private final PaymentRepository paymentRepository;
     private final PlayerRepository playerRepository;
@@ -33,7 +33,7 @@ public class PlayerService implements CreateUserUseCase, AssignPaymentToUserUseC
     }
 
     @Override
-    public Player createUser(CreatePlayerRequestDTO requestDTO) {
+    public Player createPlayer(CreatePlayerRequestDTO requestDTO) {
         Optional<Player> existingPlayer =
                 playerRepository.findByPersonalId(requestDTO.personalId());
         if (existingPlayer.isPresent()) {
@@ -61,8 +61,8 @@ public class PlayerService implements CreateUserUseCase, AssignPaymentToUserUseC
             playerRepository.save(player);
         }
 
-        if (!payment.users().contains(playerMinInfo)) {
-            payment.users().add(playerMinInfo);
+        if (!payment.players().contains(playerMinInfo)) {
+            payment.players().add(playerMinInfo);
             paymentRepository.save(payment);
         }
 

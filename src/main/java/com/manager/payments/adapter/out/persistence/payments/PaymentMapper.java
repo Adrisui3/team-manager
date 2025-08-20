@@ -2,8 +2,8 @@ package com.manager.payments.adapter.out.persistence.payments;
 
 import com.manager.payments.adapter.out.persistence.players.PlayerJpaEntity;
 import com.manager.payments.adapter.out.persistence.players.PlayerJpaRepository;
-import com.manager.payments.application.exception.PaymentNotFoundException;
-import com.manager.payments.application.exception.PlayerNotFoundException;
+import com.manager.payments.model.exceptions.PaymentNotFoundException;
+import com.manager.payments.model.exceptions.PlayerNotFoundException;
 import com.manager.payments.model.payments.Payment;
 import com.manager.payments.model.payments.PaymentMinInfo;
 import com.manager.payments.model.users.PlayerMinInfo;

@@ -8,9 +8,9 @@ import java.util.UUID;
 
 public record Payment(UUID id, double amount, String name, String description, LocalDate startDate,
                       LocalDate nextPaymentDate, LocalDate endDate, int periodDays, PaymentStatus status,
-                      List<PlayerMinInfo> users) {
+                      List<PlayerMinInfo> players) {
 
-    public boolean hasUser(UUID userId) {
-        return users.stream().anyMatch(user -> user.id().equals(userId));
+    public boolean hasPlayer(UUID playerId) {
+        return players.stream().anyMatch(user -> user.id().equals(playerId));
     }
 }

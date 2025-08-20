@@ -16,8 +16,9 @@ public class ReceiptFactory {
         LocalDate issuedDate = LocalDate.now();
         LocalDate expiryDate = issuedDate.plusDays(RECEIPT_EXPIRATION_DAYS);
 
-        double amount =
-                payment.amount() * ((double) (ChronoUnit.DAYS.between(issuedDate, payment.nextPaymentDate())) / payment.periodDays());
+        double remainderPercentage =
+                (double) ChronoUnit.DAYS.between(issuedDate, payment.nextPaymentDate()) / payment.periodDays();
+        double amount = payment.amount() * remainderPercentage;
 
         return new ReceiptMinInfo(null, amount, issuedDate, null, expiryDate, ReceiptStatus.PENDING);
     }

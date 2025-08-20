@@ -1,7 +1,7 @@
 package com.manager.payments.model.users;
 
-import com.manager.payments.application.exception.PaymentNotAssignedException;
-import com.manager.payments.application.exception.PlayerNotAssignedException;
+import com.manager.payments.model.exceptions.PaymentNotAssignedException;
+import com.manager.payments.model.exceptions.PlayerNotAssignedException;
 import com.manager.payments.model.payments.Payment;
 import com.manager.payments.model.payments.PaymentMinInfo;
 import com.manager.payments.model.receipts.ReceiptFactory;
@@ -20,12 +20,11 @@ public record Player(UUID id, String personalId, String name, String surname, St
     }
 
     public void createReceiptFor(Payment payment) {
-        // TODO: move exceptions to model
         if (!hasPayment(payment.id())) {
             throw new PaymentNotAssignedException(id(), payment.id());
         }
 
-        if (!payment.hasUser(id())) {
+        if (!payment.hasPlayer(id())) {
             throw new PlayerNotAssignedException(id(), payment.id());
         }
 

@@ -1,9 +1,9 @@
 package com.manager.payments.adapter.in.rest.controller;
 
 import com.manager.payments.adapter.in.rest.dto.CreatePaymentRequestDTO;
-import com.manager.payments.application.exception.PaymentNotFoundException;
 import com.manager.payments.application.port.in.CreatePaymentUseCase;
 import com.manager.payments.application.port.out.PaymentRepository;
+import com.manager.payments.model.exceptions.PaymentNotFoundException;
 import com.manager.payments.model.payments.Payment;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,5 +28,10 @@ public class PaymentController {
     @PostMapping("/payment")
     public Payment createPayment(@RequestBody CreatePaymentRequestDTO requestDTO) {
         return createPaymentUseCase.createPayment(requestDTO);
+    }
+
+    @DeleteMapping("/payment/{paymentId}")
+    public void deletePayment(@PathVariable UUID paymentId) {
+        paymentRepository.deleteById(paymentId);
     }
 }
