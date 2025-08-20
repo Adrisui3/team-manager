@@ -38,4 +38,14 @@ public class RestExceptionHandler {
     public ResponseEntity<String> handlePaymentNotAssignedException(PaymentNotAssignedException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
+
+    @ExceptionHandler(PaymentInvalidDateInterval.class)
+    public ResponseEntity<String> handlePaymentInvalidDateInterval(PaymentInvalidDateInterval e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    }
+
+    @ExceptionHandler(PaymentAlreadyExpired.class)
+    public ResponseEntity<String> handlePaymentAlreadyExpired(PaymentAlreadyExpired e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    }
 }
