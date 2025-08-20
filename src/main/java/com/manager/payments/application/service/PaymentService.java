@@ -6,10 +6,9 @@ import com.manager.payments.application.port.in.FindPaymentUseCase;
 import com.manager.payments.application.port.out.PaymentRepository;
 import com.manager.payments.model.exceptions.PaymentNotFoundException;
 import com.manager.payments.model.payments.Payment;
-import com.manager.payments.model.payments.PaymentStatus;
+import com.manager.payments.model.payments.PaymentFactory;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.UUID;
 
 @Service
@@ -23,10 +22,8 @@ public class PaymentService implements CreatePaymentUseCase, FindPaymentUseCase 
 
     @Override
     public Payment createPayment(CreatePaymentRequestDTO requestDTO) {
-        // TODO: create factory with logic to automatically set the status
-        Payment newPayment = new Payment(null, requestDTO.amount(), requestDTO.name(), requestDTO.description(),
-                requestDTO.startDate(), requestDTO.startDate(), requestDTO.endDate(), requestDTO.periodDays(),
-                PaymentStatus.ACTIVE, Collections.emptyList());
+        Payment newPayment = PaymentFactory.build(requestDTO.amount(), requestDTO.name(), requestDTO.description(),
+                requestDTO.startDate(), requestDTO.endDate(), requestDTO.periodDays());
         return paymentRepository.save(newPayment);
     }
 
