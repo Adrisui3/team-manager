@@ -1,6 +1,6 @@
 package com.manager.payments.application.service;
 
-import com.manager.payments.application.port.in.CreateReceiptUseCase;
+import com.manager.payments.application.port.in.IssueNewReceiptsUseCase;
 import com.manager.payments.application.port.out.PaymentRepository;
 import com.manager.payments.application.port.out.PlayerRepository;
 import com.manager.payments.model.exceptions.PaymentNotFoundException;
@@ -8,13 +8,19 @@ import com.manager.payments.model.exceptions.PlayerNotFoundException;
 import com.manager.payments.model.payments.Payment;
 import com.manager.payments.model.receipts.ReceiptMinInfo;
 import com.manager.payments.model.users.Player;
+import com.manager.payments.model.users.PlayerMinInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 @Service
-public class BillingService implements CreateReceiptUseCase {
+public class BillingService implements IssueNewReceiptsUseCase {
 
+    private final Logger logger = LoggerFactory.getLogger(BillingService.class);
     private final PlayerRepository playerRepository;
     private final PaymentRepository paymentRepository;
 
@@ -24,7 +30,23 @@ public class BillingService implements CreateReceiptUseCase {
     }
 
     @Override
-    public ReceiptMinInfo createReceipt(UUID playerId, UUID paymentId) {
+    public void issueNewReceipts() {
+        LocalDate now = LocalDate.now();
+        logger.info("Running BillingJob at {}", now);
+        List<Payment> payments = paymentRepository.findAllActiveAndNextPaymentDateBefore(now);
+        logger.info("Processing {} payments", payments.size());
+        for (Payment payment : payments) {
+            LocalDate newNextPaymentDate = payment.nextPaymentDate().plusDays(payment.periodDays());
+            paymentRepository.updateNextPaymentDate(payment.id(), newNextPaymentDate);
+
+            for (PlayerMinInfo player : payment.players()) {
+                ReceiptMinInfo newReceipt = createReceipt(player.id(), payment.id());
+                logger.info("Created receipt {} for player {}", newReceipt.id(), player.id());
+            }
+        }
+    }
+
+    private ReceiptMinInfo createReceipt(UUID playerId, UUID paymentId) {
         Player player = playerRepository.findById(playerId).orElseThrow(() -> new PlayerNotFoundException(playerId));
         Payment payment =
                 paymentRepository.findById(paymentId).orElseThrow(() -> new PaymentNotFoundException(paymentId));
