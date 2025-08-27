@@ -30,10 +30,9 @@ public class BillingService implements IssueNewReceiptsUseCase {
     }
 
     @Override
-    public void issueNewReceipts() {
-        LocalDate now = LocalDate.now();
-        logger.info("Running BillingJob at {}", now);
-        List<Payment> payments = paymentRepository.findAllActiveAndNextPaymentDateBefore(now);
+    public void issueNewReceipts(LocalDate date) {
+        logger.info("Running BillingJob at {}", date);
+        List<Payment> payments = paymentRepository.findAllActiveAndNextPaymentDateBefore(date);
         logger.info("Processing {} payments", payments.size());
         for (Payment payment : payments) {
             LocalDate newNextPaymentDate = payment.nextPaymentDate().plusDays(payment.periodDays());

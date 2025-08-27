@@ -1,5 +1,7 @@
 package com.manager.payments.application.port.in;
 
+import java.time.LocalDate;
+
 public interface IssueNewReceiptsUseCase {
-    void issueNewReceipts();
+    void issueNewReceipts(LocalDate date);
 }
