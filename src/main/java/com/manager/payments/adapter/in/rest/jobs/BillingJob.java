@@ -30,7 +30,7 @@ public class BillingJob {
     @Transactional
     public void billing() {
         LocalDate now = LocalDate.now();
-        List<Payment> payments = paymentRepository.findAllActiveByNextPaymentDateBefore(now);
+        List<Payment> payments = paymentRepository.findAllActiveAndNextPaymentDateBefore(now);
         for (Payment payment : payments) {
             LocalDate newNextPaymentDate = payment.nextPaymentDate().plusDays(payment.periodDays());
             paymentRepository.updateNextPaymentDate(payment.id(), newNextPaymentDate);

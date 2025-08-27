@@ -55,7 +55,7 @@ public class PaymentRepositoryAdapter implements PaymentRepository {
     }
 
     @Override
-    public List<Payment> findAllActiveByNextPaymentDateBefore(LocalDate date) {
+    public List<Payment> findAllActiveAndNextPaymentDateBefore(LocalDate date) {
         List<PaymentJpaEntity> payments = paymentJpaRepository.findAllByNextPaymentDateBeforeAndStatus(date,
                 PaymentStatus.ACTIVE);
         return payments.stream().map(paymentMapper::toPayment).toList();
