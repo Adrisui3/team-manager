@@ -17,7 +17,7 @@ import java.util.List;
 @Component
 public class BillingJob {
 
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(BillingJob.class);
     private final CreateReceiptUseCase createReceiptUseCase;
     private final PaymentRepository paymentRepository;
 
