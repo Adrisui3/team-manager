@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
+@RequestMapping("/player")
 public class PlayerController {
 
     private final CreatePlayerUseCase createPlayerUseCase;
@@ -26,27 +27,27 @@ public class PlayerController {
         this.assignPaymentToPlayerUseCase = assignPaymentToPlayerUseCase;
     }
 
-    @GetMapping("/player/{playerId}")
+    @GetMapping("/{playerId}")
     public Player getUser(@PathVariable("playerId") UUID playerId) {
         return playerRepository.findById(playerId).orElseThrow(() -> new PlayerNotFoundException(playerId));
     }
 
-    @GetMapping("/player/{playerId}/receipts")
+    @GetMapping("/{playerId}/receipts")
     public List<ReceiptMinInfo> getUserReceipts(@PathVariable("playerId") UUID playerId) {
         return playerRepository.findAllReceipts(playerId);
     }
 
-    @PostMapping("/player")
+    @PostMapping
     public Player createUser(@RequestBody CreatePlayerRequestDTO requestDTO) {
         return createPlayerUseCase.createPlayer(requestDTO);
     }
 
-    @PutMapping("/player/{playerId}/assign/{paymentId}")
+    @PutMapping("/{playerId}/assign/{paymentId}")
     public Player assignPaymentToPlayer(@PathVariable UUID playerId, @PathVariable UUID paymentId) {
         return assignPaymentToPlayerUseCase.assignPaymentToPlayer(playerId, paymentId);
     }
 
-    @DeleteMapping("/player/{playerId}")
+    @DeleteMapping("/{playerId}")
     public void deleteUser(@PathVariable UUID playerId) {
         playerRepository.deleteById(playerId);
     }

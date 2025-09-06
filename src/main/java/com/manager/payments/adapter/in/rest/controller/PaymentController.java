@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
+@RequestMapping("/payment")
 public class PaymentController {
 
     private final PaymentRepository paymentRepository;
@@ -20,17 +21,17 @@ public class PaymentController {
         this.createPaymentUseCase = createPaymentUseCase;
     }
 
-    @GetMapping("/payment/{paymentId}")
+    @GetMapping("/{paymentId}")
     public Payment getPayment(@PathVariable("paymentId") UUID paymentId) {
         return paymentRepository.findById(paymentId).orElseThrow(() -> new PaymentNotFoundException(paymentId));
     }
 
-    @PostMapping("/payment")
+    @PostMapping
     public Payment createPayment(@RequestBody CreatePaymentRequestDTO requestDTO) {
         return createPaymentUseCase.createPayment(requestDTO);
     }
 
-    @DeleteMapping("/payment/{paymentId}")
+    @DeleteMapping("/{paymentId}")
     public void deletePayment(@PathVariable UUID paymentId) {
         paymentRepository.deleteById(paymentId);
     }
