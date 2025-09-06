@@ -68,4 +68,19 @@ public class PaymentRepositoryAdapter implements PaymentRepository {
         paymentJpaEntity.setNextPaymentDate(nextPaymentDate);
         paymentJpaRepository.save(paymentJpaEntity);
     }
+
+    @Override
+    public void updatePaymentStatus(UUID id, PaymentStatus status) {
+        PaymentJpaEntity paymentJpaEntity =
+                paymentJpaRepository.findById(id).orElseThrow(() -> new PaymentNotFoundException(id));
+        paymentJpaEntity.setStatus(status);
+        paymentJpaRepository.save(paymentJpaEntity);
+    }
+
+    @Override
+    public List<Payment> findAllActiveAndEndDateBefore(LocalDate date) {
+        List<PaymentJpaEntity> payments = paymentJpaRepository.findAllByEndDateBeforeAndStatus(date,
+                PaymentStatus.ACTIVE);
+        return payments.stream().map(paymentMapper::toPayment).toList();
+    }
 }
