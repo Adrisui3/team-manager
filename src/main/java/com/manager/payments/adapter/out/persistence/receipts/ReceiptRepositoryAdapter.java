@@ -29,10 +29,10 @@ public class ReceiptRepositoryAdapter implements ReceiptRepository {
     }
 
     @Override
-    public void updateStatus(UUID receiptId, ReceiptStatus status) {
+    public Receipt updateStatus(UUID receiptId, ReceiptStatus status) {
         ReceiptJpaEntity receipt =
                 receiptJpaRepository.findById(receiptId).orElseThrow(() -> new ReceiptNotFoundException(receiptId));
         receipt.setStatus(status);
-        receiptJpaRepository.save(receipt);
+        return receiptMapper.toReceipt(receiptJpaRepository.save(receipt));
     }
 }

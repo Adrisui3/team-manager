@@ -11,5 +11,5 @@ public interface ReceiptRepository {
 
     List<Receipt> findAllPendingWithExpirationDateBefore(LocalDate date);
 
-    void updateStatus(UUID receiptId, ReceiptStatus status);
+    Receipt updateStatus(UUID receiptId, ReceiptStatus status);
 }

@@ -48,6 +48,7 @@ class IssueNewReceiptsUseCaseTest {
 
         PaymentRepository paymentRepository = Mockito.mock(PaymentRepository.class);
         Mockito.when(paymentRepository.findAllActiveAndNextPaymentDateBefore(Mockito.any())).thenReturn(List.of(payment));
+        Mockito.when(paymentRepository.updateNextPaymentDate(Mockito.any(), Mockito.any())).thenReturn(payment);
 
         IssueNewReceiptsUseCase issueNewReceiptsUseCase = new BillingService(playerRepository, paymentRepository);
 
@@ -56,7 +57,11 @@ class IssueNewReceiptsUseCaseTest {
 
         // then
         assertThat(player1.receipts().size()).isEqualTo(1);
+        assertThat(player1.receipts().getLast().issuedDate()).isEqualTo(LocalDate.now());
+        assertThat(player1.receipts().getLast().expiryDate()).isEqualTo(LocalDate.now().plusDays(15));
         assertThat(player2.receipts().size()).isEqualTo(1);
+        assertThat(player2.receipts().getLast().issuedDate()).isEqualTo(LocalDate.now());
+        assertThat(player2.receipts().getLast().expiryDate()).isEqualTo(LocalDate.now().plusDays(15));
     }
 
 }

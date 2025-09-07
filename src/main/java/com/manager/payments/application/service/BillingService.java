@@ -35,11 +35,11 @@ public class BillingService implements IssueNewReceiptsUseCase {
         logger.info("Processing {} payments", payments.size());
         for (Payment payment : payments) {
             LocalDate newNextPaymentDate = payment.nextPaymentDate().plusDays(payment.periodDays());
-            paymentRepository.updateNextPaymentDate(payment.id(), newNextPaymentDate);
+            Payment updatedPayment = paymentRepository.updateNextPaymentDate(payment.id(), newNextPaymentDate);
 
-            for (PlayerMinInfo player : payment.players()) {
-                ReceiptMinInfo newReceipt = createReceipt(player.id(), payment);
-                logger.info("Created receipt {} for player {}", newReceipt.id(), player.id());
+            for (PlayerMinInfo player : updatedPayment.players()) {
+                ReceiptMinInfo newReceipt = createReceipt(player.id(), updatedPayment);
+                logger.info("Created receipt {} for player {}", newReceipt.id(), updatedPayment.id());
             }
         }
     }
