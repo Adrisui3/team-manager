@@ -52,4 +52,9 @@ public class AssignPaymentToPlayerUseCaseTest {
         assertThat(payment.players().contains(PlayerMinInfo.from(player))).isTrue();
     }
 
+    @Test
+    void check() {
+        assertThat(false).isTrue();
+    }
+
 }
