@@ -20,8 +20,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-
-public class AssignPaymentToPlayerUseCaseTest {
+class AssignPaymentToPlayerUseCaseTest {
 
 
     @Test

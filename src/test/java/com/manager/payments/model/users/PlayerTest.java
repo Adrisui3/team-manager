@@ -13,7 +13,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.AssertionsForClassTypes.*;
 
-public class PlayerTest {
+class PlayerTest {
 
     @Test
     void shouldCreateReceiptForPlayerWhenPaymentIsAssigned() {
