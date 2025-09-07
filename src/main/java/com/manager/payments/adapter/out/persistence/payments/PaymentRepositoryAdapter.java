@@ -62,19 +62,19 @@ public class PaymentRepositoryAdapter implements PaymentRepository {
     }
 
     @Override
-    public void updateNextPaymentDate(UUID id, LocalDate nextPaymentDate) {
+    public Payment updateNextPaymentDate(UUID id, LocalDate nextPaymentDate) {
         PaymentJpaEntity paymentJpaEntity =
                 paymentJpaRepository.findById(id).orElseThrow(() -> new PaymentNotFoundException(id));
         paymentJpaEntity.setNextPaymentDate(nextPaymentDate);
-        paymentJpaRepository.save(paymentJpaEntity);
+        return paymentMapper.toPayment(paymentJpaRepository.save(paymentJpaEntity));
     }
 
     @Override
-    public void updatePaymentStatus(UUID id, PaymentStatus status) {
+    public Payment updatePaymentStatus(UUID id, PaymentStatus status) {
         PaymentJpaEntity paymentJpaEntity =
                 paymentJpaRepository.findById(id).orElseThrow(() -> new PaymentNotFoundException(id));
         paymentJpaEntity.setStatus(status);
-        paymentJpaRepository.save(paymentJpaEntity);
+        return paymentMapper.toPayment(paymentJpaRepository.save(paymentJpaEntity));
     }
 
     @Override

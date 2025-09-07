@@ -20,8 +20,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-
-public class AssignPaymentToPlayerUseCaseTest {
+class AssignPaymentToPlayerUseCaseTest {
 
 
     @Test
@@ -51,5 +50,4 @@ public class AssignPaymentToPlayerUseCaseTest {
         assertThat(player.payments().contains(PaymentMinInfo.from(payment))).isTrue();
         assertThat(payment.players().contains(PlayerMinInfo.from(player))).isTrue();
     }
-
 }

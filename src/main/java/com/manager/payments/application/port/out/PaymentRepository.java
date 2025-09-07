@@ -18,9 +18,9 @@ public interface PaymentRepository {
 
     List<Payment> findAllActiveAndNextPaymentDateBefore(LocalDate date);
 
-    void updateNextPaymentDate(UUID id, LocalDate nextPaymentDate);
+    Payment updateNextPaymentDate(UUID id, LocalDate nextPaymentDate);
 
-    void updatePaymentStatus(UUID id, PaymentStatus status);
+    Payment updatePaymentStatus(UUID id, PaymentStatus status);
 
     List<Payment> findAllActiveAndEndDateBefore(LocalDate date);
 }
