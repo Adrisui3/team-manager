@@ -1,5 +1,6 @@
 package com.manager.payments.adapter.out.persistence.receipts;
 
+import com.manager.payments.adapter.out.persistence.players.PlayerJpaRepository;
 import com.manager.payments.application.port.out.ReceiptRepository;
 import com.manager.payments.model.exceptions.ReceiptNotFoundException;
 import com.manager.payments.model.receipts.Receipt;
@@ -13,10 +14,13 @@ import java.util.UUID;
 @Component
 public class ReceiptRepositoryAdapter implements ReceiptRepository {
 
+    private final PlayerJpaRepository playerJpaRepository;
     private final ReceiptJpaRepository receiptJpaRepository;
     private final ReceiptMapper receiptMapper;
 
-    public ReceiptRepositoryAdapter(ReceiptJpaRepository receiptJpaRepository, ReceiptMapper receiptMapper) {
+    public ReceiptRepositoryAdapter(PlayerJpaRepository playerJpaRepository,
+                                    ReceiptJpaRepository receiptJpaRepository, ReceiptMapper receiptMapper) {
+        this.playerJpaRepository = playerJpaRepository;
         this.receiptJpaRepository = receiptJpaRepository;
         this.receiptMapper = receiptMapper;
     }
@@ -26,6 +30,13 @@ public class ReceiptRepositoryAdapter implements ReceiptRepository {
         List<ReceiptJpaEntity> receipts =
                 receiptJpaRepository.findAllByStatusAndExpiryDateBefore(ReceiptStatus.PENDING, date);
         return receipts.stream().map(receiptMapper::toReceipt).toList();
+    }
+
+    @Override
+    public Receipt save(Receipt receipt) {
+        ReceiptJpaEntity receiptJpaEntity = receiptMapper.toReceiptJpaEntity(receipt, playerJpaRepository);
+        ReceiptJpaEntity savedReceipt = receiptJpaRepository.save(receiptJpaEntity);
+        return receiptMapper.toReceipt(savedReceipt);
     }
 
     @Override

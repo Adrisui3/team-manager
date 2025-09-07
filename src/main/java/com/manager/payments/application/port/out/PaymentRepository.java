@@ -1,7 +1,6 @@
 package com.manager.payments.application.port.out;
 
 import com.manager.payments.model.payments.Payment;
-import com.manager.payments.model.payments.PaymentStatus;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -17,10 +16,6 @@ public interface PaymentRepository {
     void deleteById(UUID id);
 
     List<Payment> findAllActiveAndNextPaymentDateBefore(LocalDate date);
-
-    Payment updateNextPaymentDate(UUID id, LocalDate nextPaymentDate);
-
-    Payment updatePaymentStatus(UUID id, PaymentStatus status);
 
     List<Payment> findAllActiveAndEndDateBefore(LocalDate date);
 }

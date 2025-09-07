@@ -3,7 +3,6 @@ package com.manager.payments.adapter.out.persistence.payments;
 import com.manager.payments.adapter.out.persistence.players.PlayerJpaEntity;
 import com.manager.payments.adapter.out.persistence.players.PlayerJpaRepository;
 import com.manager.payments.application.port.out.PaymentRepository;
-import com.manager.payments.model.exceptions.PaymentNotFoundException;
 import com.manager.payments.model.payments.Payment;
 import com.manager.payments.model.payments.PaymentStatus;
 import org.springframework.stereotype.Component;
@@ -59,22 +58,6 @@ public class PaymentRepositoryAdapter implements PaymentRepository {
         List<PaymentJpaEntity> payments = paymentJpaRepository.findAllByNextPaymentDateBeforeAndStatus(date,
                 PaymentStatus.ACTIVE);
         return payments.stream().map(paymentMapper::toPayment).toList();
-    }
-
-    @Override
-    public Payment updateNextPaymentDate(UUID id, LocalDate nextPaymentDate) {
-        PaymentJpaEntity paymentJpaEntity =
-                paymentJpaRepository.findById(id).orElseThrow(() -> new PaymentNotFoundException(id));
-        paymentJpaEntity.setNextPaymentDate(nextPaymentDate);
-        return paymentMapper.toPayment(paymentJpaRepository.save(paymentJpaEntity));
-    }
-
-    @Override
-    public Payment updatePaymentStatus(UUID id, PaymentStatus status) {
-        PaymentJpaEntity paymentJpaEntity =
-                paymentJpaRepository.findById(id).orElseThrow(() -> new PaymentNotFoundException(id));
-        paymentJpaEntity.setStatus(status);
-        return paymentMapper.toPayment(paymentJpaRepository.save(paymentJpaEntity));
     }
 
     @Override
