@@ -13,4 +13,14 @@ public record Payment(UUID id, double amount, String name, String description, L
     public boolean hasPlayer(UUID playerId) {
         return players.stream().anyMatch(user -> user.id().equals(playerId));
     }
+
+    public Payment withNextPaymentDate(LocalDate nextPaymentDate) {
+        return new Payment(id, amount, name, description, startDate, nextPaymentDate, endDate, periodDays, status,
+                players);
+    }
+
+    public Payment withStatus(PaymentStatus status) {
+        return new Payment(id, amount, name, description, startDate, nextPaymentDate, endDate, periodDays, status,
+                players);
+    }
 }

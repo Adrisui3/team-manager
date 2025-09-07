@@ -7,4 +7,8 @@ import java.util.UUID;
 
 public record Receipt(UUID id, double amount, LocalDate issuedDate, LocalDate paymentDate, LocalDate expiryDate,
                       ReceiptStatus status, PlayerMinInfo user) {
+
+    public Receipt withStatus(ReceiptStatus status) {
+        return new Receipt(id, amount, issuedDate, paymentDate, expiryDate, status, user);
+    }
 }

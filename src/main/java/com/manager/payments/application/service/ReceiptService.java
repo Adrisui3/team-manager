@@ -27,7 +27,8 @@ public class ReceiptService implements ProcessOverdueReceiptsUseCase {
         List<Receipt> overdueReceipts = receiptRepository.findAllPendingWithExpirationDateBefore(date);
         logger.info("Found {} overdue receipts", overdueReceipts.size());
         for (Receipt receipt : overdueReceipts) {
-            receiptRepository.updateStatus(receipt.id(), ReceiptStatus.OVERDUE);
+            Receipt updatedReceipt = receipt.withStatus(ReceiptStatus.OVERDUE);
+            receiptRepository.save(updatedReceipt);
             logger.info("Receipt {} is now flagged as overdue", receipt.id());
         }
     }

@@ -48,7 +48,6 @@ class IssueNewReceiptsUseCaseTest {
 
         PaymentRepository paymentRepository = Mockito.mock(PaymentRepository.class);
         Mockito.when(paymentRepository.findAllActiveAndNextPaymentDateBefore(Mockito.any())).thenReturn(List.of(payment));
-        Mockito.when(paymentRepository.updateNextPaymentDate(Mockito.any(), Mockito.any())).thenReturn(payment);
 
         IssueNewReceiptsUseCase issueNewReceiptsUseCase = new BillingService(playerRepository, paymentRepository);
 

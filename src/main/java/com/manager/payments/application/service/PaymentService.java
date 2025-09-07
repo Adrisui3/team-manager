@@ -37,7 +37,8 @@ public class PaymentService implements CreatePaymentUseCase, ProcessExpiredPayme
         List<Payment> expiredPayments = paymentRepository.findAllActiveAndEndDateBefore(date);
         logger.info("Found {} expired payments", expiredPayments.size());
         for (Payment payment : expiredPayments) {
-            paymentRepository.updatePaymentStatus(payment.id(), PaymentStatus.EXPIRED);
+            Payment updatedPayment = payment.withStatus(PaymentStatus.EXPIRED);
+            paymentRepository.save(updatedPayment);
             logger.info("Payment with id {} is now flagged as expired", payment.id());
         }
     }
