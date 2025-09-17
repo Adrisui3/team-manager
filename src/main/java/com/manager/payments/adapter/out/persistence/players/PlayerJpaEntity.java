@@ -24,6 +24,7 @@ public class PlayerJpaEntity {
     private String name;
     private String surname;
 
+    @Column(unique = true)
     private String email;
 
     private LocalDate birthDate;
