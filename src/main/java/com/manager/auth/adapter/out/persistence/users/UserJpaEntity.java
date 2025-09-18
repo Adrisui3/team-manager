@@ -29,7 +29,7 @@ public class UserJpaEntity implements UserDetails {
 
     private boolean enabled;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private UserVerificationJpaEntity verification;
 
     @Override

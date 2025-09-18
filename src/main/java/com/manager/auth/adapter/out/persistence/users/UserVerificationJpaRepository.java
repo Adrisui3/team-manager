@@ -10,4 +10,5 @@ public interface UserVerificationJpaRepository extends JpaRepository<UserVerific
 
     void deleteByUser(UserJpaEntity user);
 
+    UserVerificationJpaEntity findByUser(UserJpaEntity user);
 }
