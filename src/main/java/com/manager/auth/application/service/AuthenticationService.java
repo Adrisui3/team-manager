@@ -6,7 +6,6 @@ import com.manager.auth.adapter.dto.VerifyUserDto;
 import com.manager.auth.adapter.out.persistence.users.UserJpaEntity;
 import com.manager.auth.adapter.out.persistence.users.UserJpaRepository;
 import com.manager.auth.adapter.out.persistence.users.UserVerificationJpaEntity;
-import jakarta.mail.MessagingException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -36,20 +35,20 @@ public class AuthenticationService {
     }
 
     public UserJpaEntity signup(RegisterUserDto registerUserDto) {
-        UserJpaEntity userJpaEntity = new UserJpaEntity();
-        userJpaEntity.setEmail(registerUserDto.email());
-        userJpaEntity.setPassword(passwordEncoder.encode(registerUserDto.password()));
-        userJpaEntity.setEnabled(false);
+        UserJpaEntity user = new UserJpaEntity();
+        user.setEmail(registerUserDto.email());
+        user.setPassword(passwordEncoder.encode(registerUserDto.password()));
+        user.setEnabled(false);
 
         UserVerificationJpaEntity userVerificationJpaEntity = new UserVerificationJpaEntity();
         userVerificationJpaEntity.setVerificationCode(generateVerificationCode());
         userVerificationJpaEntity.setExpirationDate(LocalDateTime.now().plusMinutes(15));
 
-        userJpaEntity.setVerification(userVerificationJpaEntity);
-        userVerificationJpaEntity.setUser(userJpaEntity);
+        user.setVerification(userVerificationJpaEntity);
+        userVerificationJpaEntity.setUser(user);
 
-        sendVerificationEmail(userJpaEntity);
-        return userJpaRepository.save(userJpaEntity);
+        emailService.sendVerificationEmail(user.getEmail(), user.getVerification().getVerificationCode());
+        return userJpaRepository.save(user);
     }
 
     public UserJpaEntity authenticate(LoginUserDto loginUserDto) {
@@ -107,33 +106,10 @@ public class AuthenticationService {
             user.setVerification(userVerificationJpaEntity);
             userVerificationJpaEntity.setUser(user);
 
-            sendVerificationEmail(user);
+            emailService.sendVerificationEmail(user.getEmail(), user.getVerification().getVerificationCode());
             userJpaRepository.save(user);
         } else {
             throw new RuntimeException("User not found.");
-        }
-    }
-
-    public void sendVerificationEmail(UserJpaEntity userJpaEntity) {
-        String subject = "Account verification";
-        String verificationCode = userJpaEntity.getVerification().getVerificationCode();
-        String htmlMessage = "<html>"
-                + "<body style=\"font-family: Arial, sans-serif;\">"
-                + "<div style=\"background-color: #f5f5f5; padding: 20px;\">"
-                + "<h2 style=\"color: #333;\">Welcome to our app!</h2>"
-                + "<p style=\"font-size: 16px;\">Please enter the verification code below to continue:</p>"
-                + "<div style=\"background-color: #fff; padding: 20px; border-radius: 5px; box-shadow: 0 0 10px rgba" +
-                "(0,0,0,0.1);\">"
-                + "<h3 style=\"color: #333;\">Verification Code:</h3>"
-                + "<p style=\"font-size: 18px; font-weight: bold; color: #007bff;\">" + verificationCode + "</p>"
-                + "</div>"
-                + "</div>"
-                + "</body>"
-                + "</html>";
-        try {
-            emailService.sendVerificationEmail(userJpaEntity.getEmail(), subject, htmlMessage);
-        } catch (MessagingException e) {
-            e.printStackTrace();
         }
     }
 
