@@ -1,19 +1,12 @@
-package com.manager.auth.adapter.out.persistence.users;
-
-import jakarta.persistence.*;
+package com.manager.auth.model.users;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Entity
-@Table(name = "users")
-public class UserJpaEntity {
+public class User {
 
-    @Id
-    @GeneratedValue
     private UUID id;
 
-    @Column(unique = true, nullable = false)
     private String email;
     private String password;
 
@@ -24,8 +17,7 @@ public class UserJpaEntity {
 
     private boolean enabled;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private UserVerificationJpaEntity verification;
+    private UserVerification verification;
 
     public UUID getId() {
         return id;
@@ -41,6 +33,10 @@ public class UserJpaEntity {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
     }
 
     public void setPassword(String password) {
@@ -71,23 +67,19 @@ public class UserJpaEntity {
         this.lastLogIn = lastLogIn;
     }
 
+    public boolean isEnabled() {
+        return enabled;
+    }
+
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
 
-    public UserVerificationJpaEntity getVerification() {
+    public UserVerification getVerification() {
         return verification;
     }
 
-    public void setVerification(UserVerificationJpaEntity verification) {
+    public void setVerification(UserVerification verification) {
         this.verification = verification;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public boolean isEnabled() {
-        return enabled;
     }
 }

@@ -4,8 +4,8 @@ import com.manager.auth.adapter.dto.LoginResponseDto;
 import com.manager.auth.adapter.dto.LoginUserDto;
 import com.manager.auth.adapter.dto.RegisterUserDto;
 import com.manager.auth.adapter.dto.SetUserPasswordDto;
-import com.manager.auth.adapter.out.persistence.users.UserJpaEntity;
 import com.manager.auth.application.service.AuthenticationService;
+import com.manager.auth.model.users.User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,8 +23,8 @@ public class AuthenticationController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<UserJpaEntity> registerUser(@RequestBody RegisterUserDto registerUserDto) {
-        UserJpaEntity registeredUser = authenticationService.signup(registerUserDto);
+    public ResponseEntity<User> registerUser(@RequestBody RegisterUserDto registerUserDto) {
+        User registeredUser = authenticationService.signup(registerUserDto);
         return ResponseEntity.ok(registeredUser);
     }
 

@@ -1,7 +1,9 @@
 package com.manager.auth.adapter.config;
 
-import com.manager.auth.adapter.out.persistence.users.UserJpaRepository;
+import com.manager.auth.adapter.in.security.SecurityUserDetails;
+import com.manager.auth.application.port.out.UserRepository;
 import com.manager.auth.application.service.JwtService;
+import com.manager.auth.model.users.User;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -10,8 +12,6 @@ import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -22,13 +22,13 @@ import java.io.IOException;
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private final UserJpaRepository userJpaRepository;
+    private final UserRepository userRepository;
     private final HandlerExceptionResolver handlerExceptionResolver;
     private final JwtService jwtService;
 
-    public JwtAuthenticationFilter(UserJpaRepository userJpaRepository,
+    public JwtAuthenticationFilter(UserRepository userRepository,
                                    HandlerExceptionResolver handlerExceptionResolver, JwtService jwtService) {
-        this.userJpaRepository = userJpaRepository;
+        this.userRepository = userRepository;
         this.handlerExceptionResolver = handlerExceptionResolver;
         this.jwtService = jwtService;
     }
@@ -48,10 +48,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             if (userEmail != null && authentication == null) {
-                UserDetails userDetails =
-                        userJpaRepository.findByEmail(userEmail).orElseThrow(() -> new UsernameNotFoundException(
-                                "Could not find user with email: " + userEmail));
-                if (jwtService.isTokenValid(token, userDetails)) {
+                User user =
+                        userRepository.findByEmail(userEmail).orElseThrow(() -> new RuntimeException("User not found" +
+                                "."));
+                if (jwtService.isTokenValid(token, userEmail)) {
+                    SecurityUserDetails userDetails = new SecurityUserDetails(user);
                     UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
                             new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                     usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

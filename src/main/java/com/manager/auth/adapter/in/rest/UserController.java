@@ -1,7 +1,7 @@
 package com.manager.auth.adapter.in.rest;
 
-import com.manager.auth.adapter.out.persistence.users.UserJpaEntity;
 import com.manager.auth.application.service.AuthenticationService;
+import com.manager.auth.model.users.User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,7 +18,7 @@ public class UserController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<UserJpaEntity> getCurrentUser() {
+    public ResponseEntity<User> getCurrentUser() {
         return ResponseEntity.ok(authenticationService.getAuthenticatedUser());
     }
 }
