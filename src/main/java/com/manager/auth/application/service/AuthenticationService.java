@@ -7,8 +7,6 @@ import com.manager.auth.adapter.dto.SetUserPasswordDto;
 import com.manager.auth.application.port.out.UserRepository;
 import com.manager.auth.model.users.User;
 import com.manager.auth.model.users.UserVerification;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -108,11 +106,6 @@ public class AuthenticationService {
 
         emailService.sendInvitationEmail(user.getEmail(), user.getVerification().getVerificationCode());
         userRepository.save(user);
-    }
-
-    public User getAuthenticatedUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return (User) authentication.getPrincipal();
     }
 
     private String generateVerificationCode() {
