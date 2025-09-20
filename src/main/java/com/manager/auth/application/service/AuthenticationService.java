@@ -125,7 +125,6 @@ public class AuthenticationService {
         return (UserJpaEntity) authentication.getPrincipal();
     }
 
-
     private String generateVerificationCode() {
         Random random = new Random();
         int code = random.nextInt(999999) + 10000;
