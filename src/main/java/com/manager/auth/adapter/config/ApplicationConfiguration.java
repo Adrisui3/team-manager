@@ -1,30 +1,13 @@
 package com.manager.auth.adapter.config;
 
-import com.manager.auth.adapter.out.persistence.users.UserJpaRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Configuration
 public class ApplicationConfiguration {
-
-    private final UserJpaRepository userJpaRepository;
-
-    public ApplicationConfiguration(UserJpaRepository userJpaRepository) {
-        this.userJpaRepository = userJpaRepository;
-    }
-
-    @Bean
-    UserDetailsService userDetailsService() {
-        return username -> userJpaRepository.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException(
-                "User not found with email: " + username));
-    }
 
     @Bean
     BCryptPasswordEncoder passwordEncoder() {
@@ -34,12 +17,5 @@ public class ApplicationConfiguration {
     @Bean
     AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
-    }
-
-    @Bean
-    AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider(userDetailsService());
-        daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
-        return daoAuthenticationProvider;
     }
 }

@@ -1,13 +1,13 @@
 package com.manager.auth.application.service;
 
+import com.manager.auth.adapter.dto.LoginResponseDto;
 import com.manager.auth.adapter.dto.LoginUserDto;
 import com.manager.auth.adapter.dto.RegisterUserDto;
-import com.manager.auth.adapter.dto.VerifyUserDto;
+import com.manager.auth.adapter.dto.SetUserPasswordDto;
 import com.manager.auth.adapter.out.persistence.users.UserJpaEntity;
 import com.manager.auth.adapter.out.persistence.users.UserJpaRepository;
 import com.manager.auth.adapter.out.persistence.users.UserVerificationJpaEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,14 +20,16 @@ import java.util.Random;
 @Service
 public class AuthenticationService {
 
+    private final JwtService jwtService;
     public final UserJpaRepository userJpaRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final EmailService emailService;
 
-    public AuthenticationService(UserJpaRepository userJpaRepository,
+    public AuthenticationService(JwtService jwtService, UserJpaRepository userJpaRepository,
                                  PasswordEncoder passwordEncoder,
                                  AuthenticationManager authenticationManager, EmailService emailService) {
+        this.jwtService = jwtService;
         this.userJpaRepository = userJpaRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
@@ -37,7 +39,8 @@ public class AuthenticationService {
     public UserJpaEntity signup(RegisterUserDto registerUserDto) {
         UserJpaEntity user = new UserJpaEntity();
         user.setEmail(registerUserDto.email());
-        user.setPassword(passwordEncoder.encode(registerUserDto.password()));
+        user.setName(registerUserDto.name());
+        user.setSurname(registerUserDto.surname());
         user.setEnabled(false);
 
         UserVerificationJpaEntity userVerificationJpaEntity = new UserVerificationJpaEntity();
@@ -47,27 +50,12 @@ public class AuthenticationService {
         user.setVerification(userVerificationJpaEntity);
         userVerificationJpaEntity.setUser(user);
 
-        emailService.sendVerificationEmail(user.getEmail(), user.getVerification().getVerificationCode());
+        emailService.sendInvitationEmail(user.getEmail(), user.getVerification().getVerificationCode());
         return userJpaRepository.save(user);
     }
 
-    public UserJpaEntity authenticate(LoginUserDto loginUserDto) {
-        UserJpaEntity userJpaEntity =
-                userJpaRepository.findByEmail(loginUserDto.email()).orElseThrow(() -> new RuntimeException("User not " +
-                        "found"));
-
-        if (!userJpaEntity.isEnabled()) {
-            throw new RuntimeException("Account not verified.");
-        }
-        userJpaEntity.setLastLogIn(LocalDateTime.now());
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginUserDto.email(),
-                loginUserDto.password()));
-
-        return userJpaRepository.save(userJpaEntity);
-    }
-
-    public void verifyUser(VerifyUserDto verifyUserDto) {
-        Optional<UserJpaEntity> optionalUser = userJpaRepository.findByEmail(verifyUserDto.email());
+    public void setPassword(SetUserPasswordDto setUserPasswordDto) {
+        Optional<UserJpaEntity> optionalUser = userJpaRepository.findByEmail(setUserPasswordDto.email());
         if (optionalUser.isPresent()) {
             UserJpaEntity userJpaEntity = optionalUser.get();
             UserVerificationJpaEntity userVerificationJpaEntity = userJpaEntity.getVerification();
@@ -79,8 +67,9 @@ public class AuthenticationService {
                 throw new RuntimeException("Verification code expired.");
             }
 
-            if (userVerificationJpaEntity.getVerificationCode().equals(verifyUserDto.verificationCode())) {
+            if (userVerificationJpaEntity.getVerificationCode().equals(setUserPasswordDto.verificationCode())) {
                 userJpaEntity.setEnabled(true);
+                userJpaEntity.setPassword(passwordEncoder.encode(setUserPasswordDto.password()));
                 userJpaEntity.setVerification(null);
                 userJpaRepository.save(userJpaEntity);
             } else {
@@ -89,6 +78,24 @@ public class AuthenticationService {
         } else {
             throw new RuntimeException("User not found.");
         }
+    }
+
+    public LoginResponseDto authenticate(LoginUserDto loginUserDto) {
+        UserJpaEntity userJpaEntity =
+                userJpaRepository.findByEmail(loginUserDto.email()).orElseThrow(() -> new RuntimeException("Invalid " +
+                        "email or password"));
+
+        if (!userJpaEntity.isEnabled()) {
+            throw new RuntimeException("Disabled account");
+        }
+
+        if (!passwordEncoder.matches(loginUserDto.password(), userJpaEntity.getPassword())) {
+            throw new RuntimeException("Invalid email or password");
+        }
+
+        userJpaEntity.setLastLogIn(LocalDateTime.now());
+        UserJpaEntity savedUser = userJpaRepository.save(userJpaEntity);
+        return new LoginResponseDto(jwtService.generateToken(savedUser), jwtService.getJwtExpiration());
     }
 
     public void resendVerificationCode(String email) {
@@ -106,7 +113,7 @@ public class AuthenticationService {
             user.setVerification(userVerificationJpaEntity);
             userVerificationJpaEntity.setUser(user);
 
-            emailService.sendVerificationEmail(user.getEmail(), user.getVerification().getVerificationCode());
+            emailService.sendInvitationEmail(user.getEmail(), user.getVerification().getVerificationCode());
             userJpaRepository.save(user);
         } else {
             throw new RuntimeException("User not found.");

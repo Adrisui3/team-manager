@@ -19,7 +19,6 @@ public class UserJpaEntity implements UserDetails {
 
     @Column(unique = true, nullable = false)
     private String email;
-    @Column(nullable = false)
     private String password;
 
     private String name;
