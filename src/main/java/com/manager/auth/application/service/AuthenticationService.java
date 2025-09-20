@@ -7,7 +7,6 @@ import com.manager.auth.adapter.dto.SetUserPasswordDto;
 import com.manager.auth.adapter.out.persistence.users.UserJpaEntity;
 import com.manager.auth.adapter.out.persistence.users.UserJpaRepository;
 import com.manager.auth.adapter.out.persistence.users.UserVerificationJpaEntity;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,16 +22,14 @@ public class AuthenticationService {
     private final JwtService jwtService;
     public final UserJpaRepository userJpaRepository;
     private final PasswordEncoder passwordEncoder;
-    private final AuthenticationManager authenticationManager;
     private final EmailService emailService;
 
     public AuthenticationService(JwtService jwtService, UserJpaRepository userJpaRepository,
                                  PasswordEncoder passwordEncoder,
-                                 AuthenticationManager authenticationManager, EmailService emailService) {
+                                 EmailService emailService) {
         this.jwtService = jwtService;
         this.userJpaRepository = userJpaRepository;
         this.passwordEncoder = passwordEncoder;
-        this.authenticationManager = authenticationManager;
         this.emailService = emailService;
     }
 
