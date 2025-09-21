@@ -1,6 +1,6 @@
 package com.manager.payments.model.payments;
 
-import com.manager.payments.model.users.PlayerMinInfo;
+import com.manager.payments.model.players.PlayerMinInfo;
 
 import java.time.LocalDate;
 import java.util.List;

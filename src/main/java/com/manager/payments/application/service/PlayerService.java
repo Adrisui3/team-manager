@@ -10,9 +10,9 @@ import com.manager.payments.model.exceptions.PlayerAlreadyExistsException;
 import com.manager.payments.model.exceptions.PlayerNotFoundException;
 import com.manager.payments.model.payments.Payment;
 import com.manager.payments.model.payments.PaymentMinInfo;
-import com.manager.payments.model.users.Player;
-import com.manager.payments.model.users.PlayerMinInfo;
-import com.manager.payments.model.users.PlayerStatus;
+import com.manager.payments.model.players.Player;
+import com.manager.payments.model.players.PlayerMinInfo;
+import com.manager.payments.model.players.PlayerStatus;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 

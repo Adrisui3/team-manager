@@ -33,7 +33,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> authenticate(@RequestBody LoginUserDto loginUserDto) {
+    public ResponseEntity<LoginResponseDto> authenticate(@RequestBody LoginUserDto loginUserDto) {
         LoginResponseDto loginResponseDto = authenticateUserUseCase.authenticate(loginUserDto);
         return ResponseEntity.ok(loginResponseDto);
     }

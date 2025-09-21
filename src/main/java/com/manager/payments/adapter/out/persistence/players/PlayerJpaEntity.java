@@ -2,8 +2,8 @@ package com.manager.payments.adapter.out.persistence.players;
 
 import com.manager.payments.adapter.out.persistence.payments.PaymentJpaEntity;
 import com.manager.payments.adapter.out.persistence.receipts.ReceiptJpaEntity;
-import com.manager.payments.model.users.Category;
-import com.manager.payments.model.users.PlayerStatus;
+import com.manager.payments.model.players.Category;
+import com.manager.payments.model.players.PlayerStatus;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;

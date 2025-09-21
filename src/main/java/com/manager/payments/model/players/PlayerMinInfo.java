@@ -1,4 +1,4 @@
-package com.manager.payments.model.users;
+package com.manager.payments.model.players;
 
 import java.time.LocalDate;
 import java.util.UUID;

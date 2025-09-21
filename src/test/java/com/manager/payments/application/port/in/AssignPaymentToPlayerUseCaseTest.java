@@ -6,10 +6,10 @@ import com.manager.payments.application.service.PlayerService;
 import com.manager.payments.model.payments.Payment;
 import com.manager.payments.model.payments.PaymentMinInfo;
 import com.manager.payments.model.payments.PaymentStatus;
-import com.manager.payments.model.users.Category;
-import com.manager.payments.model.users.Player;
-import com.manager.payments.model.users.PlayerMinInfo;
-import com.manager.payments.model.users.PlayerStatus;
+import com.manager.payments.model.players.Category;
+import com.manager.payments.model.players.Player;
+import com.manager.payments.model.players.PlayerMinInfo;
+import com.manager.payments.model.players.PlayerStatus;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 

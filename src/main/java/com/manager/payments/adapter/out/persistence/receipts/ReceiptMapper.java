@@ -6,7 +6,7 @@ import com.manager.payments.model.exceptions.PlayerNotFoundException;
 import com.manager.payments.model.exceptions.ReceiptNotFoundException;
 import com.manager.payments.model.receipts.Receipt;
 import com.manager.payments.model.receipts.ReceiptMinInfo;
-import com.manager.payments.model.users.PlayerMinInfo;
+import com.manager.payments.model.players.PlayerMinInfo;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 
