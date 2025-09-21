@@ -1,5 +1,7 @@
 package com.manager.auth.adapter.dto;
 
-public record RegisterUserDto(String email, String name, String surname) {
+import com.manager.auth.model.roles.Role;
+
+public record RegisterUserDto(String email, String name, String surname, Role role) {
 
 }

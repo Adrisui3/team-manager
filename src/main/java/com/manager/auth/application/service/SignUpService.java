@@ -27,10 +27,14 @@ public class SignUpService implements SignUpUserUseCase {
 
     @Override
     public User signup(RegisterUserDto registerUserDto) {
+        if (userRepository.existsByEmail(registerUserDto.email()))
+            throw new RuntimeException("Email already in use");
+
         User user = new User();
         user.setEmail(registerUserDto.email());
         user.setName(registerUserDto.name());
         user.setSurname(registerUserDto.surname());
+        user.setRole(registerUserDto.role());
         user.setEnabled(false);
 
         UserVerification userVerification = UserVerificationFactory.build(user);

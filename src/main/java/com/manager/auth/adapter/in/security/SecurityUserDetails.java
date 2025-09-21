@@ -1,23 +1,17 @@
 package com.manager.auth.adapter.in.security;
 
 import com.manager.auth.model.users.User;
-import io.jsonwebtoken.lang.Collections;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.List;
 
-public class SecurityUserDetails implements UserDetails {
-
-    private final User user;
-
-    public SecurityUserDetails(User user) {
-        this.user = user;
-    }
+public record SecurityUserDetails(User user) implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.emptyList();
+        return List.of(new SecurityRoleDetails(user.getRole()));
     }
 
     @Override
@@ -28,9 +22,5 @@ public class SecurityUserDetails implements UserDetails {
     @Override
     public String getUsername() {
         return user.getEmail();
-    }
-
-    public User getUser() {
-        return user;
     }
 }

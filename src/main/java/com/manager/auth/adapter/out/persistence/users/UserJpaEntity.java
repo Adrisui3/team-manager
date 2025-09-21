@@ -1,5 +1,6 @@
 package com.manager.auth.adapter.out.persistence.users;
 
+import com.manager.auth.model.roles.Role;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -21,6 +22,9 @@ public class UserJpaEntity {
     private String surname;
 
     private LocalDateTime lastLogIn;
+
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
     private boolean enabled;
 
@@ -89,5 +93,13 @@ public class UserJpaEntity {
 
     public boolean isEnabled() {
         return enabled;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
     }
 }

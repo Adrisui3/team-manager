@@ -1,5 +1,7 @@
 package com.manager.auth.model.users;
 
+import com.manager.auth.model.roles.Role;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -14,6 +16,8 @@ public class User {
     private String surname;
 
     private LocalDateTime lastLogIn;
+
+    private Role role;
 
     private boolean enabled;
 
@@ -81,5 +85,13 @@ public class User {
 
     public void setVerification(UserVerification verification) {
         this.verification = verification;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
     }
 }

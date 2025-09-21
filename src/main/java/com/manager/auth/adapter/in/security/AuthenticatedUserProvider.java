@@ -11,6 +11,6 @@ public class AuthenticatedUserProvider {
     public User getAuthenticatedUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         SecurityUserDetails securityUserDetails = (SecurityUserDetails) authentication.getPrincipal();
-        return securityUserDetails.getUser();
+        return securityUserDetails.user();
     }
 }
