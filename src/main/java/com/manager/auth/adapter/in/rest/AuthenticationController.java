@@ -29,7 +29,7 @@ public class AuthenticationController {
     public ResponseEntity<?> registerUser(@RequestBody RegisterUserDto registerUserDto) {
         try {
             User registeredUser = signUpUserUseCase.signup(registerUserDto);
-            return ResponseEntity.ok(RegisteredUserResponseDto.from(registeredUser));
+            return ResponseEntity.ok(UserDto.from(registeredUser));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

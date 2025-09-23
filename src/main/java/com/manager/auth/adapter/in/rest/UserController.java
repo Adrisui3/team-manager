@@ -1,5 +1,6 @@
 package com.manager.auth.adapter.in.rest;
 
+import com.manager.auth.adapter.dto.UserDto;
 import com.manager.auth.adapter.in.security.AuthenticatedUserProvider;
 import com.manager.auth.model.users.User;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +19,8 @@ public class UserController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<User> getCurrentUser() {
-        return ResponseEntity.ok(authenticatedUserProvider.getAuthenticatedUser());
+    public ResponseEntity<UserDto> getCurrentUser() {
+        User authenticatedUser = authenticatedUserProvider.getAuthenticatedUser();
+        return ResponseEntity.ok(UserDto.from(authenticatedUser));
     }
 }
