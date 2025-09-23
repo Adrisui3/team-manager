@@ -25,7 +25,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/signup")
-    //@PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> registerUser(@RequestBody RegisterUserDto registerUserDto) {
         try {
             User registeredUser = signUpUserUseCase.signup(registerUserDto);
