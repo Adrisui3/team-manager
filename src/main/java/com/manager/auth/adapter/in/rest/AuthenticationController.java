@@ -1,9 +1,6 @@
 package com.manager.auth.adapter.in.rest;
 
-import com.manager.auth.adapter.dto.LoginResponseDto;
-import com.manager.auth.adapter.dto.LoginUserDto;
-import com.manager.auth.adapter.dto.RegisterUserDto;
-import com.manager.auth.adapter.dto.SetUserPasswordDto;
+import com.manager.auth.adapter.dto.*;
 import com.manager.auth.application.port.in.AuthenticateUserUseCase;
 import com.manager.auth.application.port.in.SignUpUserUseCase;
 import com.manager.auth.model.users.User;
@@ -28,11 +25,11 @@ public class AuthenticationController {
     }
 
     @PostMapping("/signup")
-    @PreAuthorize("hasRole('ADMIN')")
+    //@PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> registerUser(@RequestBody RegisterUserDto registerUserDto) {
         try {
             User registeredUser = signUpUserUseCase.signup(registerUserDto);
-            return ResponseEntity.ok(registeredUser);
+            return ResponseEntity.ok(RegisteredUserResponseDto.from(registeredUser));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
