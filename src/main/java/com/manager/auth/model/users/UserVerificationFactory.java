@@ -21,7 +21,7 @@ public class UserVerificationFactory {
 
     private static String generateVerificationCode() {
         Random random = new Random();
-        int code = random.nextInt(999999) + 10000;
+        int code = random.nextInt(900000) + 100000;
         return String.valueOf(code);
     }
 }
