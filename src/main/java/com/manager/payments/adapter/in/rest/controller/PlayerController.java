@@ -6,7 +6,7 @@ import com.manager.payments.application.port.in.CreatePlayerUseCase;
 import com.manager.payments.application.port.out.PlayerRepository;
 import com.manager.payments.model.exceptions.PlayerNotFoundException;
 import com.manager.payments.model.receipts.ReceiptMinInfo;
-import com.manager.payments.model.users.Player;
+import com.manager.payments.model.players.Player;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

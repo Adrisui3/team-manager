@@ -4,7 +4,7 @@ import com.manager.payments.adapter.out.persistence.payments.PaymentJpaRepositor
 import com.manager.payments.adapter.out.persistence.payments.PaymentMapper;
 import com.manager.payments.adapter.out.persistence.receipts.ReceiptJpaRepository;
 import com.manager.payments.adapter.out.persistence.receipts.ReceiptMapper;
-import com.manager.payments.model.users.Player;
+import com.manager.payments.model.players.Player;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;

@@ -1,6 +1,6 @@
 package com.manager.payments.adapter.in.rest.dto;
 
-import com.manager.payments.model.users.Category;
+import com.manager.payments.model.players.Category;
 
 import java.time.LocalDate;
 

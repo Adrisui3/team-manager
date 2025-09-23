@@ -1,7 +1,7 @@
 package com.manager.payments.application.port.out;
 
 import com.manager.payments.model.receipts.ReceiptMinInfo;
-import com.manager.payments.model.users.Player;
+import com.manager.payments.model.players.Player;
 
 import java.util.List;
 import java.util.Optional;
