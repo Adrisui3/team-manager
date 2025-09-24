@@ -8,8 +8,10 @@ import com.manager.payments.application.port.out.PlayerRepository;
 import com.manager.payments.model.exceptions.PaymentNotFoundException;
 import com.manager.payments.model.exceptions.PlayerAlreadyExistsException;
 import com.manager.payments.model.exceptions.PlayerNotFoundException;
+import com.manager.payments.model.exceptions.PlayerPaymentAssignmentInconsistent;
 import com.manager.payments.model.payments.Payment;
 import com.manager.payments.model.payments.PaymentMinInfo;
+import com.manager.payments.model.payments.PaymentStatus;
 import com.manager.payments.model.players.Player;
 import com.manager.payments.model.players.PlayerMinInfo;
 import com.manager.payments.model.players.PlayerStatus;
@@ -40,9 +42,9 @@ public class PlayerService implements CreatePlayerUseCase, AssignPaymentToPlayer
             throw new PlayerAlreadyExistsException(requestDTO.personalId());
         }
 
-        Player newPlayer = new Player(null, requestDTO.personalId(), requestDTO.name(), requestDTO.surname(),
-                requestDTO.email(), requestDTO.birthDate(), requestDTO.category(), PlayerStatus.ENABLED,
-                Collections.emptyList(), Collections.emptyList());
+        Player newPlayer = new Player(null, requestDTO.personalId(), requestDTO.name(),
+                requestDTO.surname(), requestDTO.email(), requestDTO.birthDate(), requestDTO.category(),
+                PlayerStatus.ENABLED, Collections.emptyList(), Collections.emptyList());
         return playerRepository.save(newPlayer);
     }
 
@@ -56,13 +58,19 @@ public class PlayerService implements CreatePlayerUseCase, AssignPaymentToPlayer
                 paymentRepository.findById(paymentId).orElseThrow(() -> new PaymentNotFoundException(paymentId));
         PaymentMinInfo paymentMinInfo = PaymentMinInfo.from(payment);
 
-        if (!player.payments().contains(paymentMinInfo)) {
-            player.payments().add(paymentMinInfo);
-            playerRepository.save(player);
+        if (player.hasPayment(paymentId) != payment.hasPlayer(playerId)) {
+            throw new PlayerPaymentAssignmentInconsistent(paymentId, playerId);
         }
 
-        if (!payment.players().contains(playerMinInfo)) {
+        if (!player.hasPayment(paymentId) && !payment.hasPlayer(playerId)) {
+            player.payments().add(paymentMinInfo);
             payment.players().add(playerMinInfo);
+
+            if (payment.status().equals(PaymentStatus.ACTIVE)) {
+                player.createReceiptFor(payment);
+            }
+
+            playerRepository.save(player);
             paymentRepository.save(payment);
         }
 
