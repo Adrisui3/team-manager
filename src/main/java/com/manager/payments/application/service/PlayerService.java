@@ -42,7 +42,7 @@ public class PlayerService implements CreatePlayerUseCase, AssignPaymentToPlayer
             throw new PlayerAlreadyExistsException(requestDTO.personalId());
         }
 
-        Player newPlayer = new Player(UUID.randomUUID(), requestDTO.personalId(), requestDTO.name(),
+        Player newPlayer = new Player(null, requestDTO.personalId(), requestDTO.name(),
                 requestDTO.surname(), requestDTO.email(), requestDTO.birthDate(), requestDTO.category(),
                 PlayerStatus.ENABLED, Collections.emptyList(), Collections.emptyList());
         return playerRepository.save(newPlayer);
