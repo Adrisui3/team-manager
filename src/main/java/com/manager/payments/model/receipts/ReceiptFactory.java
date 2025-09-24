@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.UUID;
 
 public class ReceiptFactory {
 
@@ -32,6 +31,6 @@ public class ReceiptFactory {
         }
 
         double amount = payment.amount() * remainderPercentage;
-        return new ReceiptMinInfo(UUID.randomUUID(), amount, issuedDate, null, expiryDate, ReceiptStatus.PENDING);
+        return new ReceiptMinInfo(null, amount, issuedDate, null, expiryDate, ReceiptStatus.PENDING);
     }
 }
