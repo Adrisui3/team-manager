@@ -48,4 +48,9 @@ public class RestExceptionHandler {
     public ResponseEntity<String> handlePaymentAlreadyExpired(PaymentAlreadyExpired e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
+
+    @ExceptionHandler(PlayerPaymentAssignmentInconsistent.class)
+    public ResponseEntity<String> handlePlayerPaymentAssignmentInconsistent(PlayerPaymentAssignmentInconsistent e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+    }
 }
