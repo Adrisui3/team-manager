@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface PaymentJpaRepository extends JpaRepository<PaymentJpaEntity, UUID> {
-    List<PaymentJpaEntity> findAllByNextPaymentDateBeforeAndStatus(LocalDate date, PaymentStatus status);
+    List<PaymentJpaEntity> findAllByNextPaymentDateLessThanEqualAndStatus(LocalDate date, PaymentStatus status);
 
     List<PaymentJpaEntity> findAllByEndDateBeforeAndStatus(LocalDate date, PaymentStatus status);
 }

@@ -18,8 +18,11 @@ public class ReceiptFactory {
 
         double remainderPercentage =
                 (double) ChronoUnit.DAYS.between(issuedDate, payment.nextPaymentDate()) / payment.periodDays();
-        double amount = payment.amount() * remainderPercentage;
+        if (remainderPercentage <= 0d || remainderPercentage > 1d) {
+            remainderPercentage = 1d;
+        }
 
+        double amount = payment.amount() * remainderPercentage;
         return new ReceiptMinInfo(null, amount, issuedDate, null, expiryDate, ReceiptStatus.PENDING);
     }
 }

@@ -11,6 +11,7 @@ import com.manager.payments.model.players.Player;
 import com.manager.payments.model.players.PlayerMinInfo;
 import com.manager.payments.model.players.PlayerStatus;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
 import java.time.LocalDate;
@@ -34,7 +35,7 @@ class IssueNewReceiptsUseCaseTest {
                 PlayerStatus.ENABLED, new ArrayList<>(), new ArrayList<>());
         UUID paymentId = UUID.randomUUID();
         Payment payment = new Payment(paymentId, 10, "", "", LocalDate.now(), LocalDate.now(),
-                LocalDate.now(), 10, PaymentStatus.ACTIVE, new ArrayList<>());
+                LocalDate.now().plusDays(10), 10, PaymentStatus.ACTIVE, new ArrayList<>());
         player1.payments().add(PaymentMinInfo.from(payment));
         player2.payments().add(PaymentMinInfo.from(payment));
         payment.players().add(PlayerMinInfo.from(player1));
@@ -47,7 +48,7 @@ class IssueNewReceiptsUseCaseTest {
         Mockito.when(playerRepository.save(player2)).thenReturn(player2);
 
         PaymentRepository paymentRepository = Mockito.mock(PaymentRepository.class);
-        Mockito.when(paymentRepository.findAllActiveAndNextPaymentDateBefore(Mockito.any())).thenReturn(List.of(payment));
+        Mockito.when(paymentRepository.findAllActiveAndNextPaymentDateBeforeOrEqual(Mockito.any())).thenReturn(List.of(payment));
 
         IssueNewReceiptsUseCase issueNewReceiptsUseCase = new BillingService(playerRepository, paymentRepository);
 
@@ -61,6 +62,42 @@ class IssueNewReceiptsUseCaseTest {
         assertThat(player2.receipts().size()).isEqualTo(1);
         assertThat(player2.receipts().getLast().issuedDate()).isEqualTo(LocalDate.now());
         assertThat(player2.receipts().getLast().expiryDate()).isEqualTo(LocalDate.now().plusDays(15));
+    }
+
+    @Test
+    void shouldCreateFullAmountReceiptsForOverduePayments() {
+        // given
+        UUID playerId = UUID.randomUUID();
+        Player player = new Player(playerId, "", "", "", "", LocalDate.now(), Category.SENIOR,
+                PlayerStatus.ENABLED, new ArrayList<>(), new ArrayList<>());
+        Payment overduePayment = new Payment(UUID.randomUUID(), 25.5, "", "", LocalDate.now().minusDays(90),
+                LocalDate.now().minusDays(40), LocalDate.now().plusDays(90), 30, PaymentStatus.ACTIVE,
+                new ArrayList<>());
+        player.payments().add(PaymentMinInfo.from(overduePayment));
+        overduePayment.players().add(PlayerMinInfo.from(player));
+
+        PlayerRepository playerRepository = Mockito.mock(PlayerRepository.class);
+        Mockito.when(playerRepository.findById(playerId)).thenReturn(Optional.of(player));
+        Mockito.when(playerRepository.save(player)).thenReturn(player);
+
+        PaymentRepository paymentRepository = Mockito.mock(PaymentRepository.class);
+        Mockito.when(paymentRepository.findAllActiveAndNextPaymentDateBeforeOrEqual(Mockito.any())).thenReturn(
+                List.of(overduePayment));
+
+        IssueNewReceiptsUseCase issueNewReceiptsUseCase = new BillingService(playerRepository, paymentRepository);
+
+        // when
+        LocalDate today = LocalDate.now();
+        issueNewReceiptsUseCase.issueNewReceipts(today);
+
+        // then
+        assertThat(player.receipts().size()).isEqualTo(2);
+        assertThat(player.receipts().get(0).amount()).isEqualTo(overduePayment.amount());
+        assertThat(player.receipts().get(1).amount()).isEqualTo(overduePayment.amount());
+
+        ArgumentCaptor<Payment> paymentCaptor = ArgumentCaptor.forClass(Payment.class);
+        Mockito.verify(paymentRepository).save(paymentCaptor.capture());
+        assertThat(paymentCaptor.getValue().nextPaymentDate().isAfter(today)).isTrue();
     }
 
 }

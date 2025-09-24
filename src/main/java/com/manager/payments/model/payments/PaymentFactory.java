@@ -5,6 +5,7 @@ import com.manager.payments.model.exceptions.PaymentInvalidDateInterval;
 
 import java.time.LocalDate;
 import java.util.Collections;
+import java.util.UUID;
 
 public class PaymentFactory {
 
@@ -22,12 +23,8 @@ public class PaymentFactory {
             throw new PaymentAlreadyExpired();
         }
 
-        PaymentStatus status = PaymentStatus.INACTIVE;
-        if (startDate.isBefore(now)) {
-            status = PaymentStatus.ACTIVE;
-        }
-
-        return new Payment(null, amount, name, description, startDate, startDate, endDate, periodDays, status,
-                Collections.emptyList());
+        PaymentStatus status = startDate.isAfter(now) ? PaymentStatus.INACTIVE : PaymentStatus.ACTIVE;
+        return new Payment(UUID.randomUUID(), amount, name, description, startDate, startDate, endDate, periodDays,
+                status, Collections.emptyList());
     }
 }

@@ -5,9 +5,9 @@ import com.manager.payments.application.port.out.PaymentRepository;
 import com.manager.payments.application.port.out.PlayerRepository;
 import com.manager.payments.model.exceptions.PlayerNotFoundException;
 import com.manager.payments.model.payments.Payment;
-import com.manager.payments.model.receipts.ReceiptMinInfo;
 import com.manager.payments.model.players.Player;
 import com.manager.payments.model.players.PlayerMinInfo;
+import com.manager.payments.model.receipts.ReceiptMinInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -31,17 +31,22 @@ public class BillingService implements IssueNewReceiptsUseCase {
     @Override
     public void issueNewReceipts(LocalDate date) {
         logger.info("Running BillingJob at {}", date);
-        List<Payment> payments = paymentRepository.findAllActiveAndNextPaymentDateBefore(date);
+        List<Payment> payments = paymentRepository.findAllActiveAndNextPaymentDateBeforeOrEqual(date);
         logger.info("Processing {} payments", payments.size());
         for (Payment payment : payments) {
-            LocalDate newNextPaymentDate = payment.nextPaymentDate().plusDays(payment.periodDays());
+            LocalDate newNextPaymentDate = payment.nextPaymentDate();
+            while ((newNextPaymentDate.isBefore(date) || newNextPaymentDate.isEqual(date)) && newNextPaymentDate.isBefore(payment.endDate())) {
+                Payment updatedPayment = payment.withNextPaymentDate(newNextPaymentDate);
+                for (PlayerMinInfo player : updatedPayment.players()) {
+                    ReceiptMinInfo newReceipt = createReceipt(player.id(), updatedPayment);
+                    logger.info("Created receipt {} for player {}", newReceipt.id(), updatedPayment.id());
+                }
+
+                newNextPaymentDate = newNextPaymentDate.plusDays(payment.periodDays());
+            }
+
             Payment updatedPayment = payment.withNextPaymentDate(newNextPaymentDate);
             paymentRepository.save(updatedPayment);
-
-            for (PlayerMinInfo player : updatedPayment.players()) {
-                ReceiptMinInfo newReceipt = createReceipt(player.id(), updatedPayment);
-                logger.info("Created receipt {} for player {}", newReceipt.id(), updatedPayment.id());
-            }
         }
     }
 
