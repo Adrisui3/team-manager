@@ -1,7 +1,10 @@
 package com.manager.payments.model.exceptions;
 
-public class PaymentInvalidDateInterval extends RuntimeException {
+import com.manager.shared.GenericStatus;
+import com.manager.shared.exception.GenericException;
+
+public class PaymentInvalidDateInterval extends GenericException {
     public PaymentInvalidDateInterval() {
-        super("Start date cannot be after end date.");
+        super("Start date cannot be after end date.", GenericStatus.INVALID_STATE);
     }
 }
