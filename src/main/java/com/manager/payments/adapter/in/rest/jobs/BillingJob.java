@@ -16,7 +16,7 @@ public class BillingJob {
         this.issueNewReceiptsUseCase = issueNewReceiptsUseCase;
     }
 
-    @Scheduled(cron = "0 0 2 * * *")
+    @Scheduled(cron = "0 0 1 * * *")
     @Transactional
     public void billing() {
         LocalDate now = LocalDate.now();
