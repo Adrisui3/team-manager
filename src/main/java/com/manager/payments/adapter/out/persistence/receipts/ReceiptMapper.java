@@ -1,12 +1,13 @@
 package com.manager.payments.adapter.out.persistence.receipts;
 
+import com.manager.payments.adapter.in.rest.dto.ReceiptMinInfoDto;
 import com.manager.payments.adapter.out.persistence.players.PlayerJpaEntity;
 import com.manager.payments.adapter.out.persistence.players.PlayerJpaRepository;
 import com.manager.payments.model.exceptions.PlayerNotFoundException;
 import com.manager.payments.model.exceptions.ReceiptNotFoundException;
+import com.manager.payments.model.players.PlayerMinInfo;
 import com.manager.payments.model.receipts.Receipt;
 import com.manager.payments.model.receipts.ReceiptMinInfo;
-import com.manager.payments.model.players.PlayerMinInfo;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 
@@ -16,6 +17,12 @@ import java.util.List;
 public interface ReceiptMapper {
 
     Receipt toReceipt(ReceiptJpaEntity receiptJpaEntity);
+
+    ReceiptMinInfoDto toReceiptMinInfoDto(ReceiptMinInfo receipt);
+
+    ReceiptMinInfoDto toReceiptMinInfoDto(Receipt receipt);
+
+    List<ReceiptMinInfoDto> toReceiptMinInfoDto(List<ReceiptMinInfo> receipt);
 
     ReceiptJpaEntity toReceiptJpaEntity(Receipt receipt, @Context PlayerJpaRepository playerJpaRepository);
 

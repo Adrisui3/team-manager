@@ -1,5 +1,7 @@
 package com.manager.payments.adapter.out.persistence.payments;
 
+import com.manager.payments.adapter.in.rest.dto.PaymentDto;
+import com.manager.payments.adapter.in.rest.dto.PlayerMInInfoDto;
 import com.manager.payments.adapter.out.persistence.players.PlayerJpaEntity;
 import com.manager.payments.adapter.out.persistence.players.PlayerJpaRepository;
 import com.manager.payments.model.exceptions.PaymentNotFoundException;
@@ -17,9 +19,13 @@ public interface PaymentMapper {
 
     Payment toPayment(PaymentJpaEntity paymentJpaEntity);
 
+    PaymentDto toPaymentDto(Payment payment);
+
     PaymentJpaEntity toPaymentJpaEntity(Payment payment, @Context PlayerJpaRepository playerJpaRepository);
 
     PaymentMinInfo toPaymentMinInfo(PaymentJpaEntity paymentJpaEntity);
+
+    PlayerMInInfoDto toPlayerMInInfoDto(PlayerMinInfo playerMinInfo);
 
     default List<PaymentJpaEntity> mapPaymentMinInfosToPaymentJpaEntities(List<PaymentMinInfo> paymentMinInfos,
                                                                           @Context PaymentJpaRepository paymentJpaRepository) {
