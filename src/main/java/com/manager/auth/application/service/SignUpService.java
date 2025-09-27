@@ -4,6 +4,7 @@ import com.manager.auth.adapter.dto.RegisterUserDto;
 import com.manager.auth.adapter.dto.SetUserPasswordDto;
 import com.manager.auth.application.port.in.SignUpUserUseCase;
 import com.manager.auth.application.port.out.UserRepository;
+import com.manager.auth.model.exceptions.*;
 import com.manager.auth.model.users.User;
 import com.manager.auth.model.users.UserVerification;
 import com.manager.auth.model.users.UserVerificationFactory;
@@ -28,7 +29,7 @@ public class SignUpService implements SignUpUserUseCase {
     @Override
     public User signup(RegisterUserDto registerUserDto) {
         if (userRepository.existsByEmail(registerUserDto.email()))
-            throw new RuntimeException("Email already in use");
+            throw new UserAlreadyExists(registerUserDto.email());
 
         User user = new User();
         user.setEmail(registerUserDto.email());
@@ -46,16 +47,14 @@ public class SignUpService implements SignUpUserUseCase {
 
     @Override
     public void setPassword(SetUserPasswordDto setUserPasswordDto) {
-        User user =
-                userRepository.findByEmail(setUserPasswordDto.email()).orElseThrow(() -> new RuntimeException(
-                        "User not found."));
+        User user = userRepository.findByEmail(setUserPasswordDto.email()).orElseThrow(UserNotFound::new);
         UserVerification userVerification = user.getVerification();
         if (userVerification == null) {
-            throw new RuntimeException("No verification exists for user.");
+            throw new VerificationNotFound();
         }
 
         if (userVerification.getExpirationDate().isBefore(LocalDateTime.now())) {
-            throw new RuntimeException("Verification code expired.");
+            throw new VerificationExpiredException();
         }
 
         if (userVerification.getVerificationCode().equals(setUserPasswordDto.verificationCode())) {
@@ -64,14 +63,14 @@ public class SignUpService implements SignUpUserUseCase {
             user.setVerification(null);
             userRepository.save(user);
         } else {
-            throw new RuntimeException("Invalid verification code.");
+            throw new InvalidVerificationCodeException();
         }
     }
 
     @Override
     public void resetPassword(String email) {
         User user =
-                userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found."));
+                userRepository.findByEmail(email).orElseThrow(UserNotFound::new);
         UserVerification userVerification = UserVerificationFactory.build(user);
         user.setVerification(userVerification);
 

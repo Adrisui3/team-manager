@@ -3,6 +3,7 @@ package com.manager.payments.adapter.out.persistence.payments;
 import com.manager.payments.adapter.out.persistence.players.PlayerJpaEntity;
 import com.manager.payments.adapter.out.persistence.players.PlayerJpaRepository;
 import com.manager.payments.application.port.out.PaymentRepository;
+import com.manager.payments.model.exceptions.PaymentNotFoundException;
 import com.manager.payments.model.payments.Payment;
 import com.manager.payments.model.payments.PaymentStatus;
 import org.springframework.stereotype.Component;
@@ -41,16 +42,14 @@ public class PaymentRepositoryAdapter implements PaymentRepository {
 
     @Override
     public void deleteById(UUID id) {
-        Optional<PaymentJpaEntity> optionalPaymentJpaEntity = paymentJpaRepository.findById(id);
-        if (optionalPaymentJpaEntity.isPresent()) {
-            PaymentJpaEntity paymentJpaEntity = optionalPaymentJpaEntity.get();
-            for (PlayerJpaEntity playerJpaEntity : paymentJpaEntity.getPlayers()) {
-                playerJpaEntity.getPayments().remove(paymentJpaEntity);
-                playerJpaRepository.save(playerJpaEntity);
-            }
-
-            paymentJpaRepository.deleteById(id);
+        PaymentJpaEntity paymentJpaEntity =
+                paymentJpaRepository.findById(id).orElseThrow(() -> new PaymentNotFoundException(id));
+        for (PlayerJpaEntity playerJpaEntity : paymentJpaEntity.getPlayers()) {
+            playerJpaEntity.getPayments().remove(paymentJpaEntity);
+            playerJpaRepository.save(playerJpaEntity);
         }
+
+        paymentJpaRepository.deleteById(id);
     }
 
     @Override

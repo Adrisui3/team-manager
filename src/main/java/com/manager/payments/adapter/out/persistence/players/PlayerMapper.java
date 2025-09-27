@@ -1,5 +1,6 @@
 package com.manager.payments.adapter.out.persistence.players;
 
+import com.manager.payments.adapter.in.rest.dto.PlayerDto;
 import com.manager.payments.adapter.out.persistence.payments.PaymentJpaRepository;
 import com.manager.payments.adapter.out.persistence.payments.PaymentMapper;
 import com.manager.payments.adapter.out.persistence.receipts.ReceiptJpaRepository;
@@ -17,6 +18,8 @@ public interface PlayerMapper {
 
     PlayerJpaEntity toPlayerJpaEntity(Player player, @Context PaymentJpaRepository paymentJpaRepository,
                                       @Context ReceiptJpaRepository receiptJpaRepository);
+
+    PlayerDto toPlayerDto(Player player);
 
     @AfterMapping
     default void linkReceipts(@MappingTarget PlayerJpaEntity playerJpaEntity) {
