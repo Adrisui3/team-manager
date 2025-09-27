@@ -4,9 +4,9 @@ import com.manager.payments.adapter.in.rest.dto.CreatePaymentRequestDTO;
 import com.manager.payments.application.port.in.CreatePaymentUseCase;
 import com.manager.payments.application.port.in.ProcessExpiredPaymentsUseCase;
 import com.manager.payments.application.port.out.PaymentRepository;
+import com.manager.payments.model.payments.ExpiredPaymentProcessor;
 import com.manager.payments.model.payments.Payment;
 import com.manager.payments.model.payments.PaymentFactory;
-import com.manager.payments.model.payments.PaymentStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -36,10 +36,8 @@ public class PaymentService implements CreatePaymentUseCase, ProcessExpiredPayme
         logger.info("Updating expired payments at {}", date);
         List<Payment> expiredPayments = paymentRepository.findAllActiveAndEndDateBefore(date);
         logger.info("Found {} expired payments", expiredPayments.size());
-        for (Payment payment : expiredPayments) {
-            Payment updatedPayment = payment.withStatus(PaymentStatus.EXPIRED);
-            paymentRepository.save(updatedPayment);
-            logger.info("Payment with id {} is now flagged as expired", payment.id());
-        }
+        List<Payment> processedPaymens = ExpiredPaymentProcessor.processExpiredPayments(expiredPayments);
+        logger.info("Processed {} expired payments", processedPaymens.size());
+        paymentRepository.saveAll(processedPaymens);
     }
 }

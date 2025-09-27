@@ -8,12 +8,9 @@ import com.manager.payments.application.port.out.PlayerRepository;
 import com.manager.payments.model.exceptions.PaymentNotFoundException;
 import com.manager.payments.model.exceptions.PlayerAlreadyExistsException;
 import com.manager.payments.model.exceptions.PlayerNotFoundException;
-import com.manager.payments.model.exceptions.PlayerPaymentAssignmentInconsistent;
 import com.manager.payments.model.payments.Payment;
-import com.manager.payments.model.payments.PaymentMinInfo;
-import com.manager.payments.model.payments.PaymentStatus;
 import com.manager.payments.model.players.Player;
-import com.manager.payments.model.players.PlayerMinInfo;
+import com.manager.payments.model.players.PlayerPaymentAssigner;
 import com.manager.payments.model.players.PlayerStatus;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
@@ -52,24 +49,10 @@ public class PlayerService implements CreatePlayerUseCase, AssignPaymentToPlayer
     @Transactional
     public Player assignPaymentToPlayer(UUID playerId, UUID paymentId) {
         Player player = playerRepository.findById(playerId).orElseThrow(() -> new PlayerNotFoundException(playerId));
-        PlayerMinInfo playerMinInfo = PlayerMinInfo.from(player);
-
         Payment payment =
                 paymentRepository.findById(paymentId).orElseThrow(() -> new PaymentNotFoundException(paymentId));
-        PaymentMinInfo paymentMinInfo = PaymentMinInfo.from(payment);
 
-        if (player.hasPayment(paymentId) != payment.hasPlayer(playerId)) {
-            throw new PlayerPaymentAssignmentInconsistent(paymentId, playerId);
-        }
-
-        if (!player.hasPayment(paymentId) && !payment.hasPlayer(playerId)) {
-            player.payments().add(paymentMinInfo);
-            payment.players().add(playerMinInfo);
-
-            if (payment.status().equals(PaymentStatus.ACTIVE)) {
-                player.createReceiptFor(payment);
-            }
-
+        if (PlayerPaymentAssigner.assign(player, payment)) {
             playerRepository.save(player);
             paymentRepository.save(payment);
         }

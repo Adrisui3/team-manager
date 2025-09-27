@@ -40,6 +40,14 @@ public class ReceiptRepositoryAdapter implements ReceiptRepository {
     }
 
     @Override
+    public List<Receipt> saveAll(List<Receipt> receipts) {
+        List<ReceiptJpaEntity> receiptJpaEntities =
+                receipts.stream().map(receipt -> receiptMapper.toReceiptJpaEntity(receipt, playerJpaRepository)).toList();
+        List<ReceiptJpaEntity> savedEntities = receiptJpaRepository.saveAll(receiptJpaEntities);
+        return savedEntities.stream().map(receiptMapper::toReceipt).toList();
+    }
+
+    @Override
     public Receipt updateStatus(UUID receiptId, ReceiptStatus status) {
         ReceiptJpaEntity receipt =
                 receiptJpaRepository.findById(receiptId).orElseThrow(() -> new ReceiptNotFoundException(receiptId));
