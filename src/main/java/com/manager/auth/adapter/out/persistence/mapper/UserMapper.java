@@ -1,5 +1,6 @@
 package com.manager.auth.adapter.out.persistence.mapper;
 
+import com.manager.auth.adapter.dto.UserDto;
 import com.manager.auth.adapter.out.persistence.users.UserJpaEntity;
 import com.manager.auth.model.users.User;
 import org.mapstruct.AfterMapping;
@@ -12,6 +13,8 @@ public interface UserMapper {
     User toUser(UserJpaEntity userJpaEntity);
 
     UserJpaEntity toUserJpaEntity(User user);
+
+    UserDto toUserDto(User user);
 
     @AfterMapping
     default void linkVerification(@MappingTarget UserJpaEntity userEntity) {

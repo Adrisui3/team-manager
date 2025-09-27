@@ -6,8 +6,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.time.LocalDateTime;
-
 @RestControllerAdvice
 public class RestExceptionHandler {
 
@@ -21,7 +19,6 @@ public class RestExceptionHandler {
             case FORBIDDEN -> HttpStatus.FORBIDDEN;
         };
 
-        return ResponseEntity.status(httpStatus).body(new ResponseDto<>(LocalDateTime.now(), httpStatus.value(),
-                e.getMessage()));
+        return ResponseEntity.status(httpStatus).body(new ResponseDto<>(httpStatus.value(), e.getMessage()));
     }
 }

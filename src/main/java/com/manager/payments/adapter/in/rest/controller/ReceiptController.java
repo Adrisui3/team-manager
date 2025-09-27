@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 @RestController
@@ -32,7 +31,7 @@ public class ReceiptController {
     public ResponseEntity<ResponseDto<ReceiptMinInfoDto>> updatePaymentStatus(@PathVariable UUID receiptId,
                                                                               @PathVariable ReceiptStatus newStatus) {
         Receipt updatedReceipt = receiptRepository.updateStatus(receiptId, newStatus);
-        return ResponseEntity.ok(new ResponseDto<>(LocalDateTime.now(), HttpStatus.OK.value(),
+        return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(),
                 receiptMapper.toReceiptMinInfoDto(updatedReceipt)));
     }
 }

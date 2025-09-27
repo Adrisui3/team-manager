@@ -15,7 +15,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -42,35 +41,33 @@ public class PlayerController {
     @GetMapping("/{playerId}")
     public ResponseEntity<ResponseDto<PlayerDto>> getUser(@PathVariable("playerId") UUID playerId) {
         Player player = playerRepository.findById(playerId).orElseThrow(() -> new PlayerNotFoundException(playerId));
-        return ResponseEntity.ok(new ResponseDto<>(LocalDateTime.now(), HttpStatus.OK.value(),
-                playerMapper.toPlayerDto(player)));
+        return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(), playerMapper.toPlayerDto(player)));
     }
 
     @GetMapping("/{playerId}/receipts")
     public ResponseEntity<ResponseDto<List<ReceiptMinInfoDto>>> getUserReceipts(@PathVariable("playerId") UUID playerId) {
         List<ReceiptMinInfoDto> receiptMinInfoDtos =
                 receiptMapper.toReceiptMinInfoDto(playerRepository.findAllReceipts(playerId));
-        return ResponseEntity.ok(new ResponseDto<>(LocalDateTime.now(), HttpStatus.OK.value(), receiptMinInfoDtos));
+        return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(), receiptMinInfoDtos));
     }
 
     @PostMapping
     public ResponseEntity<ResponseDto<PlayerDto>> createUser(@RequestBody CreatePlayerRequestDTO requestDTO) {
         Player newPlayer = createPlayerUseCase.createPlayer(requestDTO);
-        return ResponseEntity.ok(new ResponseDto<>(LocalDateTime.now(), HttpStatus.OK.value(),
-                playerMapper.toPlayerDto(newPlayer)));
+        return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(), playerMapper.toPlayerDto(newPlayer)));
     }
 
     @PutMapping("/{playerId}/assign/{paymentId}")
     public ResponseEntity<ResponseDto<Player>> assignPaymentToPlayer(@PathVariable UUID playerId,
                                                                      @PathVariable UUID paymentId) {
         Player updatedPlayer = assignPaymentToPlayerUseCase.assignPaymentToPlayer(playerId, paymentId);
-        return ResponseEntity.ok(new ResponseDto<>(LocalDateTime.now(), HttpStatus.OK.value(), updatedPlayer));
+        return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(), updatedPlayer));
     }
 
     @DeleteMapping("/{playerId}")
     public ResponseEntity<ResponseDto<String>> deleteUser(@PathVariable UUID playerId) {
         playerRepository.deleteById(playerId);
-        return ResponseEntity.ok(new ResponseDto<>(LocalDateTime.now(),
-                HttpStatus.OK.value(), "Player with id " + playerId + " was deleted"));
+        return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(), "Player with id " + playerId + " was " +
+                "deleted"));
     }
 }
