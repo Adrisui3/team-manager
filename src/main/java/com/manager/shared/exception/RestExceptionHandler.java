@@ -9,6 +9,12 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class RestExceptionHandler {
 
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<ResponseDto<String>> handleException(Exception ex) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseDto<>(HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                ex.getMessage()));
+    }
+
     @ExceptionHandler(GenericException.class)
     public ResponseEntity<ResponseDto<String>> handleGenericException(GenericException e) {
         HttpStatus httpStatus = switch (e.getStatus()) {
