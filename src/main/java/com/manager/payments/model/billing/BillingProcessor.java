@@ -28,10 +28,10 @@ public class BillingProcessor {
             for (PlayerMinInfo player : updatedPayment.players()) {
                 Player completePlayer =
                         findPlayer.apply(player.id()).orElseThrow(() -> new PlayerNotFoundException(player.id()));
-                completePlayer.createReceiptFor(payment);
-                persistPlayer.apply(completePlayer);
-                logger.info("Created receipt {} for player {}", completePlayer.receipts().getLast().id(),
-                        completePlayer.id());
+                completePlayer.createReceiptFor(updatedPayment);
+                Player updatedPlayer = persistPlayer.apply(completePlayer);
+                logger.info("Created receipt {} for player {}", updatedPlayer.receipts().getLast().id(),
+                        updatedPlayer.id());
             }
 
             newNextPaymentDate = newNextPaymentDate.plusDays(payment.periodDays());
