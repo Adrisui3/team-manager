@@ -13,5 +13,7 @@ public interface ReceiptRepository {
 
     Receipt save(Receipt receipt);
 
+    List<Receipt> saveAll(List<Receipt> receipts);
+
     Receipt updateStatus(UUID receiptId, ReceiptStatus status);
 }

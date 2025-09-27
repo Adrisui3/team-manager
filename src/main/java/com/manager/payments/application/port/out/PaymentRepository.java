@@ -11,6 +11,8 @@ public interface PaymentRepository {
 
     Payment save(Payment payment);
 
+    List<Payment> saveAll(List<Payment> payments);
+
     Optional<Payment> findById(UUID id);
 
     void deleteById(UUID id);

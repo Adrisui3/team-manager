@@ -35,6 +35,14 @@ public class PaymentRepositoryAdapter implements PaymentRepository {
     }
 
     @Override
+    public List<Payment> saveAll(List<Payment> payments) {
+        List<PaymentJpaEntity> paymentJpaEntities =
+                payments.stream().map(payment -> paymentMapper.toPaymentJpaEntity(payment, playerJpaRepository)).toList();
+        List<PaymentJpaEntity> savedPayments = paymentJpaRepository.saveAll(paymentJpaEntities);
+        return savedPayments.stream().map(paymentMapper::toPayment).toList();
+    }
+
+    @Override
     public Optional<Payment> findById(UUID id) {
         Optional<PaymentJpaEntity> paymentJpaEntity = paymentJpaRepository.findById(id);
         return paymentJpaEntity.map(paymentMapper::toPayment);

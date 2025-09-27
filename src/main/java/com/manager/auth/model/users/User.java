@@ -1,6 +1,8 @@
 package com.manager.auth.model.users;
 
+import com.manager.auth.model.exceptions.*;
 import com.manager.auth.model.roles.Role;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -22,6 +24,41 @@ public class User {
     private boolean enabled;
 
     private UserVerification verification;
+
+    public void authenticate(String password, PasswordEncoder passwordEncoder) {
+        if (!isEnabled()) {
+            throw new DisabledUserException();
+        }
+
+        if (!passwordEncoder.matches(password, getPassword())) {
+            throw new InvalidEmailOrPasswordException();
+        }
+
+        setLastLogIn(LocalDateTime.now());
+    }
+
+    public void setPassword(String verificationCode, String newPassword, PasswordEncoder passwordEncoder) {
+        if (getVerification() == null) {
+            throw new VerificationNotFound();
+        }
+
+        if (getVerification().getExpirationDate().isBefore(LocalDateTime.now())) {
+            throw new VerificationExpiredException();
+        }
+
+        if (getVerification().getVerificationCode().equals(verificationCode)) {
+            setEnabled(true);
+            setPassword(passwordEncoder.encode(newPassword));
+            setVerification(null);
+        } else {
+            throw new InvalidVerificationCodeException();
+        }
+    }
+
+    public void setVerification() {
+        UserVerification userVerification = UserVerificationFactory.build(this);
+        setVerification(userVerification);
+    }
 
     public UUID getId() {
         return id;
