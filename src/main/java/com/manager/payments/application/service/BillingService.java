@@ -3,18 +3,14 @@ package com.manager.payments.application.service;
 import com.manager.payments.application.port.in.IssueNewReceiptsUseCase;
 import com.manager.payments.application.port.out.PaymentRepository;
 import com.manager.payments.application.port.out.PlayerRepository;
-import com.manager.payments.model.exceptions.PlayerNotFoundException;
+import com.manager.payments.model.billing.BillingProcessor;
 import com.manager.payments.model.payments.Payment;
-import com.manager.payments.model.players.Player;
-import com.manager.payments.model.players.PlayerMinInfo;
-import com.manager.payments.model.receipts.ReceiptMinInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 public class BillingService implements IssueNewReceiptsUseCase {
@@ -34,27 +30,11 @@ public class BillingService implements IssueNewReceiptsUseCase {
         List<Payment> payments = paymentRepository.findAllActiveAndNextPaymentDateBeforeOrEqual(date);
         logger.info("Processing {} payments", payments.size());
         for (Payment payment : payments) {
-            LocalDate newNextPaymentDate = payment.nextPaymentDate();
-            while ((newNextPaymentDate.isBefore(date) || newNextPaymentDate.isEqual(date)) && newNextPaymentDate.isBefore(payment.endDate())) {
-                Payment updatedPayment = payment.withNextPaymentDate(newNextPaymentDate);
-                for (PlayerMinInfo player : updatedPayment.players()) {
-                    ReceiptMinInfo newReceipt = createReceipt(player.id(), updatedPayment);
-                    logger.info("Created receipt {} for player {}", newReceipt.id(), updatedPayment.id());
-                }
-
-                newNextPaymentDate = newNextPaymentDate.plusDays(payment.periodDays());
-            }
-
-            Payment updatedPayment = payment.withNextPaymentDate(newNextPaymentDate);
+            logger.info("Processing payment {}", payment.id());
+            Payment updatedPayment = BillingProcessor.process(payment, date, playerRepository::findById,
+                    playerRepository::save);
             paymentRepository.save(updatedPayment);
+            logger.info("Finished processing payment {}", payment.id());
         }
-    }
-
-    private ReceiptMinInfo createReceipt(UUID playerId, Payment payment) {
-        Player player = playerRepository.findById(playerId).orElseThrow(() -> new PlayerNotFoundException(playerId));
-
-        player.createReceiptFor(payment);
-        Player updatedPlayer = playerRepository.save(player);
-        return updatedPlayer.receipts().getLast();
     }
 }
