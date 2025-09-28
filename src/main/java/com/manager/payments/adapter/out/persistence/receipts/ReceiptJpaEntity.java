@@ -19,6 +19,9 @@ public class ReceiptJpaEntity {
     private LocalDate paymentDate;
     private LocalDate expiryDate;
 
+    private LocalDate periodStartDate;
+    private LocalDate periodEndDate;
+
     @Enumerated(EnumType.STRING)
     private ReceiptStatus status = ReceiptStatus.PENDING;
 
@@ -28,28 +31,12 @@ public class ReceiptJpaEntity {
 
     private boolean enabled;
 
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
     public UUID getId() {
         return id;
     }
 
-    public ReceiptStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(ReceiptStatus status) {
-        this.status = status;
-    }
-
-    public LocalDate getIssuedDate() {
-        return issuedDate;
-    }
-
-    public void setIssuedDate(LocalDate issuedDate) {
-        this.issuedDate = issuedDate;
+    public void setId(UUID id) {
+        this.id = id;
     }
 
     public double getAmount() {
@@ -60,12 +47,12 @@ public class ReceiptJpaEntity {
         this.amount = amount;
     }
 
-    public LocalDate getExpiryDate() {
-        return expiryDate;
+    public LocalDate getIssuedDate() {
+        return issuedDate;
     }
 
-    public void setExpiryDate(LocalDate expiryDate) {
-        this.expiryDate = expiryDate;
+    public void setIssuedDate(LocalDate issuedDate) {
+        this.issuedDate = issuedDate;
     }
 
     public LocalDate getPaymentDate() {
@@ -74,6 +61,38 @@ public class ReceiptJpaEntity {
 
     public void setPaymentDate(LocalDate paymentDate) {
         this.paymentDate = paymentDate;
+    }
+
+    public LocalDate getExpiryDate() {
+        return expiryDate;
+    }
+
+    public void setExpiryDate(LocalDate expiryDate) {
+        this.expiryDate = expiryDate;
+    }
+
+    public LocalDate getPeriodStartDate() {
+        return periodStartDate;
+    }
+
+    public void setPeriodStartDate(LocalDate periodStartDate) {
+        this.periodStartDate = periodStartDate;
+    }
+
+    public LocalDate getPeriodEndDate() {
+        return periodEndDate;
+    }
+
+    public void setPeriodEndDate(LocalDate periodEndDate) {
+        this.periodEndDate = periodEndDate;
+    }
+
+    public ReceiptStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(ReceiptStatus status) {
+        this.status = status;
     }
 
     public PlayerPaymentAssignmentJpaEntity getPlayerPaymentAssignment() {

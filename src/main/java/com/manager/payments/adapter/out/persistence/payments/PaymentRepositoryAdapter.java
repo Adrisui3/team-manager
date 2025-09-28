@@ -1,9 +1,7 @@
 package com.manager.payments.adapter.out.persistence.payments;
 
-import com.manager.payments.adapter.out.persistence.players.PlayerJpaEntity;
 import com.manager.payments.adapter.out.persistence.players.PlayerJpaRepository;
 import com.manager.payments.application.port.out.PaymentRepository;
-import com.manager.payments.model.exceptions.PaymentNotFoundException;
 import com.manager.payments.model.payments.Payment;
 import com.manager.payments.model.payments.PaymentStatus;
 import org.springframework.stereotype.Component;
@@ -16,20 +14,18 @@ import java.util.UUID;
 @Component
 public class PaymentRepositoryAdapter implements PaymentRepository {
 
-    private final PlayerJpaRepository playerJpaRepository;
     private final PaymentMapper paymentMapper;
     private final PaymentJpaRepository paymentJpaRepository;
 
     public PaymentRepositoryAdapter(PlayerJpaRepository playerJpaRepository, PaymentMapper paymentMapper,
                                     PaymentJpaRepository paymentJpaRepository) {
-        this.playerJpaRepository = playerJpaRepository;
         this.paymentMapper = paymentMapper;
         this.paymentJpaRepository = paymentJpaRepository;
     }
 
     @Override
     public Payment save(Payment payment) {
-        PaymentJpaEntity paymentJpaEntity = paymentMapper.toPaymentJpaEntity(payment, playerJpaRepository);
+        PaymentJpaEntity paymentJpaEntity = paymentMapper.toPaymentJpaEntity(payment);
         PaymentJpaEntity savedPaymentJpaEntity = paymentJpaRepository.save(paymentJpaEntity);
         return paymentMapper.toPayment(savedPaymentJpaEntity);
     }
@@ -37,7 +33,7 @@ public class PaymentRepositoryAdapter implements PaymentRepository {
     @Override
     public List<Payment> saveAll(List<Payment> payments) {
         List<PaymentJpaEntity> paymentJpaEntities =
-                payments.stream().map(payment -> paymentMapper.toPaymentJpaEntity(payment, playerJpaRepository)).toList();
+                payments.stream().map(paymentMapper::toPaymentJpaEntity).toList();
         List<PaymentJpaEntity> savedPayments = paymentJpaRepository.saveAll(paymentJpaEntities);
         return savedPayments.stream().map(paymentMapper::toPayment).toList();
     }
@@ -50,21 +46,7 @@ public class PaymentRepositoryAdapter implements PaymentRepository {
 
     @Override
     public void deleteById(UUID id) {
-        PaymentJpaEntity paymentJpaEntity =
-                paymentJpaRepository.findById(id).orElseThrow(() -> new PaymentNotFoundException(id));
-        for (PlayerJpaEntity playerJpaEntity : paymentJpaEntity.getPlayers()) {
-            playerJpaEntity.getPayments().remove(paymentJpaEntity);
-            playerJpaRepository.save(playerJpaEntity);
-        }
-
         paymentJpaRepository.deleteById(id);
-    }
-
-    @Override
-    public List<Payment> findAllActiveAndNextPaymentDateBeforeOrEqual(LocalDate date) {
-        List<PaymentJpaEntity> payments = paymentJpaRepository.findAllByNextPaymentDateLessThanEqualAndStatus(date,
-                PaymentStatus.ACTIVE);
-        return payments.stream().map(paymentMapper::toPayment).toList();
     }
 
     @Override

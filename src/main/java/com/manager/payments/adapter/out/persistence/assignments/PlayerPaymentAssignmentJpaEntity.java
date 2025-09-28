@@ -33,6 +33,8 @@ public class PlayerPaymentAssignmentJpaEntity {
     @OneToMany(mappedBy = "playerPaymentAssignment", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<ReceiptJpaEntity> receipts = new ArrayList<>();
 
+    private boolean active;
+
     public UUID getId() {
         return id;
     }
@@ -63,5 +65,13 @@ public class PlayerPaymentAssignmentJpaEntity {
 
     public void setReceipts(List<ReceiptJpaEntity> receipts) {
         this.receipts = receipts;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 }

@@ -1,15 +1,11 @@
 package com.manager.payments.adapter.out.persistence.players;
 
-import com.manager.payments.adapter.out.persistence.payments.PaymentJpaEntity;
-import com.manager.payments.adapter.out.persistence.payments.PaymentJpaRepository;
-import com.manager.payments.adapter.out.persistence.receipts.ReceiptJpaRepository;
-import com.manager.payments.adapter.out.persistence.receipts.ReceiptMapper;
 import com.manager.payments.application.port.out.PlayerRepository;
-import com.manager.payments.model.exceptions.PlayerNotFoundException;
 import com.manager.payments.model.players.Player;
-import com.manager.payments.model.receipts.ReceiptMinInfo;
+import com.manager.payments.model.receipts.Receipt;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -17,26 +13,17 @@ import java.util.UUID;
 @Component
 public class PlayerRepositoryAdapter implements PlayerRepository {
 
-    private final ReceiptMapper receiptMapper;
-    private final ReceiptJpaRepository receiptJpaRepository;
-    private final PaymentJpaRepository paymentJpaRepository;
     private final PlayerJpaRepository playerJpaRepository;
     private final PlayerMapper playerMapper;
 
-    public PlayerRepositoryAdapter(ReceiptMapper receiptMapper, ReceiptJpaRepository receiptJpaRepository,
-                                   PaymentJpaRepository paymentJpaRepository,
-                                   PlayerJpaRepository playerJpaRepository, PlayerMapper playerMapper) {
-        this.receiptMapper = receiptMapper;
-        this.receiptJpaRepository = receiptJpaRepository;
-        this.paymentJpaRepository = paymentJpaRepository;
+    public PlayerRepositoryAdapter(PlayerJpaRepository playerJpaRepository, PlayerMapper playerMapper) {
         this.playerJpaRepository = playerJpaRepository;
         this.playerMapper = playerMapper;
     }
 
     @Override
     public Player save(Player player) {
-        PlayerJpaEntity playerJpaEntity = playerMapper.toPlayerJpaEntity(player, paymentJpaRepository,
-                receiptJpaRepository);
+        PlayerJpaEntity playerJpaEntity = playerMapper.toPlayerJpaEntity(player);
         PlayerJpaEntity savedPlayerJpaEntity = playerJpaRepository.save(playerJpaEntity);
         return playerMapper.toPlayer(savedPlayerJpaEntity);
     }
@@ -53,20 +40,11 @@ public class PlayerRepositoryAdapter implements PlayerRepository {
 
     @Override
     public void deleteById(UUID id) {
-        PlayerJpaEntity playerJpaEntity =
-                playerJpaRepository.findById(id).orElseThrow(() -> new PlayerNotFoundException(id));
-        for (PaymentJpaEntity paymentJpaEntity : playerJpaEntity.getPayments()) {
-            paymentJpaEntity.getPlayers().remove(playerJpaEntity);
-            paymentJpaRepository.save(paymentJpaEntity);
-        }
-
         playerJpaRepository.deleteById(id);
     }
 
     @Override
-    public List<ReceiptMinInfo> findAllReceipts(UUID userId) {
-        PlayerJpaEntity playerJpaEntity =
-                playerJpaRepository.findById(userId).orElseThrow(() -> new PlayerNotFoundException(userId));
-        return playerJpaEntity.getReceipts().stream().map(receiptMapper::toReceiptMinInfo).toList();
+    public List<Receipt> findAllReceipts(UUID userId) {
+        return Collections.emptyList();
     }
 }
