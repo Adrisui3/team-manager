@@ -12,7 +12,8 @@ class PaymentFactoryTest {
     void shouldMarkPaymentActiveWhenStartDateIsToday() {
         LocalDate today = LocalDate.now();
 
-        Payment payment = PaymentFactory.build(10, "name", "desc", today, today.plusDays(30), 30);
+        Payment payment = PaymentFactory.build("CODE", 10, "name", "desc", today, today.plusDays(30),
+                Periodicity.MONTHLY);
 
         assertThat(payment.status()).isEqualTo(PaymentStatus.ACTIVE);
     }
@@ -21,7 +22,8 @@ class PaymentFactoryTest {
     void shouldMarkPaymentInactiveWhenStartDateIsTomorrow() {
         LocalDate today = LocalDate.now();
 
-        Payment payment = PaymentFactory.build(10, "name", "desc", today.plusDays(1), today.plusDays(30), 30);
+        Payment payment = PaymentFactory.build("CODE", 10, "name", "desc", today.plusDays(1), today.plusDays(30),
+                Periodicity.MONTHLY);
 
         assertThat(payment.status()).isEqualTo(PaymentStatus.INACTIVE);
     }

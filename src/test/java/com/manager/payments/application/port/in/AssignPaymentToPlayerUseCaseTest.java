@@ -3,7 +3,6 @@ package com.manager.payments.application.port.in;
 import com.manager.payments.application.port.out.PaymentRepository;
 import com.manager.payments.application.port.out.PlayerRepository;
 import com.manager.payments.application.service.PlayerService;
-import com.manager.payments.model.exceptions.PlayerPaymentAssignmentInconsistent;
 import com.manager.payments.model.payments.Payment;
 import com.manager.payments.model.payments.PaymentMinInfo;
 import com.manager.payments.model.payments.PaymentStatus;
@@ -20,7 +19,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 class AssignPaymentToPlayerUseCaseTest {

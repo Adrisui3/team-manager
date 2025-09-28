@@ -1,6 +1,6 @@
 package com.manager.payments.adapter.out.persistence.payments;
 
-import com.manager.payments.adapter.in.rest.dto.PaymentDto;
+import com.manager.payments.adapter.in.rest.dto.models.PaymentDto;
 import com.manager.payments.model.payments.Payment;
 import org.mapstruct.Mapper;
 

@@ -1,4 +1,4 @@
-package com.manager.payments.adapter.in.rest.dto;
+package com.manager.payments.adapter.in.rest.dto.models;
 
 import com.manager.payments.model.players.Category;
 import com.manager.payments.model.players.PlayerStatus;

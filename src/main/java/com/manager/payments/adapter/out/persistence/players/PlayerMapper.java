@@ -1,6 +1,6 @@
 package com.manager.payments.adapter.out.persistence.players;
 
-import com.manager.payments.adapter.in.rest.dto.PlayerDto;
+import com.manager.payments.adapter.in.rest.dto.models.PlayerDto;
 import com.manager.payments.model.players.Player;
 import org.mapstruct.Mapper;
 

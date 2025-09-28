@@ -1,7 +1,5 @@
 package com.manager.payments.model.players;
 
-import com.manager.payments.model.exceptions.PaymentNotAssignedException;
-import com.manager.payments.model.exceptions.PlayerNotAssignedException;
 import com.manager.payments.model.payments.Payment;
 import com.manager.payments.model.payments.PaymentMinInfo;
 import com.manager.payments.model.payments.PaymentStatus;
@@ -11,7 +9,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.UUID;
 
-import static org.assertj.core.api.AssertionsForClassTypes.*;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatCode;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 class PlayerTest {
 
