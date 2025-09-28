@@ -1,12 +1,9 @@
 package com.manager.payments.adapter.out.persistence.payments;
 
-import com.manager.payments.adapter.out.persistence.players.PlayerJpaEntity;
 import com.manager.payments.model.payments.PaymentStatus;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -29,9 +26,6 @@ public class PaymentJpaEntity {
 
     @Enumerated(EnumType.STRING)
     private PaymentStatus status = PaymentStatus.ACTIVE;
-
-    @ManyToMany(mappedBy = "payments")
-    private List<PlayerJpaEntity> players = new ArrayList<>();
 
     public void setId(UUID id) {
         this.id = id;
@@ -103,13 +97,5 @@ public class PaymentJpaEntity {
 
     public void setNextPaymentDate(LocalDate nextPaymentDate) {
         this.nextPaymentDate = nextPaymentDate;
-    }
-
-    public List<PlayerJpaEntity> getPlayers() {
-        return players;
-    }
-
-    public void setPlayers(List<PlayerJpaEntity> userJpaEntities) {
-        this.players = userJpaEntities;
     }
 }

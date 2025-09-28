@@ -1,6 +1,6 @@
 package com.manager.payments.adapter.out.persistence.receipts;
 
-import com.manager.payments.adapter.out.persistence.players.PlayerJpaEntity;
+import com.manager.payments.adapter.out.persistence.assignments.PlayerPaymentAssignmentJpaEntity;
 import com.manager.payments.model.receipts.ReceiptStatus;
 import jakarta.persistence.*;
 
@@ -22,9 +22,11 @@ public class ReceiptJpaEntity {
     @Enumerated(EnumType.STRING)
     private ReceiptStatus status = ReceiptStatus.PENDING;
 
-    @ManyToOne
-    @JoinColumn(name = "player_id")
-    private PlayerJpaEntity player;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "player_payment_id", nullable = false)
+    private PlayerPaymentAssignmentJpaEntity playerPaymentAssignment;
+
+    private boolean enabled;
 
     public void setId(UUID id) {
         this.id = id;
@@ -40,14 +42,6 @@ public class ReceiptJpaEntity {
 
     public void setStatus(ReceiptStatus status) {
         this.status = status;
-    }
-
-    public PlayerJpaEntity getPlayer() {
-        return player;
-    }
-
-    public void setPlayer(PlayerJpaEntity playerJpaEntity) {
-        this.player = playerJpaEntity;
     }
 
     public LocalDate getIssuedDate() {
@@ -80,5 +74,21 @@ public class ReceiptJpaEntity {
 
     public void setPaymentDate(LocalDate paymentDate) {
         this.paymentDate = paymentDate;
+    }
+
+    public PlayerPaymentAssignmentJpaEntity getPlayerPaymentAssignment() {
+        return playerPaymentAssignment;
+    }
+
+    public void setPlayerPaymentAssignment(PlayerPaymentAssignmentJpaEntity playerPaymentAssignment) {
+        this.playerPaymentAssignment = playerPaymentAssignment;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 }
