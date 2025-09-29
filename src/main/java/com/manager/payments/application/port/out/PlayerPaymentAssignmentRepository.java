@@ -26,4 +26,6 @@ public interface PlayerPaymentAssignmentRepository {
     List<Receipt> findAllReceiptsByPlayer(Player player);
 
     List<Receipt> findAllReceiptsByPayment(Payment payment);
+
+    boolean existsByPlayerAndPayment(Player player, Payment payment);
 }

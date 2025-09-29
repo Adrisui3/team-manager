@@ -96,4 +96,11 @@ public class PlayerPaymentAssignmentRepositoryAdapter implements PlayerPaymentAs
 
         return playerPaymentAssignmentJpaEntities.stream().flatMap(playerPaymentAssignmentJpaEntity -> playerPaymentAssignmentJpaEntity.getReceipts().stream()).map(receiptMapper::toReceipt).toList();
     }
+
+    @Override
+    public boolean existsByPlayerAndPayment(Player player, Payment payment) {
+        PlayerJpaEntity playerJpaEntity = playerMapper.toPlayerJpaEntity(player);
+        PaymentJpaEntity paymentJpaEntity = paymentMapper.toPaymentJpaEntity(payment);
+        return playerPaymentAssignmentJpaRepository.existsByPlayerAndPayment(playerJpaEntity, paymentJpaEntity);
+    }
 }

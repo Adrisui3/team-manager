@@ -8,6 +8,7 @@ import com.manager.payments.application.port.out.PlayerPaymentAssignmentReposito
 import com.manager.payments.application.port.out.PlayerRepository;
 import com.manager.payments.model.assignments.PlayerPaymentAssignment;
 import com.manager.payments.model.assignments.PlayerPaymentAssignmentFactory;
+import com.manager.payments.model.exceptions.AssignmentAlreadyExistsException;
 import com.manager.payments.model.exceptions.PaymentNotFoundException;
 import com.manager.payments.model.exceptions.PlayerAlreadyExistsException;
 import com.manager.payments.model.exceptions.PlayerNotFoundException;
@@ -56,6 +57,9 @@ public class PlayerService implements CreatePlayerUseCase, AssignPaymentToPlayer
         Player player = playerRepository.findById(playerId).orElseThrow(() -> new PlayerNotFoundException(playerId));
         Payment payment =
                 paymentRepository.findById(paymentId).orElseThrow(() -> new PaymentNotFoundException(paymentId));
+        if (playerPaymentAssignmentRepository.existsByPlayerAndPayment(player, payment)) {
+            throw new AssignmentAlreadyExistsException(playerId, paymentId);
+        }
 
         PlayerPaymentAssignment playerPaymentAssignment = PlayerPaymentAssignmentFactory.build(player, payment);
         PlayerPaymentAssignment savedPlayerPaymentAssignment =

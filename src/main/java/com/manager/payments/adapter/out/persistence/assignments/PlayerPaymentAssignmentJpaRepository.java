@@ -18,4 +18,6 @@ public interface PlayerPaymentAssignmentJpaRepository extends JpaRepository<Play
 
     List<PlayerPaymentAssignmentJpaEntity> findAllByPayment(PaymentJpaEntity payment);
 
+    boolean existsByPlayerAndPayment(PlayerJpaEntity player, PaymentJpaEntity payment);
+
 }
