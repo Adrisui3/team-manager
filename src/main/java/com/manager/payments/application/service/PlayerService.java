@@ -8,6 +8,8 @@ import com.manager.payments.application.port.out.PlayerPaymentAssignmentReposito
 import com.manager.payments.application.port.out.PlayerRepository;
 import com.manager.payments.model.assignments.PlayerPaymentAssignment;
 import com.manager.payments.model.assignments.PlayerPaymentAssignmentFactory;
+import com.manager.payments.model.billing.BillingPeriod;
+import com.manager.payments.model.billing.BillingPeriodFactory;
 import com.manager.payments.model.exceptions.AssignmentAlreadyExistsException;
 import com.manager.payments.model.exceptions.PaymentNotFoundException;
 import com.manager.payments.model.exceptions.PlayerAlreadyExistsException;
@@ -20,6 +22,7 @@ import com.manager.payments.model.receipts.ReceiptFactory;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -65,7 +68,9 @@ public class PlayerService implements CreatePlayerUseCase, AssignPaymentToPlayer
         PlayerPaymentAssignment savedPlayerPaymentAssignment =
                 playerPaymentAssignmentRepository.save(playerPaymentAssignment);
         if (savedPlayerPaymentAssignment.active()) {
-            Receipt receipt = ReceiptFactory.build(savedPlayerPaymentAssignment);
+            LocalDate now = LocalDate.now();
+            BillingPeriod billingPeriod = BillingPeriodFactory.build(payment.periodicity(), now);
+            Receipt receipt = ReceiptFactory.build(savedPlayerPaymentAssignment, billingPeriod, now);
             playerPaymentAssignmentRepository.addReceipt(savedPlayerPaymentAssignment.id(), receipt);
         }
 

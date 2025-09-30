@@ -1,15 +1,15 @@
 package com.manager.payments.model.billing;
 
-import com.manager.payments.model.exceptions.PlayerNotFoundException;
+import com.manager.payments.model.assignments.PlayerPaymentAssignment;
 import com.manager.payments.model.payments.Payment;
-import com.manager.payments.model.players.Player;
-import com.manager.payments.model.players.PlayerMinInfo;
+import com.manager.payments.model.receipts.Receipt;
+import com.manager.payments.model.receipts.ReceiptFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Function;
 
 public class BillingProcessor {
@@ -19,28 +19,24 @@ public class BillingProcessor {
     private BillingProcessor() {
     }
 
-    public static Payment process(Payment payment, LocalDate date,
-                                  Function<UUID, Optional<Player>> findPlayer,
-                                  Function<Player, Player> persistPlayer) {
-        LocalDate newNextPaymentDate = payment.nextPaymentDate();
-        while (isBillable(newNextPaymentDate, date, payment.endDate())) {
-            Payment updatedPayment = payment.withNextPaymentDate(newNextPaymentDate);
-            for (PlayerMinInfo player : updatedPayment.players()) {
-                Player completePlayer =
-                        findPlayer.apply(player.id()).orElseThrow(() -> new PlayerNotFoundException(player.id()));
-                completePlayer.createReceiptFor(updatedPayment);
-                Player updatedPlayer = persistPlayer.apply(completePlayer);
-                logger.info("Created receipt {} for player {}", updatedPlayer.receipts().getLast().id(),
-                        updatedPlayer.id());
+    public static List<Receipt> process(PlayerPaymentAssignment playerPaymentAssignment, LocalDate date,
+                                        Function<Receipt, Boolean> receiptExists) {
+        Payment payment = playerPaymentAssignment.payment();
+        LocalDate cursor = BillingPeriodFactory.getPeriodStart(payment.periodicity(), payment.startDate());
+        List<Receipt> receiptCandidates = new ArrayList<>();
+        while (!cursor.isAfter(date)) {
+            BillingPeriod billingPeriod = BillingPeriodFactory.build(payment.periodicity(), cursor);
+            if (billingPeriod.start().isAfter(payment.endDate()))
+                break;
+
+            Receipt receipt = ReceiptFactory.build(playerPaymentAssignment, billingPeriod, date);
+            if (!receiptExists.apply(receipt)) {
+                receiptCandidates.add(receipt);
             }
 
-            newNextPaymentDate = newNextPaymentDate.plusDays(payment.periodDays());
+            cursor = BillingPeriodFactory.nextPeriodStart(payment.periodicity(), cursor);
         }
 
-        return payment.withNextPaymentDate(newNextPaymentDate);
-    }
-
-    private static boolean isBillable(LocalDate nextPaymentDate, LocalDate date, LocalDate endDate) {
-        return (nextPaymentDate.isBefore(date) || nextPaymentDate.isEqual(date)) && nextPaymentDate.isBefore(endDate);
+        return receiptCandidates;
     }
 }

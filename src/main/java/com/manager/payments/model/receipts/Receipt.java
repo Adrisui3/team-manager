@@ -11,9 +11,9 @@ public record Receipt(UUID id, double amount, LocalDate issuedDate, LocalDate pa
 
     private static final int RECEIPT_EXPIRATION_DAYS = 15;
 
-    public Receipt(double amount, LocalDate periodStartDate, LocalDate periodEndDate, ReceiptStatus status,
-                   PlayerPaymentAssignment playerPaymentAssignment) {
-        this(null, amount, LocalDate.now(), null, LocalDate.now().plusDays(RECEIPT_EXPIRATION_DAYS), periodStartDate,
+    public Receipt(double amount, LocalDate issuedDate, LocalDate periodStartDate, LocalDate periodEndDate,
+                   ReceiptStatus status, PlayerPaymentAssignment playerPaymentAssignment) {
+        this(null, amount, issuedDate, null, issuedDate.plusDays(RECEIPT_EXPIRATION_DAYS), periodStartDate,
                 periodEndDate, status, playerPaymentAssignment);
     }
 

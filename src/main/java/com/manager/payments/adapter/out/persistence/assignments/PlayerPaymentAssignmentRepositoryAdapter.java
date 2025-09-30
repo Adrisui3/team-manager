@@ -13,6 +13,7 @@ import com.manager.payments.model.players.Player;
 import com.manager.payments.model.receipts.Receipt;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -102,5 +103,12 @@ public class PlayerPaymentAssignmentRepositoryAdapter implements PlayerPaymentAs
         PlayerJpaEntity playerJpaEntity = playerMapper.toPlayerJpaEntity(player);
         PaymentJpaEntity paymentJpaEntity = paymentMapper.toPaymentJpaEntity(payment);
         return playerPaymentAssignmentJpaRepository.existsByPlayerAndPayment(playerJpaEntity, paymentJpaEntity);
+    }
+
+    @Override
+    public List<PlayerPaymentAssignment> findAllActiveAndStartDateBeforeOrEqual(LocalDate date) {
+        List<PlayerPaymentAssignmentJpaEntity> playerPaymentAssignmentJpaEntities =
+                playerPaymentAssignmentJpaRepository.findAllByActiveIsTrueAndPaymentStartDateLessThanEqual(date);
+        return playerPaymentAssignmentJpaEntities.stream().map(playerPaymentAssignmentMapper::toPlayerPaymentAssignment).toList();
     }
 }

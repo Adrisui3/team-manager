@@ -50,4 +50,10 @@ public class ReceiptRepositoryAdapter implements ReceiptRepository {
         receipt.setStatus(status);
         return receiptMapper.toReceipt(receiptJpaRepository.save(receipt));
     }
+
+    @Override
+    public boolean exists(Receipt receipt) {
+        return receiptJpaRepository.existsByPlayerPaymentAssignmentIdAndIssuedDateBetween(receipt.id(),
+                receipt.periodStartDate(), receipt.periodEndDate());
+    }
 }

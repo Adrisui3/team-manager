@@ -5,6 +5,7 @@ import com.manager.payments.adapter.out.persistence.players.PlayerJpaEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -19,5 +20,7 @@ public interface PlayerPaymentAssignmentJpaRepository extends JpaRepository<Play
     List<PlayerPaymentAssignmentJpaEntity> findAllByPayment(PaymentJpaEntity payment);
 
     boolean existsByPlayerAndPayment(PlayerJpaEntity player, PaymentJpaEntity payment);
+
+    List<PlayerPaymentAssignmentJpaEntity> findAllByActiveIsTrueAndPaymentStartDateLessThanEqual(LocalDate date);
 
 }

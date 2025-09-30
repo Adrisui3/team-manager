@@ -5,6 +5,7 @@ import com.manager.payments.model.payments.Payment;
 import com.manager.payments.model.players.Player;
 import com.manager.payments.model.receipts.Receipt;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -28,4 +29,6 @@ public interface PlayerPaymentAssignmentRepository {
     List<Receipt> findAllReceiptsByPayment(Payment payment);
 
     boolean existsByPlayerAndPayment(Player player, Payment payment);
+
+    List<PlayerPaymentAssignment> findAllActiveAndStartDateBeforeOrEqual(LocalDate date);
 }
