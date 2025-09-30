@@ -11,7 +11,6 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "player_payment_assignment",
-        indexes = @Index(name = "uidx_player_payment", columnList = "player_id,payment_id", unique = true),
         uniqueConstraints = @UniqueConstraint(
                 name = "uq_player_payment",
                 columnNames = {"player_id", "payment_id"}
@@ -30,7 +29,7 @@ public class PlayerPaymentAssignmentJpaEntity {
     @JoinColumn(name = "payment_id", nullable = false)
     private PaymentJpaEntity payment;
 
-    @OneToMany(mappedBy = "playerPaymentAssignment", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "playerPaymentAssignment")
     private List<ReceiptJpaEntity> receipts = new ArrayList<>();
 
     private boolean active;

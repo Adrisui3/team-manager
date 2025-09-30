@@ -25,8 +25,8 @@ public class ReceiptJpaEntity {
     @Enumerated(EnumType.STRING)
     private ReceiptStatus status = ReceiptStatus.PENDING;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "player_payment_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "player_payment_id")
     private PlayerPaymentAssignmentJpaEntity playerPaymentAssignment;
 
     private boolean enabled;
