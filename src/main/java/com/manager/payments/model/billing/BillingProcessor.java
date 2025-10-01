@@ -4,8 +4,6 @@ import com.manager.payments.model.assignments.PlayerPaymentAssignment;
 import com.manager.payments.model.payments.Payment;
 import com.manager.payments.model.receipts.Receipt;
 import com.manager.payments.model.receipts.ReceiptFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -13,8 +11,6 @@ import java.util.List;
 import java.util.function.Function;
 
 public class BillingProcessor {
-
-    private static final Logger logger = LoggerFactory.getLogger(BillingProcessor.class);
 
     private BillingProcessor() {
     }

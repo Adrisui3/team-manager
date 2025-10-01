@@ -31,7 +31,7 @@ public class BillingService implements IssueNewReceiptsUseCase {
         logger.info("Running BillingJob at {}", date);
         List<PlayerPaymentAssignment> assignments =
                 playerPaymentAssignmentRepository.findAllActiveAndStartDateBeforeOrEqual(date);
-        logger.info("Processing {} assignment", assignments.size());
+        logger.info("Found {} assignment", assignments.size());
         for (PlayerPaymentAssignment assignment : assignments) {
             logger.info("Processing assignment {}", assignment.id());
             List<Receipt> receipts = BillingProcessor.process(assignment, date, receiptRepository::exists);
