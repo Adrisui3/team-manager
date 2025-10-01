@@ -69,7 +69,7 @@ public class PlayerController {
         return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(), playerMapper.toPlayerDto(newPlayer)));
     }
 
-    @PutMapping("/{playerId}/assign/{paymentId}")
+    @PostMapping("/{playerId}/assign/{paymentId}")
     public ResponseEntity<ResponseDto<PlayerPaymentAssignmentDto>> assignPaymentToPlayer(@PathVariable UUID playerId,
                                                                                          @PathVariable UUID paymentId) {
         PlayerPaymentAssignment assignment = assignPaymentToPlayerUseCase.assignPaymentToPlayer(playerId, paymentId);
