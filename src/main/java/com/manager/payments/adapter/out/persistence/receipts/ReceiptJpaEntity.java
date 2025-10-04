@@ -29,8 +29,6 @@ public class ReceiptJpaEntity {
     @JoinColumn(name = "player_payment_id")
     private PlayerPaymentAssignmentJpaEntity playerPaymentAssignment;
 
-    private boolean enabled;
-
     public UUID getId() {
         return id;
     }
@@ -101,13 +99,5 @@ public class ReceiptJpaEntity {
 
     public void setPlayerPaymentAssignment(PlayerPaymentAssignmentJpaEntity playerPaymentAssignment) {
         this.playerPaymentAssignment = playerPaymentAssignment;
-    }
-
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
     }
 }
