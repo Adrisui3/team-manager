@@ -6,8 +6,7 @@ import com.manager.payments.model.receipts.Receipt;
 import com.manager.payments.model.receipts.ReceiptFactory;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 
 public class BillingProcessor {
@@ -15,24 +14,18 @@ public class BillingProcessor {
     private BillingProcessor() {
     }
 
-    public static List<Receipt> process(PlayerPaymentAssignment playerPaymentAssignment, LocalDate date,
-                                        Function<Receipt, Boolean> receiptExists) {
+    public static Optional<Receipt> process(PlayerPaymentAssignment playerPaymentAssignment, LocalDate date,
+                                            Function<Receipt, Boolean> receiptExists) {
         Payment payment = playerPaymentAssignment.payment();
-        LocalDate cursor = BillingPeriodFactory.getPeriodStart(payment.periodicity(), payment.startDate());
-        List<Receipt> receiptCandidates = new ArrayList<>();
-        while (!cursor.isAfter(date)) {
-            BillingPeriod billingPeriod = BillingPeriodFactory.build(payment.periodicity(), cursor);
-            if (billingPeriod.start().isAfter(payment.endDate()))
-                break;
+        BillingPeriod currentBillingPeriod = BillingPeriodFactory.build(payment.periodicity(), date);
+        if (currentBillingPeriod.start().isAfter(payment.endDate()))
+            return Optional.empty();
 
-            Receipt receipt = ReceiptFactory.build(playerPaymentAssignment, billingPeriod, date);
-            if (!receiptExists.apply(receipt)) {
-                receiptCandidates.add(receipt);
-            }
-
-            cursor = BillingPeriodFactory.nextPeriodStart(payment.periodicity(), cursor);
+        Receipt receipt = ReceiptFactory.build(playerPaymentAssignment, currentBillingPeriod, date);
+        if (!receiptExists.apply(receipt)) {
+            return Optional.of(receipt);
         }
 
-        return receiptCandidates;
+        return Optional.empty();
     }
 }
