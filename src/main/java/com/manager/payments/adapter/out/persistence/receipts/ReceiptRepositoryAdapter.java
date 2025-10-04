@@ -53,7 +53,7 @@ public class ReceiptRepositoryAdapter implements ReceiptRepository {
 
     @Override
     public boolean exists(Receipt receipt) {
-        return receiptJpaRepository.existsByPlayerPaymentAssignmentIdAndIssuedDateBetween(receipt.playerPaymentAssignment().id(),
+        return receiptJpaRepository.existsByPlayerPaymentAssignment_IdAndPeriodStartDateAndPeriodEndDate(receipt.playerPaymentAssignment().id(),
                 receipt.periodStartDate(), receipt.periodEndDate());
     }
 }
