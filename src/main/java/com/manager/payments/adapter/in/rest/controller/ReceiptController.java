@@ -1,6 +1,6 @@
 package com.manager.payments.adapter.in.rest.controller;
 
-import com.manager.payments.adapter.in.rest.dto.ReceiptMinInfoDto;
+import com.manager.payments.adapter.in.rest.dto.models.ReceiptDto;
 import com.manager.payments.adapter.out.persistence.receipts.ReceiptMapper;
 import com.manager.payments.application.port.out.ReceiptRepository;
 import com.manager.payments.model.receipts.Receipt;
@@ -28,10 +28,9 @@ public class ReceiptController {
     }
 
     @PutMapping("/{receiptId}/update-status/{newStatus}")
-    public ResponseEntity<ResponseDto<ReceiptMinInfoDto>> updatePaymentStatus(@PathVariable UUID receiptId,
-                                                                              @PathVariable ReceiptStatus newStatus) {
+    public ResponseEntity<ResponseDto<ReceiptDto>> updatePaymentStatus(@PathVariable UUID receiptId,
+                                                                       @PathVariable ReceiptStatus newStatus) {
         Receipt updatedReceipt = receiptRepository.updateStatus(receiptId, newStatus);
-        return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(),
-                receiptMapper.toReceiptMinInfoDto(updatedReceipt)));
+        return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(), receiptMapper.toReceiptDto(updatedReceipt)));
     }
 }

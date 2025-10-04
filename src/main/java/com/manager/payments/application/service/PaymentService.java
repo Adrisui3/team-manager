@@ -1,6 +1,6 @@
 package com.manager.payments.application.service;
 
-import com.manager.payments.adapter.in.rest.dto.CreatePaymentRequestDTO;
+import com.manager.payments.adapter.in.rest.dto.request.CreatePaymentRequestDTO;
 import com.manager.payments.application.port.in.CreatePaymentUseCase;
 import com.manager.payments.application.port.in.ProcessExpiredPaymentsUseCase;
 import com.manager.payments.application.port.out.PaymentRepository;
@@ -26,8 +26,8 @@ public class PaymentService implements CreatePaymentUseCase, ProcessExpiredPayme
 
     @Override
     public Payment createPayment(CreatePaymentRequestDTO requestDTO) {
-        Payment newPayment = PaymentFactory.build(requestDTO.amount(), requestDTO.name(), requestDTO.description(),
-                requestDTO.startDate(), requestDTO.endDate(), requestDTO.periodDays());
+        Payment newPayment = PaymentFactory.build(requestDTO.code(), requestDTO.amount(), requestDTO.name(),
+                requestDTO.description(), requestDTO.startDate(), requestDTO.endDate(), requestDTO.periodicity());
         return paymentRepository.save(newPayment);
     }
 

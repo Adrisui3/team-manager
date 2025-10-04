@@ -9,4 +9,9 @@ import java.util.UUID;
 
 public interface ReceiptJpaRepository extends JpaRepository<ReceiptJpaEntity, UUID> {
     List<ReceiptJpaEntity> findAllByStatusAndExpiryDateBefore(ReceiptStatus status, LocalDate expiryDateBefore);
+
+    boolean existsByPlayerPaymentAssignment_IdAndPeriodStartDateAndPeriodEndDate(UUID playerPaymentAssignmentId,
+                                                                                 LocalDate startDate,
+                                                                                 LocalDate endDate);
+
 }

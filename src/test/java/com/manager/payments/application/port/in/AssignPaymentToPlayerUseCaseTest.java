@@ -1,167 +1,88 @@
 package com.manager.payments.application.port.in;
 
 import com.manager.payments.application.port.out.PaymentRepository;
+import com.manager.payments.application.port.out.PlayerPaymentAssignmentRepository;
 import com.manager.payments.application.port.out.PlayerRepository;
 import com.manager.payments.application.service.PlayerService;
-import com.manager.payments.model.exceptions.PlayerPaymentAssignmentInconsistent;
+import com.manager.payments.model.assignments.PlayerPaymentAssignment;
+import com.manager.payments.model.exceptions.AssignmentAlreadyExistsException;
 import com.manager.payments.model.payments.Payment;
-import com.manager.payments.model.payments.PaymentMinInfo;
 import com.manager.payments.model.payments.PaymentStatus;
+import com.manager.payments.model.payments.Periodicity;
 import com.manager.payments.model.players.Category;
 import com.manager.payments.model.players.Player;
-import com.manager.payments.model.players.PlayerMinInfo;
 import com.manager.payments.model.players.PlayerStatus;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.mockito.AdditionalAnswers.returnsFirstArg;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 
-class AssignPaymentToPlayerUseCaseTest {
+public class AssignPaymentToPlayerUseCaseTest {
 
 
     @Test
-    void shouldAssignPaymentToPlayerWhenNoPreviousAssignmentExist() {
-        // given
+    public void shouldAssignPaymentToPlayer() {
+        //given
         UUID playerId = UUID.randomUUID();
-        Player player = new Player(playerId, "", "", "", "", LocalDate.now(), Category.SENIOR,
-                PlayerStatus.ENABLED, new ArrayList<>(), new ArrayList<>());
+        Player player = new Player(playerId, "", "", "", "", LocalDate.now(), Category.SENIOR, PlayerStatus.ENABLED);
         PlayerRepository playerRepository = Mockito.mock(PlayerRepository.class);
         Mockito.when(playerRepository.findById(playerId)).thenReturn(Optional.of(player));
 
         UUID paymentId = UUID.randomUUID();
-        Payment payment = new Payment(paymentId, 10, "", "", LocalDate.now(), LocalDate.now(),
-                LocalDate.now(), 10, PaymentStatus.ACTIVE, new ArrayList<>());
+        LocalDate startDate = LocalDate.of(2025, 9, 1);
+        LocalDate endDate = LocalDate.of(2025, 9, 30);
+        Payment payment = new Payment(paymentId, "", 50, "", "", startDate, endDate, Periodicity.MONTHLY,
+                PaymentStatus.ACTIVE);
         PaymentRepository paymentRepository = Mockito.mock(PaymentRepository.class);
         Mockito.when(paymentRepository.findById(paymentId)).thenReturn(Optional.of(payment));
 
-        AssignPaymentToPlayerUseCase assignPaymentToPlayerUseCase = new PlayerService(paymentRepository,
-                playerRepository);
+        PlayerPaymentAssignmentRepository playerPaymentAssignmentRepository =
+                Mockito.mock(PlayerPaymentAssignmentRepository.class);
+        Mockito.when(playerPaymentAssignmentRepository.existsByPlayerAndPayment(player, payment)).thenReturn(false);
+        Mockito.when(playerPaymentAssignmentRepository.save(any())).then(returnsFirstArg());
+
+        AssignPaymentToPlayerUseCase assignPaymentToPlayerUseCase =
+                new PlayerService(playerPaymentAssignmentRepository, paymentRepository, playerRepository);
 
         // when
-        player = assignPaymentToPlayerUseCase.assignPaymentToPlayer(playerId, paymentId);
+        PlayerPaymentAssignment savedAssignment = assignPaymentToPlayerUseCase.assignPaymentToPlayer(playerId,
+                paymentId);
 
-        //then
-        assertThat(player.payments().size()).isEqualTo(1);
-        assertThat(payment.players().size()).isEqualTo(1);
-        assertThat(player.payments().contains(PaymentMinInfo.from(payment))).isTrue();
-        assertThat(payment.players().contains(PlayerMinInfo.from(player))).isTrue();
+        // then
+        assertThat(savedAssignment.active()).isTrue();
+        verify(playerPaymentAssignmentRepository).save(any());
     }
 
     @Test
-    void shouldAssignPaymentToPlayerAndCreateProratedReceipt() {
-        // given
+    public void shouldFailIfAssignmentAlreadyExists() {
+        //given
         UUID playerId = UUID.randomUUID();
-        Player player = new Player(playerId, "", "", "", "", LocalDate.now(), Category.SENIOR,
-                PlayerStatus.ENABLED, new ArrayList<>(), new ArrayList<>());
+        Player player = Mockito.mock(Player.class);
         PlayerRepository playerRepository = Mockito.mock(PlayerRepository.class);
         Mockito.when(playerRepository.findById(playerId)).thenReturn(Optional.of(player));
 
         UUID paymentId = UUID.randomUUID();
-        Payment payment = new Payment(paymentId, 10, "", "", LocalDate.now(), LocalDate.now().plusDays(5),
-                LocalDate.now(), 10, PaymentStatus.ACTIVE, new ArrayList<>());
+        Payment payment = Mockito.mock(Payment.class);
         PaymentRepository paymentRepository = Mockito.mock(PaymentRepository.class);
         Mockito.when(paymentRepository.findById(paymentId)).thenReturn(Optional.of(payment));
 
-        AssignPaymentToPlayerUseCase assignPaymentToPlayerUseCase = new PlayerService(paymentRepository,
-                playerRepository);
+        PlayerPaymentAssignmentRepository playerPaymentAssignmentRepository =
+                Mockito.mock(PlayerPaymentAssignmentRepository.class);
+        Mockito.when(playerPaymentAssignmentRepository.existsByPlayerAndPayment(player, payment)).thenReturn(true);
+        Mockito.when(playerPaymentAssignmentRepository.save(any())).then(returnsFirstArg());
+
+        AssignPaymentToPlayerUseCase assignPaymentToPlayerUseCase =
+                new PlayerService(playerPaymentAssignmentRepository, paymentRepository, playerRepository);
 
         // when
-        player = assignPaymentToPlayerUseCase.assignPaymentToPlayer(playerId, paymentId);
-
-        //then
-        assertThat(player.payments().size()).isEqualTo(1);
-        assertThat(payment.players().size()).isEqualTo(1);
-        assertThat(player.payments().contains(PaymentMinInfo.from(payment))).isTrue();
-        assertThat(payment.players().contains(PlayerMinInfo.from(player))).isTrue();
-        assertThat(player.receipts().size()).isEqualTo(1);
-        assertThat(player.receipts().getFirst().amount()).isEqualTo(5);
-    }
-
-    @Test
-    void shouldAssignPaymentToPlayerAndCreateFullReceiptWhenNextDateIsPast() {
-        // given
-        UUID playerId = UUID.randomUUID();
-        Player player = new Player(playerId, "", "", "", "", LocalDate.now(), Category.SENIOR,
-                PlayerStatus.ENABLED, new ArrayList<>(), new ArrayList<>());
-        PlayerRepository playerRepository = Mockito.mock(PlayerRepository.class);
-        Mockito.when(playerRepository.findById(playerId)).thenReturn(Optional.of(player));
-
-        UUID paymentId = UUID.randomUUID();
-        Payment payment = new Payment(paymentId, 10, "", "", LocalDate.now(), LocalDate.now().minusDays(5),
-                LocalDate.now(), 10, PaymentStatus.ACTIVE, new ArrayList<>());
-        PaymentRepository paymentRepository = Mockito.mock(PaymentRepository.class);
-        Mockito.when(paymentRepository.findById(paymentId)).thenReturn(Optional.of(payment));
-
-        AssignPaymentToPlayerUseCase assignPaymentToPlayerUseCase = new PlayerService(paymentRepository,
-                playerRepository);
-
-        // when
-        player = assignPaymentToPlayerUseCase.assignPaymentToPlayer(playerId, paymentId);
-
-        //then
-        assertThat(player.payments().size()).isEqualTo(1);
-        assertThat(payment.players().size()).isEqualTo(1);
-        assertThat(player.payments().contains(PaymentMinInfo.from(payment))).isTrue();
-        assertThat(payment.players().contains(PlayerMinInfo.from(player))).isTrue();
-        assertThat(player.receipts().size()).isEqualTo(1);
-        assertThat(player.receipts().getFirst().amount()).isEqualTo(10);
-    }
-
-    @Test
-    void shouldAssignPaymentToPlayerAndNotCreateReceiptIfPaymentInactive() {
-        // given
-        UUID playerId = UUID.randomUUID();
-        Player player = new Player(playerId, "", "", "", "", LocalDate.now(), Category.SENIOR,
-                PlayerStatus.ENABLED, new ArrayList<>(), new ArrayList<>());
-        PlayerRepository playerRepository = Mockito.mock(PlayerRepository.class);
-        Mockito.when(playerRepository.findById(playerId)).thenReturn(Optional.of(player));
-
-        UUID paymentId = UUID.randomUUID();
-        Payment payment = new Payment(paymentId, 10, "", "", LocalDate.now(), LocalDate.now().minusDays(5),
-                LocalDate.now(), 10, PaymentStatus.INACTIVE, new ArrayList<>());
-        PaymentRepository paymentRepository = Mockito.mock(PaymentRepository.class);
-        Mockito.when(paymentRepository.findById(paymentId)).thenReturn(Optional.of(payment));
-
-        AssignPaymentToPlayerUseCase assignPaymentToPlayerUseCase = new PlayerService(paymentRepository,
-                playerRepository);
-
-        // when
-        player = assignPaymentToPlayerUseCase.assignPaymentToPlayer(playerId, paymentId);
-
-        //then
-        assertThat(player.payments().size()).isEqualTo(1);
-        assertThat(payment.players().size()).isEqualTo(1);
-        assertThat(player.payments().contains(PaymentMinInfo.from(payment))).isTrue();
-        assertThat(payment.players().contains(PlayerMinInfo.from(player))).isTrue();
-        assertThat(player.receipts().isEmpty()).isTrue();
-    }
-
-    @Test
-    void shouldThrowExceptionIfAssignmentIsInconsistent() {
-        // given
-        UUID playerId = UUID.randomUUID();
-        Player player = new Player(playerId, "", "", "", "", LocalDate.now(), Category.SENIOR,
-                PlayerStatus.ENABLED, new ArrayList<>(), new ArrayList<>());
-        PlayerRepository playerRepository = Mockito.mock(PlayerRepository.class);
-        Mockito.when(playerRepository.findById(playerId)).thenReturn(Optional.of(player));
-
-        UUID paymentId = UUID.randomUUID();
-        Payment payment = new Payment(paymentId, 10, "", "", LocalDate.now(), LocalDate.now().minusDays(5),
-                LocalDate.now(), 10, PaymentStatus.ACTIVE, List.of(PlayerMinInfo.from(player)));
-        PaymentRepository paymentRepository = Mockito.mock(PaymentRepository.class);
-        Mockito.when(paymentRepository.findById(paymentId)).thenReturn(Optional.of(payment));
-
-        AssignPaymentToPlayerUseCase assignPaymentToPlayerUseCase = new PlayerService(paymentRepository,
-                playerRepository);
-
-        // when
-        assertThatThrownBy(() -> assignPaymentToPlayerUseCase.assignPaymentToPlayer(playerId, paymentId)).isInstanceOf(PlayerPaymentAssignmentInconsistent.class);
+        assertThatThrownBy(() -> assignPaymentToPlayerUseCase.assignPaymentToPlayer(playerId, paymentId)).isInstanceOf(AssignmentAlreadyExistsException.class);
     }
 }

@@ -1,6 +1,6 @@
 package com.manager.payments.adapter.out.persistence.receipts;
 
-import com.manager.payments.adapter.out.persistence.players.PlayerJpaEntity;
+import com.manager.payments.adapter.out.persistence.assignments.PlayerPaymentAssignmentJpaEntity;
 import com.manager.payments.model.receipts.ReceiptStatus;
 import jakarta.persistence.*;
 
@@ -19,43 +19,22 @@ public class ReceiptJpaEntity {
     private LocalDate paymentDate;
     private LocalDate expiryDate;
 
+    private LocalDate periodStartDate;
+    private LocalDate periodEndDate;
+
     @Enumerated(EnumType.STRING)
     private ReceiptStatus status = ReceiptStatus.PENDING;
 
-    @ManyToOne
-    @JoinColumn(name = "player_id")
-    private PlayerJpaEntity player;
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "player_payment_id")
+    private PlayerPaymentAssignmentJpaEntity playerPaymentAssignment;
 
     public UUID getId() {
         return id;
     }
 
-    public ReceiptStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(ReceiptStatus status) {
-        this.status = status;
-    }
-
-    public PlayerJpaEntity getPlayer() {
-        return player;
-    }
-
-    public void setPlayer(PlayerJpaEntity playerJpaEntity) {
-        this.player = playerJpaEntity;
-    }
-
-    public LocalDate getIssuedDate() {
-        return issuedDate;
-    }
-
-    public void setIssuedDate(LocalDate issuedDate) {
-        this.issuedDate = issuedDate;
+    public void setId(UUID id) {
+        this.id = id;
     }
 
     public double getAmount() {
@@ -66,12 +45,12 @@ public class ReceiptJpaEntity {
         this.amount = amount;
     }
 
-    public LocalDate getExpiryDate() {
-        return expiryDate;
+    public LocalDate getIssuedDate() {
+        return issuedDate;
     }
 
-    public void setExpiryDate(LocalDate expiryDate) {
-        this.expiryDate = expiryDate;
+    public void setIssuedDate(LocalDate issuedDate) {
+        this.issuedDate = issuedDate;
     }
 
     public LocalDate getPaymentDate() {
@@ -80,5 +59,45 @@ public class ReceiptJpaEntity {
 
     public void setPaymentDate(LocalDate paymentDate) {
         this.paymentDate = paymentDate;
+    }
+
+    public LocalDate getExpiryDate() {
+        return expiryDate;
+    }
+
+    public void setExpiryDate(LocalDate expiryDate) {
+        this.expiryDate = expiryDate;
+    }
+
+    public LocalDate getPeriodStartDate() {
+        return periodStartDate;
+    }
+
+    public void setPeriodStartDate(LocalDate periodStartDate) {
+        this.periodStartDate = periodStartDate;
+    }
+
+    public LocalDate getPeriodEndDate() {
+        return periodEndDate;
+    }
+
+    public void setPeriodEndDate(LocalDate periodEndDate) {
+        this.periodEndDate = periodEndDate;
+    }
+
+    public ReceiptStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(ReceiptStatus status) {
+        this.status = status;
+    }
+
+    public PlayerPaymentAssignmentJpaEntity getPlayerPaymentAssignment() {
+        return playerPaymentAssignment;
+    }
+
+    public void setPlayerPaymentAssignment(PlayerPaymentAssignmentJpaEntity playerPaymentAssignment) {
+        this.playerPaymentAssignment = playerPaymentAssignment;
     }
 }

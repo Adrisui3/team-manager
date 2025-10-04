@@ -4,15 +4,14 @@ import com.manager.payments.model.exceptions.PaymentAlreadyExpired;
 import com.manager.payments.model.exceptions.PaymentInvalidDateInterval;
 
 import java.time.LocalDate;
-import java.util.Collections;
 
 public class PaymentFactory {
 
     private PaymentFactory() {
     }
 
-    public static Payment build(double amount, String name, String description, LocalDate startDate,
-                                LocalDate endDate, int periodDays) {
+    public static Payment build(String code, double amount, String name, String description, LocalDate startDate,
+                                LocalDate endDate, Periodicity periodicity) {
         LocalDate now = LocalDate.now();
         if (startDate.isAfter(endDate)) {
             throw new PaymentInvalidDateInterval();
@@ -23,7 +22,6 @@ public class PaymentFactory {
         }
 
         PaymentStatus status = startDate.isAfter(now) ? PaymentStatus.INACTIVE : PaymentStatus.ACTIVE;
-        return new Payment(null, amount, name, description, startDate, startDate, endDate, periodDays,
-                status, Collections.emptyList());
+        return new Payment(code, amount, name, description, startDate, endDate, periodicity, status);
     }
 }

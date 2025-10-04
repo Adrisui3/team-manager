@@ -1,7 +1,7 @@
 package com.manager.payments.adapter.in.rest.controller;
 
-import com.manager.payments.adapter.in.rest.dto.CreatePaymentRequestDTO;
-import com.manager.payments.adapter.in.rest.dto.PaymentDto;
+import com.manager.payments.adapter.in.rest.dto.models.PaymentDto;
+import com.manager.payments.adapter.in.rest.dto.request.CreatePaymentRequestDTO;
 import com.manager.payments.adapter.out.persistence.payments.PaymentMapper;
 import com.manager.payments.application.port.in.CreatePaymentUseCase;
 import com.manager.payments.application.port.out.PaymentRepository;
