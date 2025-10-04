@@ -9,7 +9,6 @@ import com.manager.payments.adapter.out.persistence.players.PlayerMapper;
 import com.manager.payments.adapter.out.persistence.receipts.ReceiptMapper;
 import com.manager.payments.application.port.in.AssignPaymentToPlayerUseCase;
 import com.manager.payments.application.port.in.CreatePlayerUseCase;
-import com.manager.payments.application.port.out.PlayerPaymentAssignmentRepository;
 import com.manager.payments.application.port.out.PlayerRepository;
 import com.manager.payments.model.assignments.PlayerPaymentAssignment;
 import com.manager.payments.model.exceptions.PlayerNotFoundException;
@@ -27,7 +26,6 @@ import java.util.UUID;
 @RequestMapping("/player")
 public class PlayerController {
 
-    private final PlayerPaymentAssignmentRepository playerPaymentAssignmentRepository;
     private final PlayerPaymentAssignmentMapper playerPaymentAssignmentMapper;
     private final CreatePlayerUseCase createPlayerUseCase;
     private final PlayerRepository playerRepository;
@@ -35,12 +33,10 @@ public class PlayerController {
     private final PlayerMapper playerMapper;
     private final ReceiptMapper receiptMapper;
 
-    public PlayerController(PlayerPaymentAssignmentRepository playerPaymentAssignmentRepository,
-                            PlayerPaymentAssignmentMapper playerPaymentAssignmentMapper,
+    public PlayerController(PlayerPaymentAssignmentMapper playerPaymentAssignmentMapper,
                             CreatePlayerUseCase createPlayerUseCase, PlayerRepository playerRepository,
                             AssignPaymentToPlayerUseCase assignPaymentToPlayerUseCase, PlayerMapper playerMapper,
                             ReceiptMapper receiptMapper) {
-        this.playerPaymentAssignmentRepository = playerPaymentAssignmentRepository;
         this.playerPaymentAssignmentMapper = playerPaymentAssignmentMapper;
         this.createPlayerUseCase = createPlayerUseCase;
         this.playerRepository = playerRepository;
@@ -57,8 +53,7 @@ public class PlayerController {
 
     @GetMapping("/{playerId}/receipts")
     public ResponseEntity<ResponseDto<List<ReceiptDto>>> getUserReceipts(@PathVariable("playerId") UUID playerId) {
-        Player player = playerRepository.findById(playerId).orElseThrow(() -> new PlayerNotFoundException(playerId));
-        List<Receipt> receipts = playerPaymentAssignmentRepository.findAllReceiptsByPlayer(player);
+        List<Receipt> receipts = playerRepository.findAllReceipts(playerId);
         return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(),
                 receipts.stream().map(receiptMapper::toReceiptDto).toList()));
     }

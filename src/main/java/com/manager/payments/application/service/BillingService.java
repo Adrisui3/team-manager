@@ -37,6 +37,7 @@ public class BillingService implements IssueNewReceiptsUseCase {
             logger.info("Processing assignment {}", assignment.id());
             Optional<Receipt> optionalReceipt = BillingProcessor.process(assignment, date, receiptRepository::exists);
             optionalReceipt.ifPresent(receipt -> {
+                playerPaymentAssignmentRepository.addReceipt(assignment.id(), receipt);
                 receiptRepository.save(receipt);
                 logger.info("Generated receipt for period between {} and {}", receipt.periodStartDate(),
                         receipt.periodEndDate());

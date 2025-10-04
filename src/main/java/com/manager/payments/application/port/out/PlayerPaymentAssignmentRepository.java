@@ -16,17 +16,7 @@ public interface PlayerPaymentAssignmentRepository {
 
     Optional<PlayerPaymentAssignment> findById(UUID id);
 
-    List<PlayerPaymentAssignment> findByPlayer(Player player);
-
-    List<PlayerPaymentAssignment> findByPayment(Payment payment);
-
-    Optional<PlayerPaymentAssignment> findByPlayerAndPayment(Player player, Payment payment);
-
     void addReceipt(UUID playerPaymentAssignmentId, Receipt receipt);
-
-    List<Receipt> findAllReceiptsByPlayer(Player player);
-
-    List<Receipt> findAllReceiptsByPayment(Payment payment);
 
     boolean existsByPlayerAndPayment(Player player, Payment payment);
 

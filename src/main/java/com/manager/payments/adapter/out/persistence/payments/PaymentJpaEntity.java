@@ -1,10 +1,13 @@
 package com.manager.payments.adapter.out.persistence.payments;
 
+import com.manager.payments.adapter.out.persistence.assignments.PlayerPaymentAssignmentJpaEntity;
 import com.manager.payments.model.payments.PaymentStatus;
 import com.manager.payments.model.payments.Periodicity;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -30,6 +33,9 @@ public class PaymentJpaEntity {
 
     @Enumerated(EnumType.STRING)
     private PaymentStatus status = PaymentStatus.ACTIVE;
+
+    @OneToMany(mappedBy = "payment", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PlayerPaymentAssignmentJpaEntity> assignments = new ArrayList<>();
 
     public UUID getId() {
         return id;
@@ -101,5 +107,13 @@ public class PaymentJpaEntity {
 
     public void setStatus(PaymentStatus status) {
         this.status = status;
+    }
+
+    public List<PlayerPaymentAssignmentJpaEntity> getAssignments() {
+        return assignments;
+    }
+
+    public void setAssignments(List<PlayerPaymentAssignmentJpaEntity> assignments) {
+        this.assignments = assignments;
     }
 }

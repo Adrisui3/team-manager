@@ -1,6 +1,5 @@
 package com.manager.payments.adapter.out.persistence.payments;
 
-import com.manager.payments.adapter.out.persistence.players.PlayerJpaRepository;
 import com.manager.payments.application.port.out.PaymentRepository;
 import com.manager.payments.model.payments.Payment;
 import com.manager.payments.model.payments.PaymentStatus;
@@ -17,7 +16,7 @@ public class PaymentRepositoryAdapter implements PaymentRepository {
     private final PaymentMapper paymentMapper;
     private final PaymentJpaRepository paymentJpaRepository;
 
-    public PaymentRepositoryAdapter(PlayerJpaRepository playerJpaRepository, PaymentMapper paymentMapper,
+    public PaymentRepositoryAdapter(PaymentMapper paymentMapper,
                                     PaymentJpaRepository paymentJpaRepository) {
         this.paymentMapper = paymentMapper;
         this.paymentJpaRepository = paymentJpaRepository;

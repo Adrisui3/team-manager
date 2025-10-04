@@ -1,11 +1,13 @@
 package com.manager.payments.adapter.out.persistence.players;
 
+import com.manager.payments.adapter.out.persistence.receipts.ReceiptJpaEntity;
+import com.manager.payments.adapter.out.persistence.receipts.ReceiptMapper;
 import com.manager.payments.application.port.out.PlayerRepository;
+import com.manager.payments.model.exceptions.PlayerNotFoundException;
 import com.manager.payments.model.players.Player;
 import com.manager.payments.model.receipts.Receipt;
 import org.springframework.stereotype.Component;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -15,10 +17,13 @@ public class PlayerRepositoryAdapter implements PlayerRepository {
 
     private final PlayerJpaRepository playerJpaRepository;
     private final PlayerMapper playerMapper;
+    private final ReceiptMapper receiptMapper;
 
-    public PlayerRepositoryAdapter(PlayerJpaRepository playerJpaRepository, PlayerMapper playerMapper) {
+    public PlayerRepositoryAdapter(PlayerJpaRepository playerJpaRepository, PlayerMapper playerMapper,
+                                   ReceiptMapper receiptMapper) {
         this.playerJpaRepository = playerJpaRepository;
         this.playerMapper = playerMapper;
+        this.receiptMapper = receiptMapper;
     }
 
     @Override
@@ -44,7 +49,11 @@ public class PlayerRepositoryAdapter implements PlayerRepository {
     }
 
     @Override
-    public List<Receipt> findAllReceipts(UUID userId) {
-        return Collections.emptyList();
+    public List<Receipt> findAllReceipts(UUID playerId) {
+        PlayerJpaEntity playerJpaEntity =
+                playerJpaRepository.findById(playerId).orElseThrow(() -> new PlayerNotFoundException(playerId));
+        List<ReceiptJpaEntity> allReceipts =
+                playerJpaEntity.getAssignments().stream().flatMap(assignment -> assignment.getReceipts().stream()).toList();
+        return allReceipts.stream().map(receiptMapper::toReceipt).toList();
     }
 }
