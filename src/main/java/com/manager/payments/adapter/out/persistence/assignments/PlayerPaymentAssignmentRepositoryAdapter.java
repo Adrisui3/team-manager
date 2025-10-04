@@ -5,6 +5,7 @@ import com.manager.payments.adapter.out.persistence.payments.PaymentMapper;
 import com.manager.payments.adapter.out.persistence.players.PlayerJpaEntity;
 import com.manager.payments.adapter.out.persistence.players.PlayerMapper;
 import com.manager.payments.adapter.out.persistence.receipts.ReceiptJpaEntity;
+import com.manager.payments.adapter.out.persistence.receipts.ReceiptJpaRepository;
 import com.manager.payments.adapter.out.persistence.receipts.ReceiptMapper;
 import com.manager.payments.application.port.out.PlayerPaymentAssignmentRepository;
 import com.manager.payments.model.assignments.PlayerPaymentAssignment;
@@ -26,16 +27,18 @@ public class PlayerPaymentAssignmentRepositoryAdapter implements PlayerPaymentAs
     private final PlayerMapper playerMapper;
     private final PlayerPaymentAssignmentMapper playerPaymentAssignmentMapper;
     private final PlayerPaymentAssignmentJpaRepository playerPaymentAssignmentJpaRepository;
+    private final ReceiptJpaRepository receiptJpaRepository;
 
     public PlayerPaymentAssignmentRepositoryAdapter(ReceiptMapper receiptMapper, PaymentMapper paymentMapper,
                                                     PlayerMapper playerMapper,
                                                     PlayerPaymentAssignmentMapper playerPaymentAssignmentMapper,
-                                                    PlayerPaymentAssignmentJpaRepository playerPaymentAssignmentJpaRepository) {
+                                                    PlayerPaymentAssignmentJpaRepository playerPaymentAssignmentJpaRepository, ReceiptJpaRepository receiptJpaRepository) {
         this.receiptMapper = receiptMapper;
         this.paymentMapper = paymentMapper;
         this.playerMapper = playerMapper;
         this.playerPaymentAssignmentMapper = playerPaymentAssignmentMapper;
         this.playerPaymentAssignmentJpaRepository = playerPaymentAssignmentJpaRepository;
+        this.receiptJpaRepository = receiptJpaRepository;
     }
 
     @Override
@@ -76,9 +79,12 @@ public class PlayerPaymentAssignmentRepositoryAdapter implements PlayerPaymentAs
         PlayerPaymentAssignmentJpaEntity playerPaymentAssignmentJpaEntity =
                 playerPaymentAssignmentJpaRepository.findById(playerPaymentAssignmentId).orElseThrow(() -> new RuntimeException("Player Payment Assignment not found"));
         ReceiptJpaEntity receiptJpaEntity = receiptMapper.toReceiptJpaEntity(receipt);
+
+        receiptJpaEntity.setPlayerPaymentAssignment(playerPaymentAssignmentJpaEntity);
         playerPaymentAssignmentJpaEntity.getReceipts().add(receiptJpaEntity);
 
         playerPaymentAssignmentJpaRepository.save(playerPaymentAssignmentJpaEntity);
+        receiptJpaRepository.save(receiptJpaEntity);
     }
 
     @Override
