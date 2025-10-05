@@ -17,10 +17,10 @@ public class BillingProcessor {
     public static Optional<Receipt> process(PlayerPaymentAssignment playerPaymentAssignment, LocalDate date,
                                             Function<Receipt, Boolean> receiptExists) {
         Payment payment = playerPaymentAssignment.payment();
-        BillingPeriod currentBillingPeriod = BillingPeriodFactory.build(payment.periodicity(), date);
         if (date.isAfter(payment.endDate()))
             return Optional.empty();
 
+        BillingPeriod currentBillingPeriod = BillingPeriodFactory.build(payment.periodicity(), date);
         LocalDate periodEnd = currentBillingPeriod.end().isAfter(payment.endDate()) ? payment.endDate() :
                 currentBillingPeriod.end();
         BillingPeriod cappedBillingPeriod = new BillingPeriod(currentBillingPeriod.start(), periodEnd);
