@@ -1,13 +1,11 @@
 package com.manager.payments.adapter.out.persistence.assignments;
 
-import com.manager.payments.adapter.out.persistence.receipts.ReceiptJpaEntity;
 import com.manager.payments.adapter.out.persistence.receipts.ReceiptJpaRepository;
 import com.manager.payments.adapter.out.persistence.receipts.ReceiptMapper;
 import com.manager.payments.application.port.out.PlayerPaymentAssignmentRepository;
 import com.manager.payments.model.assignments.PlayerPaymentAssignment;
 import com.manager.payments.model.payments.Payment;
 import com.manager.payments.model.players.Player;
-import com.manager.payments.model.receipts.Receipt;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -45,19 +43,6 @@ public class PlayerPaymentAssignmentRepositoryAdapter implements PlayerPaymentAs
     @Override
     public Optional<PlayerPaymentAssignment> findById(UUID id) {
         return playerPaymentAssignmentJpaRepository.findById(id).map(playerPaymentAssignmentMapper::toPlayerPaymentAssignment);
-    }
-
-    @Override
-    public void addReceipt(UUID playerPaymentAssignmentId, Receipt receipt) {
-        PlayerPaymentAssignmentJpaEntity playerPaymentAssignmentJpaEntity =
-                playerPaymentAssignmentJpaRepository.findById(playerPaymentAssignmentId).orElseThrow(() -> new RuntimeException("Player Payment Assignment not found"));
-        ReceiptJpaEntity receiptJpaEntity = receiptMapper.toReceiptJpaEntity(receipt);
-
-        receiptJpaEntity.setPlayerPaymentAssignment(playerPaymentAssignmentJpaEntity);
-        playerPaymentAssignmentJpaEntity.getReceipts().add(receiptJpaEntity);
-
-        playerPaymentAssignmentJpaRepository.save(playerPaymentAssignmentJpaEntity);
-        receiptJpaRepository.save(receiptJpaEntity);
     }
 
     @Override
