@@ -18,7 +18,7 @@ public class BillingProcessor {
                                             Function<Receipt, Boolean> receiptExists) {
         Payment payment = playerPaymentAssignment.payment();
         BillingPeriod currentBillingPeriod = BillingPeriodFactory.build(payment.periodicity(), date);
-        if (currentBillingPeriod.start().isAfter(payment.endDate()) || date.isAfter(payment.endDate()))
+        if (date.isAfter(payment.endDate()))
             return Optional.empty();
 
         LocalDate periodEnd = currentBillingPeriod.end().isAfter(payment.endDate()) ? payment.endDate() :
