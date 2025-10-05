@@ -1,6 +1,5 @@
 package com.manager.payments.adapter.out.persistence.receipts;
 
-import com.manager.payments.adapter.out.persistence.players.PlayerJpaRepository;
 import com.manager.payments.application.port.out.ReceiptRepository;
 import com.manager.payments.model.exceptions.ReceiptNotFoundException;
 import com.manager.payments.model.receipts.Receipt;
@@ -14,13 +13,10 @@ import java.util.UUID;
 @Component
 public class ReceiptRepositoryAdapter implements ReceiptRepository {
 
-    private final PlayerJpaRepository playerJpaRepository;
     private final ReceiptJpaRepository receiptJpaRepository;
     private final ReceiptMapper receiptMapper;
 
-    public ReceiptRepositoryAdapter(PlayerJpaRepository playerJpaRepository,
-                                    ReceiptJpaRepository receiptJpaRepository, ReceiptMapper receiptMapper) {
-        this.playerJpaRepository = playerJpaRepository;
+    public ReceiptRepositoryAdapter(ReceiptJpaRepository receiptJpaRepository, ReceiptMapper receiptMapper) {
         this.receiptJpaRepository = receiptJpaRepository;
         this.receiptMapper = receiptMapper;
     }
@@ -34,7 +30,7 @@ public class ReceiptRepositoryAdapter implements ReceiptRepository {
 
     @Override
     public Receipt save(Receipt receipt) {
-        ReceiptJpaEntity receiptJpaEntity = receiptMapper.toReceiptJpaEntity(receipt, playerJpaRepository);
+        ReceiptJpaEntity receiptJpaEntity = receiptMapper.toReceiptJpaEntity(receipt);
         ReceiptJpaEntity savedReceipt = receiptJpaRepository.save(receiptJpaEntity);
         return receiptMapper.toReceipt(savedReceipt);
     }
@@ -42,7 +38,7 @@ public class ReceiptRepositoryAdapter implements ReceiptRepository {
     @Override
     public List<Receipt> saveAll(List<Receipt> receipts) {
         List<ReceiptJpaEntity> receiptJpaEntities =
-                receipts.stream().map(receipt -> receiptMapper.toReceiptJpaEntity(receipt, playerJpaRepository)).toList();
+                receipts.stream().map(receiptMapper::toReceiptJpaEntity).toList();
         List<ReceiptJpaEntity> savedEntities = receiptJpaRepository.saveAll(receiptJpaEntities);
         return savedEntities.stream().map(receiptMapper::toReceipt).toList();
     }
@@ -53,5 +49,11 @@ public class ReceiptRepositoryAdapter implements ReceiptRepository {
                 receiptJpaRepository.findById(receiptId).orElseThrow(() -> new ReceiptNotFoundException(receiptId));
         receipt.setStatus(status);
         return receiptMapper.toReceipt(receiptJpaRepository.save(receipt));
+    }
+
+    @Override
+    public boolean exists(Receipt receipt) {
+        return receiptJpaRepository.existsByPlayerPaymentAssignment_IdAndPeriodStartDateAndPeriodEndDate(receipt.playerPaymentAssignment().id(),
+                receipt.periodStartDate(), receipt.periodEndDate());
     }
 }

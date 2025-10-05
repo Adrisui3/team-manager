@@ -16,4 +16,6 @@ public interface ReceiptRepository {
     List<Receipt> saveAll(List<Receipt> receipts);
 
     Receipt updateStatus(UUID receiptId, ReceiptStatus status);
+
+    boolean exists(Receipt receipt);
 }

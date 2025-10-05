@@ -1,15 +1,19 @@
 package com.manager.payments.adapter.in.rest.controller;
 
-import com.manager.payments.adapter.in.rest.dto.CreatePlayerRequestDTO;
-import com.manager.payments.adapter.in.rest.dto.PlayerDto;
-import com.manager.payments.adapter.in.rest.dto.ReceiptMinInfoDto;
+import com.manager.payments.adapter.in.rest.dto.models.PlayerDto;
+import com.manager.payments.adapter.in.rest.dto.models.PlayerPaymentAssignmentDto;
+import com.manager.payments.adapter.in.rest.dto.models.ReceiptDto;
+import com.manager.payments.adapter.in.rest.dto.request.CreatePlayerRequestDTO;
+import com.manager.payments.adapter.out.persistence.assignments.PlayerPaymentAssignmentMapper;
 import com.manager.payments.adapter.out.persistence.players.PlayerMapper;
 import com.manager.payments.adapter.out.persistence.receipts.ReceiptMapper;
 import com.manager.payments.application.port.in.AssignPaymentToPlayerUseCase;
 import com.manager.payments.application.port.in.CreatePlayerUseCase;
 import com.manager.payments.application.port.out.PlayerRepository;
+import com.manager.payments.model.assignments.PlayerPaymentAssignment;
 import com.manager.payments.model.exceptions.PlayerNotFoundException;
 import com.manager.payments.model.players.Player;
+import com.manager.payments.model.receipts.Receipt;
 import com.manager.shared.response.ResponseDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,15 +26,18 @@ import java.util.UUID;
 @RequestMapping("/player")
 public class PlayerController {
 
+    private final PlayerPaymentAssignmentMapper playerPaymentAssignmentMapper;
     private final CreatePlayerUseCase createPlayerUseCase;
     private final PlayerRepository playerRepository;
     private final AssignPaymentToPlayerUseCase assignPaymentToPlayerUseCase;
     private final PlayerMapper playerMapper;
     private final ReceiptMapper receiptMapper;
 
-    public PlayerController(CreatePlayerUseCase createPlayerUseCase, PlayerRepository playerRepository,
+    public PlayerController(PlayerPaymentAssignmentMapper playerPaymentAssignmentMapper,
+                            CreatePlayerUseCase createPlayerUseCase, PlayerRepository playerRepository,
                             AssignPaymentToPlayerUseCase assignPaymentToPlayerUseCase, PlayerMapper playerMapper,
                             ReceiptMapper receiptMapper) {
+        this.playerPaymentAssignmentMapper = playerPaymentAssignmentMapper;
         this.createPlayerUseCase = createPlayerUseCase;
         this.playerRepository = playerRepository;
         this.assignPaymentToPlayerUseCase = assignPaymentToPlayerUseCase;
@@ -45,10 +52,10 @@ public class PlayerController {
     }
 
     @GetMapping("/{playerId}/receipts")
-    public ResponseEntity<ResponseDto<List<ReceiptMinInfoDto>>> getUserReceipts(@PathVariable("playerId") UUID playerId) {
-        List<ReceiptMinInfoDto> receiptMinInfoDtos =
-                receiptMapper.toReceiptMinInfoDto(playerRepository.findAllReceipts(playerId));
-        return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(), receiptMinInfoDtos));
+    public ResponseEntity<ResponseDto<List<ReceiptDto>>> getUserReceipts(@PathVariable("playerId") UUID playerId) {
+        List<Receipt> receipts = playerRepository.findAllReceipts(playerId);
+        return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(),
+                receipts.stream().map(receiptMapper::toReceiptDto).toList()));
     }
 
     @PostMapping
@@ -57,11 +64,12 @@ public class PlayerController {
         return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(), playerMapper.toPlayerDto(newPlayer)));
     }
 
-    @PutMapping("/{playerId}/assign/{paymentId}")
-    public ResponseEntity<ResponseDto<Player>> assignPaymentToPlayer(@PathVariable UUID playerId,
-                                                                     @PathVariable UUID paymentId) {
-        Player updatedPlayer = assignPaymentToPlayerUseCase.assignPaymentToPlayer(playerId, paymentId);
-        return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(), updatedPlayer));
+    @PostMapping("/{playerId}/assign/{paymentId}")
+    public ResponseEntity<ResponseDto<PlayerPaymentAssignmentDto>> assignPaymentToPlayer(@PathVariable UUID playerId,
+                                                                                         @PathVariable UUID paymentId) {
+        PlayerPaymentAssignment assignment = assignPaymentToPlayerUseCase.assignPaymentToPlayer(playerId, paymentId);
+        return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(),
+                playerPaymentAssignmentMapper.toPlayerPaymentAssignmentDto(assignment)));
     }
 
     @DeleteMapping("/{playerId}")

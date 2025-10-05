@@ -1,7 +1,8 @@
 package com.manager.payments.adapter.out.persistence.payments;
 
-import com.manager.payments.adapter.out.persistence.players.PlayerJpaEntity;
+import com.manager.payments.adapter.out.persistence.assignments.PlayerPaymentAssignmentJpaEntity;
 import com.manager.payments.model.payments.PaymentStatus;
+import com.manager.payments.model.payments.Periodicity;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -16,29 +17,48 @@ public class PaymentJpaEntity {
     @GeneratedValue
     private UUID id;
 
+    @Column(unique = true, nullable = false, length = 10)
+    private String code;
+
     private double amount;
 
     private String name;
     private String description;
 
     private LocalDate startDate;
-    private LocalDate nextPaymentDate;
     private LocalDate endDate;
 
-    private int periodDays;
+    @Enumerated(EnumType.STRING)
+    private Periodicity periodicity;
 
     @Enumerated(EnumType.STRING)
     private PaymentStatus status = PaymentStatus.ACTIVE;
 
-    @ManyToMany(mappedBy = "payments")
-    private List<PlayerJpaEntity> players = new ArrayList<>();
+    @OneToMany(mappedBy = "payment", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PlayerPaymentAssignmentJpaEntity> assignments = new ArrayList<>();
+
+    public UUID getId() {
+        return id;
+    }
 
     public void setId(UUID id) {
         this.id = id;
     }
 
-    public UUID getId() {
-        return id;
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public double getAmount() {
+        return amount;
+    }
+
+    public void setAmount(double amount) {
+        this.amount = amount;
     }
 
     public String getName() {
@@ -57,14 +77,6 @@ public class PaymentJpaEntity {
         this.description = description;
     }
 
-    public LocalDate getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(LocalDate endDate) {
-        this.endDate = endDate;
-    }
-
     public LocalDate getStartDate() {
         return startDate;
     }
@@ -73,43 +85,35 @@ public class PaymentJpaEntity {
         this.startDate = startDate;
     }
 
-    public int getPeriodDays() {
-        return periodDays;
+    public LocalDate getEndDate() {
+        return endDate;
     }
 
-    public void setPeriodDays(int periodDays) {
-        this.periodDays = periodDays;
+    public void setEndDate(LocalDate endDate) {
+        this.endDate = endDate;
     }
 
-    public double getAmount() {
-        return amount;
+    public Periodicity getPeriodicity() {
+        return periodicity;
     }
 
-    public void setAmount(double amount) {
-        this.amount = amount;
+    public void setPeriodicity(Periodicity periodicity) {
+        this.periodicity = periodicity;
     }
 
     public PaymentStatus getStatus() {
         return status;
     }
 
-    public void setStatus(PaymentStatus paymentStatus) {
-        this.status = paymentStatus;
+    public void setStatus(PaymentStatus status) {
+        this.status = status;
     }
 
-    public LocalDate getNextPaymentDate() {
-        return nextPaymentDate;
+    public List<PlayerPaymentAssignmentJpaEntity> getAssignments() {
+        return assignments;
     }
 
-    public void setNextPaymentDate(LocalDate nextPaymentDate) {
-        this.nextPaymentDate = nextPaymentDate;
-    }
-
-    public List<PlayerJpaEntity> getPlayers() {
-        return players;
-    }
-
-    public void setPlayers(List<PlayerJpaEntity> userJpaEntities) {
-        this.players = userJpaEntities;
+    public void setAssignments(List<PlayerPaymentAssignmentJpaEntity> assignments) {
+        this.assignments = assignments;
     }
 }

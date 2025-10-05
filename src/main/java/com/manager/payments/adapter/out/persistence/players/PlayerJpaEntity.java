@@ -1,7 +1,6 @@
 package com.manager.payments.adapter.out.persistence.players;
 
-import com.manager.payments.adapter.out.persistence.payments.PaymentJpaEntity;
-import com.manager.payments.adapter.out.persistence.receipts.ReceiptJpaEntity;
+import com.manager.payments.adapter.out.persistence.assignments.PlayerPaymentAssignmentJpaEntity;
 import com.manager.payments.model.players.Category;
 import com.manager.payments.model.players.PlayerStatus;
 import jakarta.persistence.*;
@@ -35,16 +34,8 @@ public class PlayerJpaEntity {
     @Enumerated(EnumType.STRING)
     private PlayerStatus status = PlayerStatus.ENABLED;
 
-    @ManyToMany
-    @JoinTable(
-            name = "player_payment",
-            joinColumns = @JoinColumn(name = "player_id"),
-            inverseJoinColumns = @JoinColumn(name = "payment_id")
-    )
-    private List<PaymentJpaEntity> payments = new ArrayList<>();
-
-    @OneToMany(mappedBy = "player", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ReceiptJpaEntity> receiptJpaEntities = new ArrayList<>();
+    @OneToMany(mappedBy = "player", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PlayerPaymentAssignmentJpaEntity> assignments = new ArrayList<>();
 
     public String getName() {
         return name;
@@ -102,27 +93,19 @@ public class PlayerJpaEntity {
         this.status = status;
     }
 
-    public List<ReceiptJpaEntity> getReceipts() {
-        return receiptJpaEntities;
-    }
-
-    public void setReceipts(List<ReceiptJpaEntity> receiptJpaEntities) {
-        this.receiptJpaEntities = receiptJpaEntities;
-    }
-
-    public List<PaymentJpaEntity> getPayments() {
-        return payments;
-    }
-
-    public void setPayments(List<PaymentJpaEntity> paymentJpaEntities) {
-        this.payments = paymentJpaEntities;
-    }
-
     public String getPersonalId() {
         return personalId;
     }
 
     public void setPersonalId(String personalId) {
         this.personalId = personalId;
+    }
+
+    public List<PlayerPaymentAssignmentJpaEntity> getAssignments() {
+        return assignments;
+    }
+
+    public void setAssignments(List<PlayerPaymentAssignmentJpaEntity> assignments) {
+        this.assignments = assignments;
     }
 }
