@@ -12,6 +12,6 @@ public interface PlayerPaymentAssignmentJpaRepository extends JpaRepository<Play
 
     boolean existsByPlayer_IdAndPayment_Id(UUID playerId, UUID paymentId);
 
-    List<PlayerPaymentAssignmentJpaEntity> findAllByActiveIsTrueAndPaymentStartDateLessThanEqual(LocalDate date);
+    List<PlayerPaymentAssignmentJpaEntity> findAllByActiveIsTrueAndPayment_StartDateLessThanEqual(LocalDate date);
 
 }
