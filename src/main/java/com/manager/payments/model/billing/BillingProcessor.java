@@ -18,10 +18,13 @@ public class BillingProcessor {
                                             Function<Receipt, Boolean> receiptExists) {
         Payment payment = playerPaymentAssignment.payment();
         BillingPeriod currentBillingPeriod = BillingPeriodFactory.build(payment.periodicity(), date);
-        if (currentBillingPeriod.start().isAfter(payment.endDate()))
+        if (currentBillingPeriod.start().isAfter(payment.endDate()) || date.isAfter(payment.endDate()))
             return Optional.empty();
 
-        Receipt receipt = ReceiptFactory.build(playerPaymentAssignment, currentBillingPeriod, date);
+        LocalDate periodEnd = currentBillingPeriod.end().isAfter(payment.endDate()) ? payment.endDate() :
+                currentBillingPeriod.end();
+        BillingPeriod cappedBillingPeriod = new BillingPeriod(currentBillingPeriod.start(), periodEnd);
+        Receipt receipt = ReceiptFactory.build(playerPaymentAssignment, cappedBillingPeriod, date);
         if (!receiptExists.apply(receipt)) {
             return Optional.of(receipt);
         }

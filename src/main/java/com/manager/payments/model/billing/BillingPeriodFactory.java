@@ -16,15 +16,7 @@ public class BillingPeriodFactory {
         return new BillingPeriod(start, end);
     }
 
-    public static LocalDate nextPeriodStart(Periodicity periodicity, LocalDate current) {
-        return switch (periodicity) {
-            case MONTHLY -> current.plusMonths(1).withDayOfMonth(1);
-            case QUARTERLY -> current.plusMonths(3).withDayOfMonth(1);
-            case ONCE -> current.plusYears(100);
-        };
-    }
-
-    public static LocalDate getPeriodStart(Periodicity periodicity, LocalDate date) {
+    private static LocalDate getPeriodStart(Periodicity periodicity, LocalDate date) {
         return switch (periodicity) {
             case MONTHLY -> YearMonth.from(date).atDay(1);
             case QUARTERLY -> {
@@ -36,7 +28,7 @@ public class BillingPeriodFactory {
         };
     }
 
-    public static LocalDate getPeriodEnd(Periodicity periodicity, LocalDate date) {
+    private static LocalDate getPeriodEnd(Periodicity periodicity, LocalDate date) {
         return switch (periodicity) {
             case MONTHLY -> YearMonth.from(date).atEndOfMonth();
             case QUARTERLY -> getPeriodStart(periodicity, date).plusMonths(3).minusDays(1);
