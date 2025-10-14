@@ -20,7 +20,15 @@ import java.util.List;
 @EnableMethodSecurity
 public class SecurityConfiguration {
 
-    private final static List<String> PUBLIC_ROUTES = List.of("/auth/**", "/swagger-ui/**", "/api-docs/**");
+    private static final String[] DOCS = {
+            "/swagger-ui.html",
+            "/swagger-ui/**",
+            "/v3/api-docs/**",
+    };
+
+    private static final String[] PUBLIC_ROUTES = {
+            "/auth/**"
+    };
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
@@ -31,7 +39,7 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(authorize -> authorize.requestMatchers(PUBLIC_ROUTES.toArray(new String[0])).permitAll().anyRequest().authenticated())
+                .authorizeHttpRequests(authorize -> authorize.requestMatchers(DOCS).permitAll().requestMatchers(PUBLIC_ROUTES).permitAll().anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
@@ -42,7 +50,7 @@ public class SecurityConfiguration {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of("*"));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
