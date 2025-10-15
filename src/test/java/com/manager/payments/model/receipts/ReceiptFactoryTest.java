@@ -6,6 +6,9 @@ import com.manager.payments.model.billing.BillingPeriodFactory;
 import com.manager.payments.model.payments.Payment;
 import com.manager.payments.model.payments.PaymentStatus;
 import com.manager.payments.model.payments.Periodicity;
+import com.manager.payments.model.players.Category;
+import com.manager.payments.model.players.Player;
+import com.manager.payments.model.players.PlayerStatus;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -19,16 +22,18 @@ class ReceiptFactoryTest {
         // given
         LocalDate startDate = LocalDate.of(2025, 9, 1);
         LocalDate endDate = LocalDate.of(2025, 9, 30);
+        Player player = new Player("123456789A", "", "", "", null, Category.NONE, PlayerStatus.ENABLED);
         Payment payment = new Payment("PAYMENT", 50, "", "", startDate, endDate,
                 Periodicity.MONTHLY, PaymentStatus.ACTIVE);
         BillingPeriod billingPeriod = BillingPeriodFactory.build(payment.periodicity(), startDate);
-        PlayerPaymentAssignment playerPaymentAssignment = new PlayerPaymentAssignment(null, payment, true);
+        PlayerPaymentAssignment playerPaymentAssignment = new PlayerPaymentAssignment(player, payment, true);
 
         //then
         Receipt receipt = ReceiptFactory.build(playerPaymentAssignment, billingPeriod, startDate);
 
         //then
         assertThat(receipt.amount()).isEqualTo(payment.amount());
+        assertThat(receipt.code()).isEqualTo("123456789A-PAYMENT-092025");
     }
 
     @Test
@@ -37,10 +42,11 @@ class ReceiptFactoryTest {
         LocalDate startDate = LocalDate.of(2025, 9, 1);
         LocalDate endDate = LocalDate.of(2025, 9, 30);
         LocalDate currentDate = LocalDate.of(2025, 9, 16);
+        Player player = new Player("123456789A", "", "", "", null, Category.NONE, PlayerStatus.ENABLED);
         Payment payment = new Payment("PAYMENT", 50, "", "", startDate, endDate,
                 Periodicity.MONTHLY, PaymentStatus.ACTIVE);
         BillingPeriod billingPeriod = BillingPeriodFactory.build(payment.periodicity(), startDate);
-        PlayerPaymentAssignment playerPaymentAssignment = new PlayerPaymentAssignment(null, payment, true);
+        PlayerPaymentAssignment playerPaymentAssignment = new PlayerPaymentAssignment(player, payment, true);
 
         //then
         Receipt receipt = ReceiptFactory.build(playerPaymentAssignment, billingPeriod, currentDate);
@@ -55,10 +61,11 @@ class ReceiptFactoryTest {
         LocalDate startDate = LocalDate.of(2025, 9, 1);
         LocalDate endDate = LocalDate.of(2025, 9, 30);
         LocalDate currentDate = LocalDate.of(2025, 10, 16);
+        Player player = new Player("123456789A", "", "", "", null, Category.NONE, PlayerStatus.ENABLED);
         Payment payment = new Payment("PAYMENT", 50, "", "", startDate, endDate,
                 Periodicity.MONTHLY, PaymentStatus.ACTIVE);
         BillingPeriod billingPeriod = BillingPeriodFactory.build(payment.periodicity(), startDate);
-        PlayerPaymentAssignment playerPaymentAssignment = new PlayerPaymentAssignment(null, payment, true);
+        PlayerPaymentAssignment playerPaymentAssignment = new PlayerPaymentAssignment(player, payment, true);
 
         //then
         Receipt receipt = ReceiptFactory.build(playerPaymentAssignment, billingPeriod, currentDate);
@@ -66,5 +73,4 @@ class ReceiptFactoryTest {
         //then
         assertThat(receipt.amount()).isEqualTo(payment.amount());
     }
-
 }
