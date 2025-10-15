@@ -14,6 +14,9 @@ public class ReceiptJpaEntity {
     @GeneratedValue
     private UUID id;
 
+    @Column(unique = true, nullable = false)
+    private String code;
+
     private double amount;
     private LocalDate issuedDate;
     private LocalDate paymentDate;
@@ -99,5 +102,13 @@ public class ReceiptJpaEntity {
 
     public void setPlayerPaymentAssignment(PlayerPaymentAssignmentJpaEntity playerPaymentAssignment) {
         this.playerPaymentAssignment = playerPaymentAssignment;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 }
