@@ -4,6 +4,7 @@ import com.manager.payments.model.assignments.PlayerPaymentAssignment;
 import com.manager.payments.model.billing.BillingPeriod;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 
 public class ReceiptFactory {
@@ -22,7 +23,25 @@ public class ReceiptFactory {
         }
 
         double amount = playerPaymentAssignment.payment().amount() * remainderPercentage;
-        return new Receipt(amount, date, billingPeriod.start(), billingPeriod.end(), ReceiptStatus.PENDING,
+        String code = buildReceiptCode(playerPaymentAssignment, billingPeriod);
+
+        return new Receipt(code, amount, date, billingPeriod.start(), billingPeriod.end(), ReceiptStatus.PENDING,
                 playerPaymentAssignment);
+    }
+
+    private static String buildReceiptCode(PlayerPaymentAssignment playerPaymentAssignment,
+                                           BillingPeriod billingPeriod) {
+        String playerId = playerPaymentAssignment.player().personalId();
+        String paymentCode = playerPaymentAssignment.payment().code();
+        String code = String.join("-", playerId, paymentCode);
+
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("MMuuuu");
+        String dates = switch (playerPaymentAssignment.payment().periodicity()) {
+            case MONTHLY -> billingPeriod.start().format(fmt);
+            case QUARTERLY -> String.join("-", billingPeriod.start().format(fmt), billingPeriod.end().format(fmt));
+            case ONCE -> "";
+        };
+
+        return String.join("-", code, dates);
     }
 }
