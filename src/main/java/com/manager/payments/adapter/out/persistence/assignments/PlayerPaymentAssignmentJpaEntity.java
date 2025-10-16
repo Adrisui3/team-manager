@@ -2,11 +2,8 @@ package com.manager.payments.adapter.out.persistence.assignments;
 
 import com.manager.payments.adapter.out.persistence.payments.PaymentJpaEntity;
 import com.manager.payments.adapter.out.persistence.players.PlayerJpaEntity;
-import com.manager.payments.adapter.out.persistence.receipts.ReceiptJpaEntity;
 import jakarta.persistence.*;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -28,9 +25,6 @@ public class PlayerPaymentAssignmentJpaEntity {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "payment_id", nullable = false)
     private PaymentJpaEntity payment;
-
-    @OneToMany(mappedBy = "playerPaymentAssignment")
-    private List<ReceiptJpaEntity> receipts = new ArrayList<>();
 
     private boolean active;
 
@@ -56,14 +50,6 @@ public class PlayerPaymentAssignmentJpaEntity {
 
     public void setPayment(PaymentJpaEntity payment) {
         this.payment = payment;
-    }
-
-    public List<ReceiptJpaEntity> getReceipts() {
-        return receipts;
-    }
-
-    public void setReceipts(List<ReceiptJpaEntity> receipts) {
-        this.receipts = receipts;
     }
 
     public boolean isActive() {
