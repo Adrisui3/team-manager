@@ -21,19 +21,25 @@ public class PaymentJpaEntity {
     @Column(unique = true, nullable = false, length = 10)
     private String code;
 
+    @Column(nullable = false)
     private BigDecimal amount;
 
     private String name;
     private String description;
 
+    @Column(nullable = false)
     private LocalDate startDate;
+
+    @Column(nullable = false)
     private LocalDate endDate;
 
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Periodicity periodicity;
 
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private PaymentStatus status = PaymentStatus.ACTIVE;
+    private PaymentStatus status;
 
     @OneToMany(mappedBy = "payment", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PlayerPaymentAssignmentJpaEntity> assignments = new ArrayList<>();
