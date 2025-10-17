@@ -19,18 +19,24 @@ public class ReceiptJpaEntity {
     @Column(unique = true, nullable = false)
     private String code;
 
-    @Column(precision = 12, scale = 2)
+    @Column(precision = 12, scale = 2, nullable = false)
     private BigDecimal amount;
 
+    @Column(nullable = false)
     private LocalDate issuedDate;
+
     private LocalDate paymentDate;
     private LocalDate expiryDate;
 
+    @Column(nullable = false)
     private LocalDate periodStartDate;
+
+    @Column(nullable = false)
     private LocalDate periodEndDate;
 
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private ReceiptStatus status = ReceiptStatus.PENDING;
+    private ReceiptStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "player_id")

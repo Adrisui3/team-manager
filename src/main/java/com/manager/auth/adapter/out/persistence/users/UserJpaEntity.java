@@ -23,6 +23,7 @@ public class UserJpaEntity {
 
     private LocalDateTime lastLogIn;
 
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Role role;
 

@@ -17,22 +17,22 @@ public class PlayerJpaEntity {
     @GeneratedValue
     private UUID id;
 
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String personalId;
 
     private String name;
     private String surname;
 
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String email;
 
     private LocalDate birthDate;
 
     @Enumerated(EnumType.STRING)
-    private Category category = Category.NONE;
+    private Category category;
 
     @Enumerated(EnumType.STRING)
-    private PlayerStatus status = PlayerStatus.ENABLED;
+    private PlayerStatus status;
 
     @OneToMany(mappedBy = "player", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PlayerPaymentAssignmentJpaEntity> assignments = new ArrayList<>();
