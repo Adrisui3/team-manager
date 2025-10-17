@@ -4,6 +4,7 @@ import com.manager.payments.adapter.in.rest.dto.request.CreatePaymentRequestDTO;
 import com.manager.payments.application.port.in.CreatePaymentUseCase;
 import com.manager.payments.application.port.in.ProcessExpiredPaymentsUseCase;
 import com.manager.payments.application.port.out.PaymentRepository;
+import com.manager.payments.model.exceptions.PaymentAlreadyExistsException;
 import com.manager.payments.model.payments.ExpiredPaymentProcessor;
 import com.manager.payments.model.payments.Payment;
 import com.manager.payments.model.payments.PaymentFactory;
@@ -11,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -26,8 +28,12 @@ public class PaymentService implements CreatePaymentUseCase, ProcessExpiredPayme
 
     @Override
     public Payment createPayment(CreatePaymentRequestDTO requestDTO) {
-        Payment newPayment = PaymentFactory.build(requestDTO.code(), requestDTO.amount(), requestDTO.name(),
-                requestDTO.description(), requestDTO.startDate(), requestDTO.endDate(), requestDTO.periodicity());
+        if (paymentRepository.existsByCode(requestDTO.code()))
+            throw new PaymentAlreadyExistsException(requestDTO.code());
+
+        Payment newPayment = PaymentFactory.build(requestDTO.code(), BigDecimal.valueOf(requestDTO.amount()),
+                requestDTO.name(), requestDTO.description(), requestDTO.startDate(), requestDTO.endDate(),
+                requestDTO.periodicity());
         return paymentRepository.save(newPayment);
     }
 

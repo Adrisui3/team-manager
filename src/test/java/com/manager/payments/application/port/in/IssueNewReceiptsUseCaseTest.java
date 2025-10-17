@@ -13,6 +13,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
@@ -31,10 +33,10 @@ public class IssueNewReceiptsUseCaseTest {
         LocalDate startDate = LocalDate.of(2025, 9, 1);
         LocalDate endDate = LocalDate.of(2026, 6, 30);
         LocalDate today = LocalDate.of(2025, 9, 1);
-        Payment payment = new Payment(UUID.randomUUID(), "CODE", 50, "", "", startDate, endDate, Periodicity.MONTHLY,
-                PaymentStatus.ACTIVE);
+        Payment payment = new Payment(UUID.randomUUID(), "CODE", BigDecimal.valueOf(50).setScale(2,
+                RoundingMode.HALF_UP), "", "", startDate, endDate, Periodicity.MONTHLY, PaymentStatus.ACTIVE);
 
-        PlayerPaymentAssignment playerPaymentAssignment = new PlayerPaymentAssignment(player, payment, true);
+        PlayerPaymentAssignment playerPaymentAssignment = new PlayerPaymentAssignment(player, payment);
         PlayerPaymentAssignmentRepository playerPaymentAssignmentRepository =
                 Mockito.mock(PlayerPaymentAssignmentRepository.class);
         Mockito.when(playerPaymentAssignmentRepository.findAllActiveAndStartDateBeforeOrEqual(any())).thenReturn(List.of(playerPaymentAssignment));
@@ -67,10 +69,11 @@ public class IssueNewReceiptsUseCaseTest {
         LocalDate startDate = LocalDate.of(2025, 9, 1);
         LocalDate endDate = LocalDate.of(2026, 6, 30);
         LocalDate today = LocalDate.of(2025, 11, 16);
-        Payment payment = new Payment(UUID.randomUUID(), "CODE", 50, "", "", startDate, endDate, Periodicity.MONTHLY,
+        Payment payment = new Payment(UUID.randomUUID(), "CODE", BigDecimal.valueOf(50), "", "", startDate, endDate,
+                Periodicity.MONTHLY,
                 PaymentStatus.ACTIVE);
 
-        PlayerPaymentAssignment playerPaymentAssignment = new PlayerPaymentAssignment(player, payment, true);
+        PlayerPaymentAssignment playerPaymentAssignment = new PlayerPaymentAssignment(player, payment);
         PlayerPaymentAssignmentRepository playerPaymentAssignmentRepository =
                 Mockito.mock(PlayerPaymentAssignmentRepository.class);
         Mockito.when(playerPaymentAssignmentRepository.findAllActiveAndStartDateBeforeOrEqual(any())).thenReturn(List.of(playerPaymentAssignment));

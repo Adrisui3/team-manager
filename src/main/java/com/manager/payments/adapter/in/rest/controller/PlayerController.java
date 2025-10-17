@@ -10,6 +10,7 @@ import com.manager.payments.adapter.out.persistence.receipts.ReceiptMapper;
 import com.manager.payments.application.port.in.AssignPaymentToPlayerUseCase;
 import com.manager.payments.application.port.in.CreatePlayerUseCase;
 import com.manager.payments.application.port.out.PlayerRepository;
+import com.manager.payments.application.port.out.ReceiptRepository;
 import com.manager.payments.model.assignments.PlayerPaymentAssignment;
 import com.manager.payments.model.exceptions.PlayerNotFoundException;
 import com.manager.payments.model.players.Player;
@@ -32,17 +33,19 @@ public class PlayerController {
     private final AssignPaymentToPlayerUseCase assignPaymentToPlayerUseCase;
     private final PlayerMapper playerMapper;
     private final ReceiptMapper receiptMapper;
+    private final ReceiptRepository receiptRepository;
 
     public PlayerController(PlayerPaymentAssignmentMapper playerPaymentAssignmentMapper,
                             CreatePlayerUseCase createPlayerUseCase, PlayerRepository playerRepository,
                             AssignPaymentToPlayerUseCase assignPaymentToPlayerUseCase, PlayerMapper playerMapper,
-                            ReceiptMapper receiptMapper) {
+                            ReceiptMapper receiptMapper, ReceiptRepository receiptRepository) {
         this.playerPaymentAssignmentMapper = playerPaymentAssignmentMapper;
         this.createPlayerUseCase = createPlayerUseCase;
         this.playerRepository = playerRepository;
         this.assignPaymentToPlayerUseCase = assignPaymentToPlayerUseCase;
         this.playerMapper = playerMapper;
         this.receiptMapper = receiptMapper;
+        this.receiptRepository = receiptRepository;
     }
 
     @GetMapping("/{playerId}")
@@ -52,8 +55,8 @@ public class PlayerController {
     }
 
     @GetMapping("/{playerId}/receipts")
-    public ResponseEntity<ResponseDto<List<ReceiptDto>>> getUserReceipts(@PathVariable("playerId") UUID playerId) {
-        List<Receipt> receipts = playerRepository.findAllReceipts(playerId);
+    public ResponseEntity<ResponseDto<List<ReceiptDto>>> getPlayerReceipts(@PathVariable("playerId") UUID playerId) {
+        List<Receipt> receipts = receiptRepository.findAllByPlayerId(playerId);
         return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(),
                 receipts.stream().map(receiptMapper::toReceiptDto).toList()));
     }

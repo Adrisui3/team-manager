@@ -15,11 +15,11 @@ import com.manager.payments.model.players.PlayerStatus;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
@@ -39,7 +39,8 @@ public class AssignPaymentToPlayerUseCaseTest {
         UUID paymentId = UUID.randomUUID();
         LocalDate startDate = LocalDate.of(2025, 9, 1);
         LocalDate endDate = LocalDate.of(2025, 9, 30);
-        Payment payment = new Payment(paymentId, "", 50, "", "", startDate, endDate, Periodicity.MONTHLY,
+        Payment payment = new Payment(paymentId, "", BigDecimal.valueOf(50), "", "", startDate, endDate,
+                Periodicity.MONTHLY,
                 PaymentStatus.ACTIVE);
         PaymentRepository paymentRepository = Mockito.mock(PaymentRepository.class);
         Mockito.when(paymentRepository.findById(paymentId)).thenReturn(Optional.of(payment));
@@ -57,7 +58,6 @@ public class AssignPaymentToPlayerUseCaseTest {
                 paymentId);
 
         // then
-        assertThat(savedAssignment.active()).isTrue();
         verify(playerPaymentAssignmentRepository).save(any());
     }
 

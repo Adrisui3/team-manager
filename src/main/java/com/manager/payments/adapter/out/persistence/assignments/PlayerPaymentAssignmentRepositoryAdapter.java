@@ -1,11 +1,11 @@
 package com.manager.payments.adapter.out.persistence.assignments;
 
-import com.manager.payments.adapter.out.persistence.receipts.ReceiptJpaRepository;
-import com.manager.payments.adapter.out.persistence.receipts.ReceiptMapper;
 import com.manager.payments.application.port.out.PlayerPaymentAssignmentRepository;
 import com.manager.payments.model.assignments.PlayerPaymentAssignment;
 import com.manager.payments.model.payments.Payment;
+import com.manager.payments.model.payments.PaymentStatus;
 import com.manager.payments.model.players.Player;
+import com.manager.payments.model.players.PlayerStatus;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -16,18 +16,13 @@ import java.util.UUID;
 @Component
 public class PlayerPaymentAssignmentRepositoryAdapter implements PlayerPaymentAssignmentRepository {
 
-    private final ReceiptMapper receiptMapper;
     private final PlayerPaymentAssignmentMapper playerPaymentAssignmentMapper;
     private final PlayerPaymentAssignmentJpaRepository playerPaymentAssignmentJpaRepository;
-    private final ReceiptJpaRepository receiptJpaRepository;
 
-    public PlayerPaymentAssignmentRepositoryAdapter(ReceiptMapper receiptMapper,
-                                                    PlayerPaymentAssignmentMapper playerPaymentAssignmentMapper,
-                                                    PlayerPaymentAssignmentJpaRepository playerPaymentAssignmentJpaRepository, ReceiptJpaRepository receiptJpaRepository) {
-        this.receiptMapper = receiptMapper;
+    public PlayerPaymentAssignmentRepositoryAdapter(PlayerPaymentAssignmentMapper playerPaymentAssignmentMapper,
+                                                    PlayerPaymentAssignmentJpaRepository playerPaymentAssignmentJpaRepository) {
         this.playerPaymentAssignmentMapper = playerPaymentAssignmentMapper;
         this.playerPaymentAssignmentJpaRepository = playerPaymentAssignmentJpaRepository;
-        this.receiptJpaRepository = receiptJpaRepository;
     }
 
     @Override
@@ -53,7 +48,7 @@ public class PlayerPaymentAssignmentRepositoryAdapter implements PlayerPaymentAs
     @Override
     public List<PlayerPaymentAssignment> findAllActiveAndStartDateBeforeOrEqual(LocalDate date) {
         List<PlayerPaymentAssignmentJpaEntity> playerPaymentAssignmentJpaEntities =
-                playerPaymentAssignmentJpaRepository.findAllByActiveIsTrueAndPayment_StartDateLessThanEqual(date);
+                playerPaymentAssignmentJpaRepository.findAllByPlayer_StatusAndPayment_StatusAndPayment_StartDateLessThanEqual(PlayerStatus.ENABLED, PaymentStatus.ACTIVE, date);
         return playerPaymentAssignmentJpaEntities.stream().map(playerPaymentAssignmentMapper::toPlayerPaymentAssignment).toList();
     }
 }

@@ -1,9 +1,11 @@
 package com.manager.payments.adapter.out.persistence.receipts;
 
-import com.manager.payments.adapter.out.persistence.assignments.PlayerPaymentAssignmentJpaEntity;
+import com.manager.payments.adapter.out.persistence.payments.PaymentJpaEntity;
+import com.manager.payments.adapter.out.persistence.players.PlayerJpaEntity;
 import com.manager.payments.model.receipts.ReceiptStatus;
 import jakarta.persistence.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -17,7 +19,9 @@ public class ReceiptJpaEntity {
     @Column(unique = true, nullable = false)
     private String code;
 
-    private double amount;
+    @Column(precision = 12, scale = 2)
+    private BigDecimal amount;
+
     private LocalDate issuedDate;
     private LocalDate paymentDate;
     private LocalDate expiryDate;
@@ -29,8 +33,12 @@ public class ReceiptJpaEntity {
     private ReceiptStatus status = ReceiptStatus.PENDING;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "player_payment_id")
-    private PlayerPaymentAssignmentJpaEntity playerPaymentAssignment;
+    @JoinColumn(name = "player_id")
+    private PlayerJpaEntity player;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "payment_id")
+    private PaymentJpaEntity payment;
 
     public UUID getId() {
         return id;
@@ -40,11 +48,11 @@ public class ReceiptJpaEntity {
         this.id = id;
     }
 
-    public double getAmount() {
+    public BigDecimal getAmount() {
         return amount;
     }
 
-    public void setAmount(double amount) {
+    public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
 
@@ -96,12 +104,20 @@ public class ReceiptJpaEntity {
         this.status = status;
     }
 
-    public PlayerPaymentAssignmentJpaEntity getPlayerPaymentAssignment() {
-        return playerPaymentAssignment;
+    public PlayerJpaEntity getPlayer() {
+        return player;
     }
 
-    public void setPlayerPaymentAssignment(PlayerPaymentAssignmentJpaEntity playerPaymentAssignment) {
-        this.playerPaymentAssignment = playerPaymentAssignment;
+    public void setPlayer(PlayerJpaEntity player) {
+        this.player = player;
+    }
+
+    public PaymentJpaEntity getPayment() {
+        return payment;
+    }
+
+    public void setPayment(PaymentJpaEntity payment) {
+        this.payment = payment;
     }
 
     public String getCode() {
