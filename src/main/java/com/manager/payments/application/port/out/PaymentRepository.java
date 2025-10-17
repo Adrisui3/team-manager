@@ -15,6 +15,8 @@ public interface PaymentRepository {
 
     Optional<Payment> findById(UUID id);
 
+    boolean existsByCode(String code);
+
     void deleteById(UUID id);
 
     List<Payment> findAllActiveAndEndDateBefore(LocalDate date);

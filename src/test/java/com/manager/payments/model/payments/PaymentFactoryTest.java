@@ -2,6 +2,7 @@ package com.manager.payments.model.payments;
 
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -12,7 +13,8 @@ class PaymentFactoryTest {
     void shouldMarkPaymentActiveWhenStartDateIsToday() {
         LocalDate today = LocalDate.now();
 
-        Payment payment = PaymentFactory.build("CODE", 10, "name", "desc", today, today.plusDays(30),
+        Payment payment = PaymentFactory.build("CODE", BigDecimal.valueOf(50), "name", "desc", today,
+                today.plusDays(30),
                 Periodicity.MONTHLY);
 
         assertThat(payment.status()).isEqualTo(PaymentStatus.ACTIVE);
@@ -22,7 +24,8 @@ class PaymentFactoryTest {
     void shouldMarkPaymentInactiveWhenStartDateIsTomorrow() {
         LocalDate today = LocalDate.now();
 
-        Payment payment = PaymentFactory.build("CODE", 10, "name", "desc", today.plusDays(1), today.plusDays(30),
+        Payment payment = PaymentFactory.build("CODE", BigDecimal.valueOf(50), "name", "desc", today.plusDays(1),
+                today.plusDays(30),
                 Periodicity.MONTHLY);
 
         assertThat(payment.status()).isEqualTo(PaymentStatus.INACTIVE);

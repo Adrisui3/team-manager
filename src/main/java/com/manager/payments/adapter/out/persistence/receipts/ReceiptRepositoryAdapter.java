@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Component
@@ -19,6 +20,12 @@ public class ReceiptRepositoryAdapter implements ReceiptRepository {
     public ReceiptRepositoryAdapter(ReceiptJpaRepository receiptJpaRepository, ReceiptMapper receiptMapper) {
         this.receiptJpaRepository = receiptJpaRepository;
         this.receiptMapper = receiptMapper;
+    }
+
+    @Override
+    public Optional<Receipt> findById(UUID id) {
+        Optional<ReceiptJpaEntity> receiptJpaEntity = receiptJpaRepository.findById(id);
+        return receiptJpaEntity.map(receiptMapper::toReceipt);
     }
 
     @Override
@@ -53,7 +60,18 @@ public class ReceiptRepositoryAdapter implements ReceiptRepository {
 
     @Override
     public boolean exists(Receipt receipt) {
-        return receiptJpaRepository.existsByPlayerPaymentAssignment_IdAndPeriodStartDateAndPeriodEndDate(receipt.playerPaymentAssignment().id(),
-                receipt.periodStartDate(), receipt.periodEndDate());
+        return receiptJpaRepository.existsByPlayer_IdAndPayment_IdAndPeriodStartDateAndPeriodEndDate(receipt.player().id(), receipt.payment().id(), receipt.periodStartDate(), receipt.periodEndDate());
+    }
+
+    @Override
+    public List<Receipt> findAllByPlayerId(UUID playerId) {
+        List<ReceiptJpaEntity> receipt = receiptJpaRepository.findAllByPlayer_Id(playerId);
+        return receipt.stream().map(receiptMapper::toReceipt).toList();
+    }
+
+    @Override
+    public List<Receipt> findAllByPaymentId(UUID paymentId) {
+        List<ReceiptJpaEntity> receipt = receiptJpaRepository.findAllByPayment_Id(paymentId);
+        return receipt.stream().map(receiptMapper::toReceipt).toList();
     }
 }

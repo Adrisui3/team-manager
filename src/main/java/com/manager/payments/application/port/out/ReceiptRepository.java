@@ -5,9 +5,12 @@ import com.manager.payments.model.receipts.ReceiptStatus;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface ReceiptRepository {
+
+    Optional<Receipt> findById(UUID id);
 
     List<Receipt> findAllPendingWithExpirationDateBefore(LocalDate date);
 
@@ -18,4 +21,8 @@ public interface ReceiptRepository {
     Receipt updateStatus(UUID receiptId, ReceiptStatus status);
 
     boolean exists(Receipt receipt);
+
+    List<Receipt> findAllByPlayerId(UUID playerId);
+
+    List<Receipt> findAllByPaymentId(UUID paymentId);
 }

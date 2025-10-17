@@ -11,6 +11,8 @@ import com.manager.payments.model.players.Player;
 import com.manager.payments.model.players.PlayerStatus;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -23,10 +25,10 @@ class ReceiptFactoryTest {
         LocalDate startDate = LocalDate.of(2025, 9, 1);
         LocalDate endDate = LocalDate.of(2025, 9, 30);
         Player player = new Player("123456789A", "", "", "", null, Category.NONE, PlayerStatus.ENABLED);
-        Payment payment = new Payment("PAYMENT", 50, "", "", startDate, endDate,
+        Payment payment = new Payment("PAYMENT", BigDecimal.valueOf(50), "", "", startDate, endDate,
                 Periodicity.MONTHLY, PaymentStatus.ACTIVE);
         BillingPeriod billingPeriod = BillingPeriodFactory.build(payment.periodicity(), startDate);
-        PlayerPaymentAssignment playerPaymentAssignment = new PlayerPaymentAssignment(player, payment, true);
+        PlayerPaymentAssignment playerPaymentAssignment = new PlayerPaymentAssignment(player, payment);
 
         //then
         Receipt receipt = ReceiptFactory.build(playerPaymentAssignment, billingPeriod, startDate);
@@ -43,16 +45,16 @@ class ReceiptFactoryTest {
         LocalDate endDate = LocalDate.of(2025, 9, 30);
         LocalDate currentDate = LocalDate.of(2025, 9, 16);
         Player player = new Player("123456789A", "", "", "", null, Category.NONE, PlayerStatus.ENABLED);
-        Payment payment = new Payment("PAYMENT", 50, "", "", startDate, endDate,
+        Payment payment = new Payment("PAYMENT", BigDecimal.valueOf(50), "", "", startDate, endDate,
                 Periodicity.MONTHLY, PaymentStatus.ACTIVE);
         BillingPeriod billingPeriod = BillingPeriodFactory.build(payment.periodicity(), startDate);
-        PlayerPaymentAssignment playerPaymentAssignment = new PlayerPaymentAssignment(player, payment, true);
+        PlayerPaymentAssignment playerPaymentAssignment = new PlayerPaymentAssignment(player, payment);
 
         //then
         Receipt receipt = ReceiptFactory.build(playerPaymentAssignment, billingPeriod, currentDate);
 
         //then
-        assertThat(receipt.amount()).isEqualTo(payment.amount() / 2);
+        assertThat(receipt.amount()).isEqualTo(payment.amount().divide(BigDecimal.valueOf(2), RoundingMode.HALF_UP));
     }
 
     @Test
@@ -62,10 +64,10 @@ class ReceiptFactoryTest {
         LocalDate endDate = LocalDate.of(2025, 9, 30);
         LocalDate currentDate = LocalDate.of(2025, 10, 16);
         Player player = new Player("123456789A", "", "", "", null, Category.NONE, PlayerStatus.ENABLED);
-        Payment payment = new Payment("PAYMENT", 50, "", "", startDate, endDate,
+        Payment payment = new Payment("PAYMENT", BigDecimal.valueOf(50), "", "", startDate, endDate,
                 Periodicity.MONTHLY, PaymentStatus.ACTIVE);
         BillingPeriod billingPeriod = BillingPeriodFactory.build(payment.periodicity(), startDate);
-        PlayerPaymentAssignment playerPaymentAssignment = new PlayerPaymentAssignment(player, payment, true);
+        PlayerPaymentAssignment playerPaymentAssignment = new PlayerPaymentAssignment(player, payment);
 
         //then
         Receipt receipt = ReceiptFactory.build(playerPaymentAssignment, billingPeriod, currentDate);

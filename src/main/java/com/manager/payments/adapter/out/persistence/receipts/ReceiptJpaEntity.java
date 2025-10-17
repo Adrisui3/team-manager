@@ -5,6 +5,7 @@ import com.manager.payments.adapter.out.persistence.players.PlayerJpaEntity;
 import com.manager.payments.model.receipts.ReceiptStatus;
 import jakarta.persistence.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -18,7 +19,9 @@ public class ReceiptJpaEntity {
     @Column(unique = true, nullable = false)
     private String code;
 
-    private double amount;
+    @Column(precision = 12, scale = 2)
+    private BigDecimal amount;
+
     private LocalDate issuedDate;
     private LocalDate paymentDate;
     private LocalDate expiryDate;
@@ -45,11 +48,11 @@ public class ReceiptJpaEntity {
         this.id = id;
     }
 
-    public double getAmount() {
+    public BigDecimal getAmount() {
         return amount;
     }
 
-    public void setAmount(double amount) {
+    public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
 

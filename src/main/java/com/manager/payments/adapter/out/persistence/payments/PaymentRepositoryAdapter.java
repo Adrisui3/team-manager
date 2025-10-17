@@ -44,6 +44,11 @@ public class PaymentRepositoryAdapter implements PaymentRepository {
     }
 
     @Override
+    public boolean existsByCode(String code) {
+        return paymentJpaRepository.existsByCode(code);
+    }
+
+    @Override
     public void deleteById(UUID id) {
         paymentJpaRepository.deleteById(id);
     }

@@ -26,8 +26,6 @@ public class PlayerPaymentAssignmentJpaEntity {
     @JoinColumn(name = "payment_id", nullable = false)
     private PaymentJpaEntity payment;
 
-    private boolean active;
-
     public UUID getId() {
         return id;
     }
@@ -50,13 +48,5 @@ public class PlayerPaymentAssignmentJpaEntity {
 
     public void setPayment(PaymentJpaEntity payment) {
         this.payment = payment;
-    }
-
-    public boolean isActive() {
-        return active;
-    }
-
-    public void setActive(boolean active) {
-        this.active = active;
     }
 }

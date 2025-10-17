@@ -5,6 +5,7 @@ import com.manager.payments.model.payments.PaymentStatus;
 import com.manager.payments.model.payments.Periodicity;
 import jakarta.persistence.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +21,7 @@ public class PaymentJpaEntity {
     @Column(unique = true, nullable = false, length = 10)
     private String code;
 
-    private double amount;
+    private BigDecimal amount;
 
     private String name;
     private String description;
@@ -53,11 +54,11 @@ public class PaymentJpaEntity {
         this.code = code;
     }
 
-    public double getAmount() {
+    public BigDecimal getAmount() {
         return amount;
     }
 
-    public void setAmount(double amount) {
+    public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
 

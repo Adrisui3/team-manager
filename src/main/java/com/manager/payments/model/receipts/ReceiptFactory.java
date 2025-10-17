@@ -3,6 +3,7 @@ package com.manager.payments.model.receipts;
 import com.manager.payments.model.assignments.PlayerPaymentAssignment;
 import com.manager.payments.model.billing.BillingPeriod;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -22,11 +23,12 @@ public class ReceiptFactory {
             remainderPercentage = 1d;
         }
 
-        double amount = playerPaymentAssignment.payment().amount() * remainderPercentage;
+        BigDecimal amount =
+                playerPaymentAssignment.payment().amount().multiply(BigDecimal.valueOf(remainderPercentage));
         String code = buildReceiptCode(playerPaymentAssignment, billingPeriod);
 
         return new Receipt(code, amount, date, billingPeriod.start(), billingPeriod.end(), ReceiptStatus.PENDING,
-                playerPaymentAssignment);
+                playerPaymentAssignment.player(), playerPaymentAssignment.payment());
     }
 
     private static String buildReceiptCode(PlayerPaymentAssignment playerPaymentAssignment,

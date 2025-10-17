@@ -1,14 +1,10 @@
 package com.manager.payments.adapter.out.persistence.players;
 
-import com.manager.payments.adapter.out.persistence.receipts.ReceiptJpaEntity;
 import com.manager.payments.adapter.out.persistence.receipts.ReceiptMapper;
 import com.manager.payments.application.port.out.PlayerRepository;
-import com.manager.payments.model.exceptions.PlayerNotFoundException;
 import com.manager.payments.model.players.Player;
-import com.manager.payments.model.receipts.Receipt;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -46,14 +42,5 @@ public class PlayerRepositoryAdapter implements PlayerRepository {
     @Override
     public void deleteById(UUID id) {
         playerJpaRepository.deleteById(id);
-    }
-
-    @Override
-    public List<Receipt> findAllReceipts(UUID playerId) {
-        PlayerJpaEntity playerJpaEntity =
-                playerJpaRepository.findById(playerId).orElseThrow(() -> new PlayerNotFoundException(playerId));
-        List<ReceiptJpaEntity> allReceipts =
-                playerJpaEntity.getAssignments().stream().flatMap(assignment -> assignment.getReceipts().stream()).toList();
-        return allReceipts.stream().map(receiptMapper::toReceipt).toList();
     }
 }

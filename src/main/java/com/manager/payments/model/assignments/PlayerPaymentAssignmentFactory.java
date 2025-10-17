@@ -21,7 +21,7 @@ public class PlayerPaymentAssignmentFactory {
             throw new PaymentExpiredException();
         }
 
-        return new PlayerPaymentAssignment(player, payment, payment.status().equals(PaymentStatus.ACTIVE));
+        return new PlayerPaymentAssignment(player, payment);
     }
 
 }
