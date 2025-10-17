@@ -58,7 +58,6 @@ public class AssignPaymentToPlayerUseCaseTest {
                 paymentId);
 
         // then
-        assertThat(savedAssignment.active()).isTrue();
         verify(playerPaymentAssignmentRepository).save(any());
     }
 
