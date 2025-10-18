@@ -27,7 +27,7 @@ class ReceiptFactoryTest {
         Player player = new Player("123456789A", "", "", "", null, Category.NONE, PlayerStatus.ENABLED);
         Payment payment = new Payment("PAYMENT", BigDecimal.valueOf(50), "", "", startDate, endDate,
                 Periodicity.MONTHLY, PaymentStatus.ACTIVE);
-        BillingPeriod billingPeriod = BillingPeriodFactory.build(payment.periodicity(), startDate);
+        BillingPeriod billingPeriod = BillingPeriodFactory.build(payment, startDate);
         PlayerPaymentAssignment playerPaymentAssignment = new PlayerPaymentAssignment(player, payment);
 
         //then
@@ -47,7 +47,7 @@ class ReceiptFactoryTest {
         Player player = new Player("123456789A", "", "", "", null, Category.NONE, PlayerStatus.ENABLED);
         Payment payment = new Payment("PAYMENT", BigDecimal.valueOf(50), "", "", startDate, endDate,
                 Periodicity.MONTHLY, PaymentStatus.ACTIVE);
-        BillingPeriod billingPeriod = BillingPeriodFactory.build(payment.periodicity(), startDate);
+        BillingPeriod billingPeriod = BillingPeriodFactory.build(payment, startDate);
         PlayerPaymentAssignment playerPaymentAssignment = new PlayerPaymentAssignment(player, payment);
 
         //then
@@ -66,7 +66,7 @@ class ReceiptFactoryTest {
         Player player = new Player("123456789A", "", "", "", null, Category.NONE, PlayerStatus.ENABLED);
         Payment payment = new Payment("PAYMENT", BigDecimal.valueOf(50), "", "", startDate, endDate,
                 Periodicity.MONTHLY, PaymentStatus.ACTIVE);
-        BillingPeriod billingPeriod = BillingPeriodFactory.build(payment.periodicity(), startDate);
+        BillingPeriod billingPeriod = BillingPeriodFactory.build(payment, startDate);
         PlayerPaymentAssignment playerPaymentAssignment = new PlayerPaymentAssignment(player, payment);
 
         //then
