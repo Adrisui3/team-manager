@@ -46,6 +46,23 @@ class BillingPeriodFactoryTest {
     }
 
     @Test
+    void shouldBuildQuarterlyFirstBillingPeriodFromFirstDay() {
+        // given
+        LocalDate currentDate = LocalDate.of(2025, 6, 1);
+        Payment payment = Mockito.mock(Payment.class);
+        Mockito.when(payment.periodicity()).thenReturn(Periodicity.QUARTERLY);
+        Mockito.when(payment.startDate()).thenReturn(currentDate);
+        Mockito.when(payment.endDate()).thenReturn(LocalDate.of(2026, 6, 30));
+
+        //  when
+        BillingPeriod billingPeriod = BillingPeriodFactory.build(payment, currentDate);
+
+        // then
+        assertThat(billingPeriod.start()).isEqualTo(currentDate);
+        assertThat(billingPeriod.end()).isEqualTo(LocalDate.of(2025, 8, 31));
+    }
+
+    @Test
     void shouldBuildQuarterlySecondBillingPeriod() {
         // given
         LocalDate currentDate = LocalDate.of(2025, 12, 15);
