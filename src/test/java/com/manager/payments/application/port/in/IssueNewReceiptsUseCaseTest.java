@@ -42,7 +42,7 @@ public class IssueNewReceiptsUseCaseTest {
         Mockito.when(playerPaymentAssignmentRepository.findAllActiveAndStartDateBeforeOrEqual(any())).thenReturn(List.of(playerPaymentAssignment));
 
         ReceiptRepository receiptRepository = Mockito.mock(ReceiptRepository.class);
-        Mockito.when(receiptRepository.exists(any())).thenReturn(false);
+        Mockito.when(receiptRepository.existsByPlayerPaymentAndPeriod(any())).thenReturn(false);
 
         IssueNewReceiptsUseCase issueNewReceiptsUseCase = new BillingService(playerPaymentAssignmentRepository,
                 receiptRepository);
@@ -53,7 +53,7 @@ public class IssueNewReceiptsUseCaseTest {
         // then
         ArgumentCaptor<Receipt> receiptsCaptor = ArgumentCaptor.forClass(Receipt.class);
         verify(receiptRepository).save(receiptsCaptor.capture());
-        verify(receiptRepository, times(1)).exists(any());
+        verify(receiptRepository, times(1)).existsByPlayerPaymentAndPeriod(any());
 
         Receipt receipt = receiptsCaptor.getValue();
         assertThat(receipt.amount()).isEqualTo(payment.amount());
@@ -79,7 +79,7 @@ public class IssueNewReceiptsUseCaseTest {
         Mockito.when(playerPaymentAssignmentRepository.findAllActiveAndStartDateBeforeOrEqual(any())).thenReturn(List.of(playerPaymentAssignment));
 
         ReceiptRepository receiptRepository = Mockito.mock(ReceiptRepository.class);
-        Mockito.when(receiptRepository.exists(any())).thenReturn(true);
+        Mockito.when(receiptRepository.existsByPlayerPaymentAndPeriod(any())).thenReturn(true);
 
         IssueNewReceiptsUseCase issueNewReceiptsUseCase = new BillingService(playerPaymentAssignmentRepository,
                 receiptRepository);
@@ -89,7 +89,7 @@ public class IssueNewReceiptsUseCaseTest {
 
         // then
         verify(receiptRepository, never()).save(any());
-        verify(receiptRepository, times(1)).exists(any());
+        verify(receiptRepository, times(1)).existsByPlayerPaymentAndPeriod(any());
     }
 
 }

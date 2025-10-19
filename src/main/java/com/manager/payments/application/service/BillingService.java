@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 
 @Service
 public class BillingService implements IssueNewReceiptsUseCase {
@@ -35,7 +36,11 @@ public class BillingService implements IssueNewReceiptsUseCase {
         logger.info("Found {} assignment", assignments.size());
         for (PlayerPaymentAssignment assignment : assignments) {
             logger.info("Processing assignment {}", assignment.id());
-            Optional<Receipt> optionalReceipt = BillingProcessor.process(assignment, date, receiptRepository::exists);
+            Function<Receipt, Boolean> playerExists = switch (assignment.payment().periodicity()) {
+                case MONTHLY, QUARTERLY -> receiptRepository::existsByPlayerPaymentAndPeriod;
+                case ONCE -> receiptRepository::existsByPlayerAndPayment;
+            };
+            Optional<Receipt> optionalReceipt = BillingProcessor.process(assignment, date, playerExists);
             optionalReceipt.ifPresent(receipt -> {
                 receiptRepository.save(receipt);
                 logger.info("Generated receipt for period between {} and {}", receipt.periodStartDate(),

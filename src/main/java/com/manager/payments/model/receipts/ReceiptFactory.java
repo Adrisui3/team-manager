@@ -2,6 +2,7 @@ package com.manager.payments.model.receipts;
 
 import com.manager.payments.model.assignments.PlayerPaymentAssignment;
 import com.manager.payments.model.billing.BillingPeriod;
+import io.micrometer.common.lang.Nullable;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -13,8 +14,14 @@ public class ReceiptFactory {
     private ReceiptFactory() {
     }
 
-    public static Receipt build(PlayerPaymentAssignment playerPaymentAssignment, BillingPeriod billingPeriod,
-                                LocalDate date) {
+    public static Receipt buildForUniquePayment(PlayerPaymentAssignment playerPaymentAssignment, LocalDate date) {
+        String code = buildReceiptCode(playerPaymentAssignment, null);
+        return new Receipt(code, playerPaymentAssignment.payment().amount(), date, null, null, ReceiptStatus.PENDING,
+                playerPaymentAssignment.player(), playerPaymentAssignment.payment());
+    }
+
+    public static Receipt buildForBillingPeriod(PlayerPaymentAssignment playerPaymentAssignment,
+                                                BillingPeriod billingPeriod, LocalDate date) {
         long daysUntilNext = ChronoUnit.DAYS.between(date, billingPeriod.end()) + 1;
         long daysInPeriod = ChronoUnit.DAYS.between(billingPeriod.start(), billingPeriod.end()) + 1;
 
@@ -32,7 +39,7 @@ public class ReceiptFactory {
     }
 
     private static String buildReceiptCode(PlayerPaymentAssignment playerPaymentAssignment,
-                                           BillingPeriod billingPeriod) {
+                                           @Nullable BillingPeriod billingPeriod) {
         String playerId = playerPaymentAssignment.player().personalId();
         String paymentCode = playerPaymentAssignment.payment().code();
         String code = String.join("-", playerId, paymentCode);
@@ -44,6 +51,6 @@ public class ReceiptFactory {
             case ONCE -> "";
         };
 
-        return String.join("-", code, dates);
+        return dates.isEmpty() ? code : String.join("-", code, dates);
     }
 }

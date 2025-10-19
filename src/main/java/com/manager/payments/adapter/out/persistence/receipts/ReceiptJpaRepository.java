@@ -16,4 +16,6 @@ public interface ReceiptJpaRepository extends JpaRepository<ReceiptJpaEntity, UU
     List<ReceiptJpaEntity> findAllByPlayer_Id(UUID playerId);
 
     List<ReceiptJpaEntity> findAllByPayment_Id(UUID paymentId);
+
+    boolean existsByPlayer_IdAndPayment_Id(UUID playerId, UUID paymentId);
 }

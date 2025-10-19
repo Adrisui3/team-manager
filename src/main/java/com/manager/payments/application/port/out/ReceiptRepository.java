@@ -20,7 +20,9 @@ public interface ReceiptRepository {
 
     Receipt updateStatus(UUID receiptId, ReceiptStatus status);
 
-    boolean exists(Receipt receipt);
+    boolean existsByPlayerPaymentAndPeriod(Receipt receipt);
+
+    boolean existsByPlayerAndPayment(Receipt receipt);
 
     List<Receipt> findAllByPlayerId(UUID playerId);
 

@@ -20,8 +20,14 @@ public class BillingProcessor {
         if (date.isAfter(payment.endDate()))
             return Optional.empty();
 
-        BillingPeriod currentBillingPeriod = BillingPeriodFactory.build(payment, date);
-        Receipt receipt = ReceiptFactory.build(playerPaymentAssignment, currentBillingPeriod, date);
+        Receipt receipt = switch (payment.periodicity()) {
+            case MONTHLY, QUARTERLY -> {
+                BillingPeriod currentBillingPeriod = BillingPeriodFactory.build(payment, date);
+                yield ReceiptFactory.buildForBillingPeriod(playerPaymentAssignment, currentBillingPeriod, date);
+            }
+            case ONCE -> ReceiptFactory.buildForUniquePayment(playerPaymentAssignment, date);
+        };
+
         if (!receiptExists.apply(receipt)) {
             return Optional.of(receipt);
         }
