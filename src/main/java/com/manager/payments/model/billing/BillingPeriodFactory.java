@@ -21,7 +21,7 @@ public class BillingPeriodFactory {
             case MONTHLY -> YearMonth.from(date).atDay(1);
             case QUARTERLY -> {
                 LocalDate quarterStart = YearMonth.from(payment.startDate()).atDay(1);
-                while (quarterStart.isBefore(date) || quarterStart.isEqual(date)) {
+                while (!quarterStart.isAfter(date)) {
                     quarterStart = quarterStart.plusMonths(3);
                 }
 
