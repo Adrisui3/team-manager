@@ -75,4 +75,24 @@ class ReceiptFactoryTest {
         //then
         assertThat(receipt.amount()).isEqualTo(payment.amount());
     }
+
+    @Test
+    void shouldCreateReceiptForUniquePayment() {
+        // given
+        LocalDate startDate = LocalDate.of(2025, 9, 1);
+        LocalDate endDate = LocalDate.of(2025, 9, 30);
+        LocalDate currentDate = LocalDate.of(2025, 10, 16);
+        Player player = new Player("123456789A", "", "", "", null, Category.NONE, PlayerStatus.ENABLED);
+        Payment payment = new Payment("PAYMENT", BigDecimal.valueOf(50), "", "", startDate, endDate,
+                Periodicity.ONCE, PaymentStatus.ACTIVE);
+        BillingPeriod billingPeriod = BillingPeriodFactory.build(payment, startDate);
+        PlayerPaymentAssignment playerPaymentAssignment = new PlayerPaymentAssignment(player, payment);
+
+        //then
+        Receipt receipt = ReceiptFactory.buildForBillingPeriod(playerPaymentAssignment, billingPeriod, currentDate);
+
+        //then
+        assertThat(receipt.amount()).isEqualTo(payment.amount());
+        assertThat(receipt.code()).isEqualTo("123456789A-PAYMENT");
+    }
 }
