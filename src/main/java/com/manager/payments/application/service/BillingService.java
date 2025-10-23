@@ -42,8 +42,8 @@ public class BillingService implements IssueNewReceiptsUseCase {
             };
             Optional<Receipt> optionalReceipt = BillingProcessor.process(assignment, date, playerExists);
             optionalReceipt.ifPresent(receipt -> {
-                Receipt savedReceipt = receiptRepository.save(receipt);
-                logger.info("Generated receipt {} for assignment {}", savedReceipt.id(), assignment.id());
+                receiptRepository.save(receipt);
+                logger.info("Generated receipt for assignment {}", assignment.id());
             });
         }
         logger.info("BillingJob finished in {} milliseconds", System.currentTimeMillis() - tIni);
