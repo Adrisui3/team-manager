@@ -62,6 +62,42 @@ public class IssueNewReceiptsUseCaseTest {
     }
 
     @Test
+    void shouldIssueHalfAReceipt() {
+        // given
+        Player player = Mockito.mock(Player.class);
+
+        LocalDate startDate = LocalDate.of(2025, 9, 1);
+        LocalDate endDate = LocalDate.of(2026, 6, 30);
+        LocalDate today = LocalDate.of(2025, 9, 16);
+        Payment payment = new Payment(UUID.randomUUID(), "CODE", BigDecimal.valueOf(50).setScale(2,
+                RoundingMode.HALF_UP), "", "", startDate, endDate, Periodicity.MONTHLY, PaymentStatus.ACTIVE);
+
+        PlayerPaymentAssignment playerPaymentAssignment = new PlayerPaymentAssignment(player, payment);
+        PlayerPaymentAssignmentRepository playerPaymentAssignmentRepository =
+                Mockito.mock(PlayerPaymentAssignmentRepository.class);
+        Mockito.when(playerPaymentAssignmentRepository.findAllActiveAndStartDateBeforeOrEqual(any())).thenReturn(List.of(playerPaymentAssignment));
+
+        ReceiptRepository receiptRepository = Mockito.mock(ReceiptRepository.class);
+        Mockito.when(receiptRepository.existsByPlayerPaymentAndPeriod(any())).thenReturn(false);
+
+        IssueNewReceiptsUseCase issueNewReceiptsUseCase = new BillingService(playerPaymentAssignmentRepository,
+                receiptRepository);
+
+        // when
+        issueNewReceiptsUseCase.issueNewReceipts(today);
+
+        // then
+        ArgumentCaptor<Receipt> receiptsCaptor = ArgumentCaptor.forClass(Receipt.class);
+        verify(receiptRepository).save(receiptsCaptor.capture());
+        verify(receiptRepository, times(1)).existsByPlayerPaymentAndPeriod(any());
+
+        Receipt receipt = receiptsCaptor.getValue();
+        assertThat(receipt.amount().doubleValue()).isEqualTo(payment.amount().doubleValue() / 2);
+        assertThat(receipt.periodStartDate()).isEqualTo(LocalDate.of(2025, 9, 1));
+        assertThat(receipt.periodEndDate()).isEqualTo(LocalDate.of(2025, 9, 30));
+    }
+
+    @Test
     void shouldNotIssueRepeatedReceipts() {
         // given
         Player player = Mockito.mock(Player.class);
