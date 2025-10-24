@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 
 @Service
 public class BillingService implements IssueNewReceiptsUseCase {
@@ -29,18 +30,22 @@ public class BillingService implements IssueNewReceiptsUseCase {
 
     @Override
     public void issueNewReceipts(LocalDate date) {
-        logger.info("Running BillingJob at {}", date);
+        logger.info("Starting BillingJob for {}", date);
+        long tIni = System.currentTimeMillis();
         List<PlayerPaymentAssignment> assignments =
                 playerPaymentAssignmentRepository.findAllActiveAndStartDateBeforeOrEqual(date);
-        logger.info("Found {} assignment", assignments.size());
+        logger.info("Processing {} player-payment assignments", assignments.size());
         for (PlayerPaymentAssignment assignment : assignments) {
-            logger.info("Processing assignment {}", assignment.id());
-            Optional<Receipt> optionalReceipt = BillingProcessor.process(assignment, date, receiptRepository::exists);
+            Function<Receipt, Boolean> playerExists = switch (assignment.payment().periodicity()) {
+                case MONTHLY, QUARTERLY -> receiptRepository::existsByPlayerPaymentAndPeriod;
+                case ONCE -> receiptRepository::existsByPlayerAndPayment;
+            };
+            Optional<Receipt> optionalReceipt = BillingProcessor.process(assignment, date, playerExists);
             optionalReceipt.ifPresent(receipt -> {
                 receiptRepository.save(receipt);
-                logger.info("Generated receipt for period between {} and {}", receipt.periodStartDate(),
-                        receipt.periodEndDate());
+                logger.info("Generated receipt for assignment {}", assignment.id());
             });
         }
+        logger.info("BillingJob finished in {} milliseconds", System.currentTimeMillis() - tIni);
     }
 }

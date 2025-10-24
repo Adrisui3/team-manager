@@ -59,8 +59,13 @@ public class ReceiptRepositoryAdapter implements ReceiptRepository {
     }
 
     @Override
-    public boolean exists(Receipt receipt) {
+    public boolean existsByPlayerPaymentAndPeriod(Receipt receipt) {
         return receiptJpaRepository.existsByPlayer_IdAndPayment_IdAndPeriodStartDateAndPeriodEndDate(receipt.player().id(), receipt.payment().id(), receipt.periodStartDate(), receipt.periodEndDate());
+    }
+
+    @Override
+    public boolean existsByPlayerAndPayment(Receipt receipt) {
+        return receiptJpaRepository.existsByPlayer_IdAndPayment_Id(receipt.player().id(), receipt.payment().id());
     }
 
     @Override
