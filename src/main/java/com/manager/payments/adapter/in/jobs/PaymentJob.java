@@ -1,4 +1,4 @@
-package com.manager.payments.adapter.in.rest.jobs;
+package com.manager.payments.adapter.in.jobs;
 
 import com.manager.payments.application.port.in.ProcessExpiredPaymentsUseCase;
 import jakarta.transaction.Transactional;
