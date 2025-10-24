@@ -29,16 +29,6 @@ public class DefaultAdminInitializer implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) {
-        if (adminConfigurationProperties.email() == null || adminConfigurationProperties.email().isBlank()) {
-            logger.warn("Default admin email is empty; skipping admin bootstrap");
-            return;
-        }
-
-        if (adminConfigurationProperties.password() == null || adminConfigurationProperties.password().isBlank()) {
-            logger.warn("Default admin password is empty; skipping admin bootstrap");
-            return;
-        }
-
         if (userRepository.existsByEmail(adminConfigurationProperties.email())) {
             logger.info("Default admin user already present; skipping bootstrap");
             return;
