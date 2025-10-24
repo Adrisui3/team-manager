@@ -1,4 +1,4 @@
-package com.manager.auth.adapter.config;
+package com.manager.auth.adapter.config.security;
 
 import com.manager.auth.adapter.in.security.SecurityUserDetails;
 import com.manager.auth.application.port.out.UserRepository;
