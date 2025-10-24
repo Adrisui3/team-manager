@@ -1,5 +1,7 @@
 package com.manager.auth.adapter.config;
 
+import com.manager.auth.adapter.config.admin.AdminConfigurationProperties;
+import com.manager.auth.adapter.config.admin.DefaultAdminInitializer;
 import com.manager.auth.application.port.out.UserRepository;
 import com.manager.auth.model.roles.Role;
 import com.manager.auth.model.users.User;
@@ -23,11 +25,12 @@ class DefaultAdminInitializerTest {
         when(passwordEncoder.encode("Secret123!"))
                 .thenReturn("encoded-secret");
 
-        DefaultAdminInitializer initializer = new DefaultAdminInitializer(
-                userRepository,
-                passwordEncoder,
-                "admin@payments.local",
-                "Secret123!");
+        AdminConfigurationProperties adminConfigurationProperties = mock(AdminConfigurationProperties.class);
+        when(adminConfigurationProperties.email()).thenReturn("admin@payments.local");
+        when(adminConfigurationProperties.password()).thenReturn("Secret123!");
+
+        DefaultAdminInitializer initializer = new DefaultAdminInitializer(userRepository, passwordEncoder,
+                adminConfigurationProperties);
 
         initializer.run(applicationArguments);
 
@@ -48,11 +51,12 @@ class DefaultAdminInitializerTest {
     void skipsCreationWhenAdminAlreadyExists() {
         when(userRepository.existsByEmail("admin@payments.local")).thenReturn(true);
 
-        DefaultAdminInitializer initializer = new DefaultAdminInitializer(
-                userRepository,
-                passwordEncoder,
-                "admin@payments.local",
-                "Secret123!");
+        AdminConfigurationProperties adminConfigurationProperties = mock(AdminConfigurationProperties.class);
+        when(adminConfigurationProperties.email()).thenReturn("admin@payments.local");
+        when(adminConfigurationProperties.password()).thenReturn("Secret123!");
+
+        DefaultAdminInitializer initializer = new DefaultAdminInitializer(userRepository, passwordEncoder,
+                adminConfigurationProperties);
 
         initializer.run(applicationArguments);
 
@@ -63,20 +67,23 @@ class DefaultAdminInitializerTest {
 
     @Test
     void skipsCreationWhenConfigurationMissing() {
-        DefaultAdminInitializer initializerWithoutEmail = new DefaultAdminInitializer(
-                userRepository,
-                passwordEncoder,
-                " ",
-                "Secret123!");
+
+        AdminConfigurationProperties adminConfigurationProperties = mock(AdminConfigurationProperties.class);
+        when(adminConfigurationProperties.email()).thenReturn(" ");
+        when(adminConfigurationProperties.password()).thenReturn("Secret123!");
+
+        DefaultAdminInitializer initializerWithoutEmail = new DefaultAdminInitializer(userRepository, passwordEncoder
+                , adminConfigurationProperties);
 
         initializerWithoutEmail.run(applicationArguments);
         verifyNoInteractions(userRepository);
 
-        DefaultAdminInitializer initializerWithoutPassword = new DefaultAdminInitializer(
-                userRepository,
-                passwordEncoder,
-                "admin@payments.local",
-                " ");
+        AdminConfigurationProperties adminConfigurationProperties2 = mock(AdminConfigurationProperties.class);
+        when(adminConfigurationProperties2.email()).thenReturn("admin@payments.local");
+        when(adminConfigurationProperties2.password()).thenReturn(" ");
+
+        DefaultAdminInitializer initializerWithoutPassword = new DefaultAdminInitializer(userRepository,
+                passwordEncoder, adminConfigurationProperties2);
 
         initializerWithoutPassword.run(applicationArguments);
         verifyNoInteractions(userRepository);
