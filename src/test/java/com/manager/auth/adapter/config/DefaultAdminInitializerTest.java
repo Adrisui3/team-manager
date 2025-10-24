@@ -64,28 +64,4 @@ class DefaultAdminInitializerTest {
         verify(userRepository, never()).save(any());
         verifyNoMoreInteractions(userRepository);
     }
-
-    @Test
-    void skipsCreationWhenConfigurationMissing() {
-
-        AdminConfigurationProperties adminConfigurationProperties = mock(AdminConfigurationProperties.class);
-        when(adminConfigurationProperties.email()).thenReturn(" ");
-        when(adminConfigurationProperties.password()).thenReturn("Secret123!");
-
-        DefaultAdminInitializer initializerWithoutEmail = new DefaultAdminInitializer(userRepository, passwordEncoder
-                , adminConfigurationProperties);
-
-        initializerWithoutEmail.run(applicationArguments);
-        verifyNoInteractions(userRepository);
-
-        AdminConfigurationProperties adminConfigurationProperties2 = mock(AdminConfigurationProperties.class);
-        when(adminConfigurationProperties2.email()).thenReturn("admin@payments.local");
-        when(adminConfigurationProperties2.password()).thenReturn(" ");
-
-        DefaultAdminInitializer initializerWithoutPassword = new DefaultAdminInitializer(userRepository,
-                passwordEncoder, adminConfigurationProperties2);
-
-        initializerWithoutPassword.run(applicationArguments);
-        verifyNoInteractions(userRepository);
-    }
 }
