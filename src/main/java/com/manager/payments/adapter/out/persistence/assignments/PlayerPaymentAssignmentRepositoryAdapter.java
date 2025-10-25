@@ -6,14 +6,14 @@ import com.manager.payments.model.payments.Payment;
 import com.manager.payments.model.payments.PaymentStatus;
 import com.manager.payments.model.players.Player;
 import com.manager.payments.model.players.PlayerStatus;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-@Component
+@Repository
 public class PlayerPaymentAssignmentRepositoryAdapter implements PlayerPaymentAssignmentRepository {
 
     private final PlayerPaymentAssignmentMapper playerPaymentAssignmentMapper;

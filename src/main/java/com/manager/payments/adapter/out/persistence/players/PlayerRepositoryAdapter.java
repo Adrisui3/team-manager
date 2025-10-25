@@ -1,25 +1,29 @@
 package com.manager.payments.adapter.out.persistence.players;
 
-import com.manager.payments.adapter.out.persistence.receipts.ReceiptMapper;
 import com.manager.payments.application.port.out.PlayerRepository;
 import com.manager.payments.model.players.Player;
-import org.springframework.stereotype.Component;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 import java.util.UUID;
 
-@Component
+@Repository
 public class PlayerRepositoryAdapter implements PlayerRepository {
 
     private final PlayerJpaRepository playerJpaRepository;
     private final PlayerMapper playerMapper;
-    private final ReceiptMapper receiptMapper;
 
-    public PlayerRepositoryAdapter(PlayerJpaRepository playerJpaRepository, PlayerMapper playerMapper,
-                                   ReceiptMapper receiptMapper) {
+    public PlayerRepositoryAdapter(PlayerJpaRepository playerJpaRepository, PlayerMapper playerMapper) {
         this.playerJpaRepository = playerJpaRepository;
         this.playerMapper = playerMapper;
-        this.receiptMapper = receiptMapper;
+    }
+
+    @Override
+    public Page<Player> findAllPlayers(Pageable pageable) {
+        Page<PlayerJpaEntity> players = playerJpaRepository.findAll(pageable);
+        return players.map(playerMapper::toPlayer);
     }
 
     @Override

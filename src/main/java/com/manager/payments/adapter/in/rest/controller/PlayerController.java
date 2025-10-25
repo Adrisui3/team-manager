@@ -15,7 +15,11 @@ import com.manager.payments.model.assignments.PlayerPaymentAssignment;
 import com.manager.payments.model.exceptions.PlayerNotFoundException;
 import com.manager.payments.model.players.Player;
 import com.manager.payments.model.receipts.Receipt;
+import com.manager.shared.response.PageResponse;
 import com.manager.shared.response.ResponseDto;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +28,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/player")
+@RequestMapping("/v1/players")
 public class PlayerController {
 
     private final PlayerPaymentAssignmentMapper playerPaymentAssignmentMapper;
@@ -48,8 +52,14 @@ public class PlayerController {
         this.receiptRepository = receiptRepository;
     }
 
+    @GetMapping
+    public ResponseEntity<PageResponse<PlayerDto>> findAll(@ParameterObject Pageable pageable) {
+        Page<Player> players = playerRepository.findAllPlayers(pageable);
+        return ResponseEntity.ok(PageResponse.of(players.map(playerMapper::toPlayerDto)));
+    }
+
     @GetMapping("/{playerId}")
-    public ResponseEntity<ResponseDto<PlayerDto>> getUser(@PathVariable("playerId") UUID playerId) {
+    public ResponseEntity<ResponseDto<PlayerDto>> getPlayer(@PathVariable("playerId") UUID playerId) {
         Player player = playerRepository.findById(playerId).orElseThrow(() -> new PlayerNotFoundException(playerId));
         return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(), playerMapper.toPlayerDto(player)));
     }
