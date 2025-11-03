@@ -17,6 +17,12 @@ import com.manager.payments.model.players.Player;
 import com.manager.payments.model.receipts.Receipt;
 import com.manager.shared.response.PageResponse;
 import com.manager.shared.response.ResponseDto;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,9 +30,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
 import java.util.UUID;
 
+@Tag(name = "Players", description = "Players management endpoints")
 @RestController
 @RequestMapping("/v1/players")
 public class PlayerController {
@@ -52,18 +60,21 @@ public class PlayerController {
         this.receiptRepository = receiptRepository;
     }
 
+    @Operation(summary = "Get all users paginated")
     @GetMapping
     public ResponseEntity<PageResponse<PlayerDto>> findAll(@ParameterObject Pageable pageable) {
         Page<Player> players = playerRepository.findAllPlayers(pageable);
         return ResponseEntity.ok(PageResponse.of(players.map(playerMapper::toPlayerDto)));
     }
 
+    @Operation(summary = "Get user by id")
     @GetMapping("/{playerId}")
     public ResponseEntity<ResponseDto<PlayerDto>> getPlayer(@PathVariable("playerId") UUID playerId) {
         Player player = playerRepository.findById(playerId).orElseThrow(() -> new PlayerNotFoundException(playerId));
         return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(), playerMapper.toPlayerDto(player)));
     }
 
+    @Operation(summary = "Get a user's receipts")
     @GetMapping("/{playerId}/receipts")
     public ResponseEntity<ResponseDto<List<ReceiptDto>>> getPlayerReceipts(@PathVariable("playerId") UUID playerId) {
         List<Receipt> receipts = receiptRepository.findAllByPlayerId(playerId);
@@ -71,10 +82,19 @@ public class PlayerController {
                 receipts.stream().map(receiptMapper::toReceiptDto).toList()));
     }
 
+    @Operation(summary = "Create a new user")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "User created",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ResponseDto.class))),
+            @ApiResponse(responseCode = "400", description = "User already exists",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ResponseDto.class)))
+    })
     @PostMapping
     public ResponseEntity<ResponseDto<PlayerDto>> createUser(@RequestBody CreatePlayerRequestDTO requestDTO) {
         Player newPlayer = createPlayerUseCase.createPlayer(requestDTO);
-        return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(), playerMapper.toPlayerDto(newPlayer)));
+        return ResponseEntity.created(URI.create("/player/" + newPlayer.id())).body(new ResponseDto<>(HttpStatus.CREATED.value(), playerMapper.toPlayerDto(newPlayer)));
     }
 
     @PostMapping("/{playerId}/assign/{paymentId}")
