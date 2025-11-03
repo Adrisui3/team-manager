@@ -60,21 +60,39 @@ public class PlayerController {
         this.receiptRepository = receiptRepository;
     }
 
-    @Operation(summary = "Get all users paginated")
+    @Operation(summary = "Get all players", description = "Supports pagination via Spring Data's pagination")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "List of players",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation =
+                            PlayerDto.class)))
+    })
     @GetMapping
     public ResponseEntity<PageResponse<PlayerDto>> findAll(@ParameterObject Pageable pageable) {
         Page<Player> players = playerRepository.findAllPlayers(pageable);
         return ResponseEntity.ok(PageResponse.of(players.map(playerMapper::toPlayerDto)));
     }
 
-    @Operation(summary = "Get user by id")
+    @Operation(summary = "Get player by id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Player found",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation =
+                            PlayerDto.class))),
+            @ApiResponse(responseCode = "404", description = "Player not found",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation =
+                            ResponseDto.class)))
+    })
     @GetMapping("/{playerId}")
     public ResponseEntity<ResponseDto<PlayerDto>> getPlayer(@PathVariable("playerId") UUID playerId) {
         Player player = playerRepository.findById(playerId).orElseThrow(() -> new PlayerNotFoundException(playerId));
         return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(), playerMapper.toPlayerDto(player)));
     }
 
-    @Operation(summary = "Get a user's receipts")
+    @Operation(summary = "Get a player's receipts")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Player's receipts",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation =
+                            ReceiptDto.class))),
+    })
     @GetMapping("/{playerId}/receipts")
     public ResponseEntity<ResponseDto<List<ReceiptDto>>> getPlayerReceipts(@PathVariable("playerId") UUID playerId) {
         List<Receipt> receipts = receiptRepository.findAllByPlayerId(playerId);
@@ -82,12 +100,12 @@ public class PlayerController {
                 receipts.stream().map(receiptMapper::toReceiptDto).toList()));
     }
 
-    @Operation(summary = "Create a new user")
+    @Operation(summary = "Create a new player")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "User created",
+            @ApiResponse(responseCode = "201", description = "Player created",
                     content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ResponseDto.class))),
-            @ApiResponse(responseCode = "400", description = "User already exists",
+                            schema = @Schema(implementation = PlayerDto.class))),
+            @ApiResponse(responseCode = "400", description = "Player already exists",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ResponseDto.class)))
     })
@@ -97,14 +115,35 @@ public class PlayerController {
         return ResponseEntity.created(URI.create("/player/" + newPlayer.id())).body(new ResponseDto<>(HttpStatus.CREATED.value(), playerMapper.toPlayerDto(newPlayer)));
     }
 
+    @Operation(summary = "Assigns payment to player")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Assignment created",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = PlayerPaymentAssignmentDto.class))),
+            @ApiResponse(responseCode = "404", description = "Player not found",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation =
+                            ResponseDto.class))),
+            @ApiResponse(responseCode = "404", description = "Payment not found",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation =
+                            ResponseDto.class))),
+            @ApiResponse(responseCode = "400", description = "Assignment already exists",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation =
+                            ResponseDto.class)))
+    })
     @PostMapping("/{playerId}/assign/{paymentId}")
     public ResponseEntity<ResponseDto<PlayerPaymentAssignmentDto>> assignPaymentToPlayer(@PathVariable UUID playerId,
                                                                                          @PathVariable UUID paymentId) {
         PlayerPaymentAssignment assignment = assignPaymentToPlayerUseCase.assignPaymentToPlayer(playerId, paymentId);
-        return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(),
+        return ResponseEntity.ok(new ResponseDto<>(HttpStatus.CREATED.value(),
                 playerPaymentAssignmentMapper.toPlayerPaymentAssignmentDto(assignment)));
     }
 
+    @Operation(summary = "Delete player")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Player deleted",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation =
+                            ResponseDto.class))),
+    })
     @DeleteMapping("/{playerId}")
     public ResponseEntity<ResponseDto<String>> deleteUser(@PathVariable UUID playerId) {
         playerRepository.deleteById(playerId);
