@@ -1,6 +1,7 @@
 package com.manager.payments.adapter.out.persistence.players;
 
 import com.manager.payments.application.port.out.PlayerRepository;
+import com.manager.payments.model.exceptions.PlayerNotFoundException;
 import com.manager.payments.model.players.Player;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -45,6 +46,10 @@ public class PlayerRepositoryAdapter implements PlayerRepository {
 
     @Override
     public void deleteById(UUID id) {
+        if (!playerJpaRepository.existsById(id)) {
+            throw new PlayerNotFoundException(id);
+        }
+
         playerJpaRepository.deleteById(id);
     }
 }

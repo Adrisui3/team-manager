@@ -23,6 +23,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -82,7 +83,7 @@ public class PlayerController {
                             ResponseDto.class)))
     })
     @GetMapping("/{playerId}")
-    public ResponseEntity<ResponseDto<PlayerDto>> getPlayer(@PathVariable("playerId") UUID playerId) {
+    public ResponseEntity<ResponseDto<PlayerDto>> getPlayer(@PathVariable UUID playerId) {
         Player player = playerRepository.findById(playerId).orElseThrow(() -> new PlayerNotFoundException(playerId));
         return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(), playerMapper.toPlayerDto(player)));
     }
@@ -94,7 +95,7 @@ public class PlayerController {
                             ReceiptDto.class))),
     })
     @GetMapping("/{playerId}/receipts")
-    public ResponseEntity<ResponseDto<List<ReceiptDto>>> getPlayerReceipts(@PathVariable("playerId") UUID playerId) {
+    public ResponseEntity<ResponseDto<List<ReceiptDto>>> getPlayerReceipts(@PathVariable UUID playerId) {
         List<Receipt> receipts = receiptRepository.findAllByPlayerId(playerId);
         return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(),
                 receipts.stream().map(receiptMapper::toReceiptDto).toList()));
@@ -110,9 +111,9 @@ public class PlayerController {
                             schema = @Schema(implementation = ResponseDto.class)))
     })
     @PostMapping
-    public ResponseEntity<ResponseDto<PlayerDto>> createUser(@RequestBody CreatePlayerRequestDTO requestDTO) {
+    public ResponseEntity<ResponseDto<PlayerDto>> createUser(@Valid @RequestBody CreatePlayerRequestDTO requestDTO) {
         Player newPlayer = createPlayerUseCase.createPlayer(requestDTO);
-        return ResponseEntity.created(URI.create("/player/" + newPlayer.id())).body(new ResponseDto<>(HttpStatus.CREATED.value(), playerMapper.toPlayerDto(newPlayer)));
+        return ResponseEntity.created(URI.create("/players/" + newPlayer.id())).body(new ResponseDto<>(HttpStatus.CREATED.value(), playerMapper.toPlayerDto(newPlayer)));
     }
 
     @Operation(summary = "Assigns payment to player")
@@ -141,6 +142,9 @@ public class PlayerController {
     @Operation(summary = "Delete player")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Player deleted",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation =
+                            ResponseDto.class))),
+            @ApiResponse(responseCode = "404", description = "Player not found",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation =
                             ResponseDto.class))),
     })
