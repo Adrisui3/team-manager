@@ -1,10 +1,12 @@
 package com.manager.payments.adapter.in.rest.controller;
 
+import com.manager.payments.adapter.in.rest.dto.models.PaymentDto;
 import com.manager.payments.adapter.in.rest.dto.models.PlayerDto;
 import com.manager.payments.adapter.in.rest.dto.models.PlayerPaymentAssignmentDto;
 import com.manager.payments.adapter.in.rest.dto.models.ReceiptDto;
 import com.manager.payments.adapter.in.rest.dto.request.CreatePlayerRequestDTO;
 import com.manager.payments.adapter.out.persistence.assignments.PlayerPaymentAssignmentMapper;
+import com.manager.payments.adapter.out.persistence.payments.PaymentMapper;
 import com.manager.payments.adapter.out.persistence.players.PlayerMapper;
 import com.manager.payments.adapter.out.persistence.receipts.ReceiptMapper;
 import com.manager.payments.application.port.in.AssignPaymentToPlayerUseCase;
@@ -13,6 +15,7 @@ import com.manager.payments.application.port.out.PlayerRepository;
 import com.manager.payments.application.port.out.ReceiptRepository;
 import com.manager.payments.model.assignments.PlayerPaymentAssignment;
 import com.manager.payments.model.exceptions.PlayerNotFoundException;
+import com.manager.payments.model.payments.Payment;
 import com.manager.payments.model.players.Player;
 import com.manager.payments.model.receipts.Receipt;
 import com.manager.shared.response.PageResponse;
@@ -47,11 +50,13 @@ public class PlayerController {
     private final PlayerMapper playerMapper;
     private final ReceiptMapper receiptMapper;
     private final ReceiptRepository receiptRepository;
+    private final PaymentMapper paymentMapper;
 
     public PlayerController(PlayerPaymentAssignmentMapper playerPaymentAssignmentMapper,
                             CreatePlayerUseCase createPlayerUseCase, PlayerRepository playerRepository,
                             AssignPaymentToPlayerUseCase assignPaymentToPlayerUseCase, PlayerMapper playerMapper,
-                            ReceiptMapper receiptMapper, ReceiptRepository receiptRepository) {
+                            ReceiptMapper receiptMapper, ReceiptRepository receiptRepository,
+                            PaymentMapper paymentMapper) {
         this.playerPaymentAssignmentMapper = playerPaymentAssignmentMapper;
         this.createPlayerUseCase = createPlayerUseCase;
         this.playerRepository = playerRepository;
@@ -59,6 +64,7 @@ public class PlayerController {
         this.playerMapper = playerMapper;
         this.receiptMapper = receiptMapper;
         this.receiptRepository = receiptRepository;
+        this.paymentMapper = paymentMapper;
     }
 
     @Operation(summary = "Get all players", description = "Supports pagination via Spring Data's pagination")
@@ -137,6 +143,22 @@ public class PlayerController {
         PlayerPaymentAssignment assignment = assignPaymentToPlayerUseCase.assignPaymentToPlayer(playerId, paymentId);
         return ResponseEntity.ok(new ResponseDto<>(HttpStatus.CREATED.value(),
                 playerPaymentAssignmentMapper.toPlayerPaymentAssignmentDto(assignment)));
+    }
+
+    @Operation(summary = "Get payments assigned to a player")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "List of payments assigned to the player",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation =
+                            ResponseDto.class))),
+            @ApiResponse(responseCode = "404", description = "Player not found",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation =
+                            ResponseDto.class))),
+    })
+    @GetMapping("/{playerId}/payments")
+    public ResponseEntity<ResponseDto<List<PaymentDto>>> getPlayerPayments(@PathVariable UUID playerId) {
+        List<Payment> assignedPayments = playerRepository.findAllAssignedPayments(playerId);
+        return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(),
+                assignedPayments.stream().map(paymentMapper::toPaymentDto).toList()));
     }
 
     @Operation(summary = "Delete player")
