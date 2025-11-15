@@ -15,6 +15,8 @@ public interface PaymentRepository {
 
     Optional<Payment> findById(UUID id);
 
+    boolean existsById(UUID id);
+
     boolean existsByCode(String code);
 
     void deleteById(UUID id);

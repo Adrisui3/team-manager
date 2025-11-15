@@ -2,9 +2,7 @@ package com.manager.payments.adapter.out.persistence.assignments;
 
 import com.manager.payments.application.port.out.PlayerPaymentAssignmentRepository;
 import com.manager.payments.model.assignments.PlayerPaymentAssignment;
-import com.manager.payments.model.payments.Payment;
 import com.manager.payments.model.payments.PaymentStatus;
-import com.manager.payments.model.players.Player;
 import com.manager.payments.model.players.PlayerStatus;
 import org.springframework.stereotype.Repository;
 
@@ -41,8 +39,8 @@ public class PlayerPaymentAssignmentRepositoryAdapter implements PlayerPaymentAs
     }
 
     @Override
-    public boolean existsByPlayerAndPayment(Player player, Payment payment) {
-        return playerPaymentAssignmentJpaRepository.existsByPlayer_IdAndPayment_Id(player.id(), payment.id());
+    public boolean existsByPlayerIdAndPaymentId(UUID playerId, UUID paymentId) {
+        return playerPaymentAssignmentJpaRepository.existsByPlayer_IdAndPayment_Id(playerId, paymentId);
     }
 
     @Override
@@ -50,5 +48,10 @@ public class PlayerPaymentAssignmentRepositoryAdapter implements PlayerPaymentAs
         List<PlayerPaymentAssignmentJpaEntity> playerPaymentAssignmentJpaEntities =
                 playerPaymentAssignmentJpaRepository.findAllByPlayer_StatusAndPayment_StatusAndPayment_StartDateLessThanEqual(PlayerStatus.ENABLED, PaymentStatus.ACTIVE, date);
         return playerPaymentAssignmentJpaEntities.stream().map(playerPaymentAssignmentMapper::toPlayerPaymentAssignment).toList();
+    }
+
+    @Override
+    public void deleteByPlayerIdAndPaymentId(UUID playerId, UUID paymentId) {
+        playerPaymentAssignmentJpaRepository.deleteByPlayer_IdAndPayment_Id(playerId, paymentId);
     }
 }

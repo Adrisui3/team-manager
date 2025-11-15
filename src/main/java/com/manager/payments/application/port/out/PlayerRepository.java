@@ -17,6 +17,8 @@ public interface PlayerRepository {
 
     Optional<Player> findById(UUID id);
 
+    boolean existsById(UUID id);
+
     Optional<Player> findByPersonalId(String personalId);
 
     void deleteById(UUID id);

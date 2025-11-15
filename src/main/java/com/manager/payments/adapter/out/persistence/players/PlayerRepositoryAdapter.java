@@ -48,6 +48,11 @@ public class PlayerRepositoryAdapter implements PlayerRepository {
     }
 
     @Override
+    public boolean existsById(UUID id) {
+        return playerJpaRepository.existsById(id);
+    }
+
+    @Override
     public Optional<Player> findByPersonalId(String personalId) {
         return playerJpaRepository.findByPersonalId(personalId).map(playerMapper::toPlayer);
     }

@@ -47,7 +47,7 @@ public class AssignPaymentToPlayerUseCaseTest {
 
         PlayerPaymentAssignmentRepository playerPaymentAssignmentRepository =
                 Mockito.mock(PlayerPaymentAssignmentRepository.class);
-        Mockito.when(playerPaymentAssignmentRepository.existsByPlayerAndPayment(player, payment)).thenReturn(false);
+        Mockito.when(playerPaymentAssignmentRepository.existsByPlayerIdAndPaymentId(playerId, paymentId)).thenReturn(false);
         Mockito.when(playerPaymentAssignmentRepository.save(any())).then(returnsFirstArg());
 
         AssignPaymentToPlayerUseCase assignPaymentToPlayerUseCase =
@@ -76,7 +76,7 @@ public class AssignPaymentToPlayerUseCaseTest {
 
         PlayerPaymentAssignmentRepository playerPaymentAssignmentRepository =
                 Mockito.mock(PlayerPaymentAssignmentRepository.class);
-        Mockito.when(playerPaymentAssignmentRepository.existsByPlayerAndPayment(player, payment)).thenReturn(true);
+        Mockito.when(playerPaymentAssignmentRepository.existsByPlayerIdAndPaymentId(playerId, paymentId)).thenReturn(true);
         Mockito.when(playerPaymentAssignmentRepository.save(any())).then(returnsFirstArg());
 
         AssignPaymentToPlayerUseCase assignPaymentToPlayerUseCase =

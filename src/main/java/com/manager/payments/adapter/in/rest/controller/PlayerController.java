@@ -127,10 +127,7 @@ public class PlayerController {
             @ApiResponse(responseCode = "201", description = "Assignment created",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = PlayerPaymentAssignmentDto.class))),
-            @ApiResponse(responseCode = "404", description = "Player not found",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation =
-                            ResponseDto.class))),
-            @ApiResponse(responseCode = "404", description = "Payment not found",
+            @ApiResponse(responseCode = "404", description = "Player or payment not found",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation =
                             ResponseDto.class))),
             @ApiResponse(responseCode = "400", description = "Assignment already exists",
@@ -159,6 +156,23 @@ public class PlayerController {
         List<Payment> assignedPayments = playerRepository.findAllAssignedPayments(playerId);
         return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(),
                 assignedPayments.stream().map(paymentMapper::toPaymentDto).toList()));
+    }
+
+    @Operation(summary = "Unassigns a payment from a given player")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Assignment deleted",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ResponseDto.class))),
+            @ApiResponse(responseCode = "404", description = "Player, payment or assignment not found",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation =
+                            ResponseDto.class))),
+    })
+    @DeleteMapping("/{playerId}/unassign/{paymentId}")
+    public ResponseEntity<ResponseDto<String>> unassignPaymentFromPlayer(@PathVariable UUID playerId,
+                                                                         @PathVariable UUID paymentId) {
+        assignPaymentToPlayerUseCase.unassignPaymentToPlayer(playerId, paymentId);
+        return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(), "Payment with id " + playerId + " was " +
+                "unassigned from player with id " + playerId));
     }
 
     @Operation(summary = "Delete player")
