@@ -12,6 +12,7 @@ import com.manager.payments.model.exceptions.PaymentNotFoundException;
 import com.manager.payments.model.payments.Payment;
 import com.manager.payments.model.receipts.Receipt;
 import com.manager.shared.response.ResponseDto;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,8 +20,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
+@Tag(name = "Payments", description = "Payments management endpoints")
 @RestController
-@RequestMapping("/payment")
+@RequestMapping("/v1/payments")
 public class PaymentController {
 
     private final PaymentRepository paymentRepository;
