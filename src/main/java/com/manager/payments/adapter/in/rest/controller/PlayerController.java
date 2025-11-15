@@ -119,7 +119,7 @@ public class PlayerController {
     @PostMapping
     public ResponseEntity<ResponseDto<PlayerDto>> createUser(@Valid @RequestBody CreatePlayerRequestDTO requestDTO) {
         Player newPlayer = createPlayerUseCase.createPlayer(requestDTO);
-        return ResponseEntity.created(URI.create("v1/players/" + newPlayer.id())).body(new ResponseDto<>(HttpStatus.CREATED.value(), playerMapper.toPlayerDto(newPlayer)));
+        return ResponseEntity.created(URI.create("/v1/players/" + newPlayer.id())).body(new ResponseDto<>(HttpStatus.CREATED.value(), playerMapper.toPlayerDto(newPlayer)));
     }
 
     @Operation(summary = "Assigns payment to player")
