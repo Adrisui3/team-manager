@@ -53,9 +53,7 @@ public class PaymentController {
 
     @Operation(summary = "Get all payments", description = "Support pagination via Spring Data's pagination")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "List of payments",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation =
-                            PaymentDto.class)))
+            @ApiResponse(responseCode = "200", description = "List of payments", useReturnTypeSchema = true)
     })
     @GetMapping
     public ResponseEntity<PageResponse<PaymentDto>> findAll(@ParameterObject Pageable pageable) {
@@ -65,15 +63,13 @@ public class PaymentController {
 
     @Operation(summary = "Get payment by id")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Payment found",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation =
-                            PaymentDto.class))),
+            @ApiResponse(responseCode = "200", description = "Payment found", useReturnTypeSchema = true),
             @ApiResponse(responseCode = "404", description = "Payment not found",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation =
                             ResponseDto.class)))
     })
     @GetMapping("/{paymentId}")
-    public ResponseEntity<ResponseDto<PaymentDto>> getPayment(@PathVariable("paymentId") UUID paymentId) {
+    public ResponseEntity<ResponseDto<PaymentDto>> getPayment(@PathVariable UUID paymentId) {
         Payment payment =
                 paymentRepository.findById(paymentId).orElseThrow(() -> new PaymentNotFoundException(paymentId));
         return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(), paymentMapper.toPaymentDto(payment)));
@@ -81,22 +77,18 @@ public class PaymentController {
 
     @Operation(summary = "Get a payment's receipts")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Payment's receipts",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation =
-                            ReceiptDto.class))),
+            @ApiResponse(responseCode = "200", description = "Payment's receipts", useReturnTypeSchema = true)
     })
     @GetMapping("/{paymentId}/receipts")
-    public ResponseEntity<ResponseDto<List<ReceiptDto>>> getPaymentReceipts(@PathVariable("paymentId") UUID playerId) {
-        List<Receipt> receipts = receiptRepository.findAllByPaymentId(playerId);
+    public ResponseEntity<ResponseDto<List<ReceiptDto>>> getPaymentReceipts(@PathVariable UUID paymentId) {
+        List<Receipt> receipts = receiptRepository.findAllByPaymentId(paymentId);
         return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(),
                 receipts.stream().map(receiptMapper::toReceiptDto).toList()));
     }
 
     @Operation(summary = "Create a new payment")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Payment created",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = PaymentDto.class))),
+            @ApiResponse(responseCode = "201", description = "Payment created", useReturnTypeSchema = true),
             @ApiResponse(responseCode = "400", description = "Payment already exists",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ResponseDto.class)))
@@ -109,9 +101,7 @@ public class PaymentController {
 
     @Operation(summary = "Delete payment")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Payment deleted",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation =
-                            ResponseDto.class))),
+            @ApiResponse(responseCode = "200", description = "Payment deleted", useReturnTypeSchema = true),
             @ApiResponse(responseCode = "404", description = "Payment not found",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation =
                             ResponseDto.class))),

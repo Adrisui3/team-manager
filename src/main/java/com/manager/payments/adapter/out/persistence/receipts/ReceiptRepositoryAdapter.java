@@ -4,6 +4,8 @@ import com.manager.payments.application.port.out.ReceiptRepository;
 import com.manager.payments.model.exceptions.ReceiptNotFoundException;
 import com.manager.payments.model.receipts.Receipt;
 import com.manager.payments.model.receipts.ReceiptStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
@@ -20,6 +22,12 @@ public class ReceiptRepositoryAdapter implements ReceiptRepository {
     public ReceiptRepositoryAdapter(ReceiptJpaRepository receiptJpaRepository, ReceiptMapper receiptMapper) {
         this.receiptJpaRepository = receiptJpaRepository;
         this.receiptMapper = receiptMapper;
+    }
+
+    @Override
+    public Page<Receipt> findAll(Pageable pageable) {
+        Page<ReceiptJpaEntity> receipts = receiptJpaRepository.findAll(pageable);
+        return receipts.map(receiptMapper::toReceipt);
     }
 
     @Override

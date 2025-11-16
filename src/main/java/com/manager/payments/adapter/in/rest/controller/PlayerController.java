@@ -69,9 +69,7 @@ public class PlayerController {
 
     @Operation(summary = "Get all players", description = "Supports pagination via Spring Data's pagination")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "List of players",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation =
-                            PlayerDto.class)))
+            @ApiResponse(responseCode = "200", description = "List of players", useReturnTypeSchema = true)
     })
     @GetMapping
     public ResponseEntity<PageResponse<PlayerDto>> findAll(@ParameterObject Pageable pageable) {
@@ -81,9 +79,7 @@ public class PlayerController {
 
     @Operation(summary = "Get player by id")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Player found",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation =
-                            PlayerDto.class))),
+            @ApiResponse(responseCode = "200", description = "Player found", useReturnTypeSchema = true),
             @ApiResponse(responseCode = "404", description = "Player not found",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation =
                             ResponseDto.class)))
@@ -96,9 +92,7 @@ public class PlayerController {
 
     @Operation(summary = "Get a player's receipts")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Player's receipts",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation =
-                            ReceiptDto.class))),
+            @ApiResponse(responseCode = "200", description = "Player's receipts", useReturnTypeSchema = true),
     })
     @GetMapping("/{playerId}/receipts")
     public ResponseEntity<ResponseDto<List<ReceiptDto>>> getPlayerReceipts(@PathVariable UUID playerId) {
@@ -109,9 +103,7 @@ public class PlayerController {
 
     @Operation(summary = "Create a new player")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Player created",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = PlayerDto.class))),
+            @ApiResponse(responseCode = "201", description = "Player created", useReturnTypeSchema = true),
             @ApiResponse(responseCode = "400", description = "Player already exists",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ResponseDto.class)))
@@ -125,8 +117,7 @@ public class PlayerController {
     @Operation(summary = "Assigns payment to player")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Assignment created",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = PlayerPaymentAssignmentDto.class))),
+                    useReturnTypeSchema = true),
             @ApiResponse(responseCode = "404", description = "Player or payment not found",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation =
                             ResponseDto.class))),
@@ -145,8 +136,7 @@ public class PlayerController {
     @Operation(summary = "Get payments assigned to a player")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "List of payments assigned to the player",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation =
-                            ResponseDto.class))),
+                    useReturnTypeSchema = true),
             @ApiResponse(responseCode = "404", description = "Player not found",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation =
                             ResponseDto.class))),
@@ -161,8 +151,7 @@ public class PlayerController {
     @Operation(summary = "Unassigns a payment from a given player")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Assignment deleted",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ResponseDto.class))),
+                    useReturnTypeSchema = true),
             @ApiResponse(responseCode = "404", description = "Player, payment or assignment not found",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation =
                             ResponseDto.class))),
@@ -178,8 +167,7 @@ public class PlayerController {
     @Operation(summary = "Delete player")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Player deleted",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation =
-                            ResponseDto.class))),
+                    useReturnTypeSchema = true),
             @ApiResponse(responseCode = "404", description = "Player not found",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation =
                             ResponseDto.class))),
