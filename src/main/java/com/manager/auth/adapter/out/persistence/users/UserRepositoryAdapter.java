@@ -3,11 +3,11 @@ package com.manager.auth.adapter.out.persistence.users;
 import com.manager.auth.adapter.out.persistence.mapper.UserMapper;
 import com.manager.auth.application.port.out.UserRepository;
 import com.manager.auth.model.users.User;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-@Component
+@Repository
 public class UserRepositoryAdapter implements UserRepository {
 
     private final UserJpaRepository userJpaRepository;

@@ -37,7 +37,8 @@ public class SecurityConfiguration {
     };
 
     private static final String[] PUBLIC_ROUTES = {
-            "/auth/**"
+            "/v1/auth/login",
+            "/v1/auth/set-password",
     };
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;

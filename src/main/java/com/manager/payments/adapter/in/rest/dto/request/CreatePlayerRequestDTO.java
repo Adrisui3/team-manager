@@ -1,9 +1,20 @@
 package com.manager.payments.adapter.in.rest.dto.request;
 
 import com.manager.payments.model.players.Category;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
 
-public record CreatePlayerRequestDTO(String personalId, String name, String surname, String email, LocalDate birthDate,
-                                     Category category) {
+@Schema(name = "CreatePlayerRequest", description = "Payload to create a player")
+public record CreatePlayerRequestDTO(
+        @NotBlank @Schema(description = "Personal id", example = "12345678A") String personalId,
+        @NotBlank @Size(min = 1, max = 60) @Schema(description = "Name") String name,
+        @NotBlank @Size(min = 1, max = 80) @Schema(description = "Surname") String surname,
+        @NotBlank @Email @Schema(description = "Email") String email,
+        @NotNull @Schema(description = "Birth date") LocalDate birthDate,
+        @NotNull @Schema(description = "Player category", example = "CADETE", implementation = Category.class) Category category) {
 }

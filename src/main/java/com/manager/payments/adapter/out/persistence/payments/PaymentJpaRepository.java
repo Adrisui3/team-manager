@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface PaymentJpaRepository extends JpaRepository<PaymentJpaEntity, UUID> {
+
     List<PaymentJpaEntity> findAllByEndDateBeforeAndStatus(LocalDate date, PaymentStatus status);
 
     Optional<PaymentJpaEntity> findByCode(String code);

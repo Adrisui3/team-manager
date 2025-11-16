@@ -8,4 +8,5 @@ public interface AssignPaymentToPlayerUseCase {
 
     PlayerPaymentAssignment assignPaymentToPlayer(UUID playerId, UUID paymentId);
 
+    void unassignPaymentToPlayer(UUID playerId, UUID paymentId);
 }

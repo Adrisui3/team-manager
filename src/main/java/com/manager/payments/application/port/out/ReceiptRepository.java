@@ -2,6 +2,8 @@ package com.manager.payments.application.port.out;
 
 import com.manager.payments.model.receipts.Receipt;
 import com.manager.payments.model.receipts.ReceiptStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -9,6 +11,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface ReceiptRepository {
+
+    Page<Receipt> findAll(Pageable pageable);
 
     Optional<Receipt> findById(UUID id);
 
