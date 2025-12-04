@@ -11,5 +11,17 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
+  team-manager:
+    image: team-manager:latest
+    container_name: team-manager
+    depends_on:
+      - postgres
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/team_manager
+      DB_USER: admin
+      DB_PASSWORD: pass
+    ports:
+      - "8080:8080"
+
 volumes:
   postgres_data:
