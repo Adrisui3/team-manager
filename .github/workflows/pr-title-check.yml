@@ -1,0 +1,35 @@
+name: PR Title Check
+
+on:
+  pull_request:
+    types: [ opened, edited, reopened, synchronize ]
+
+permissions:
+  pull-requests: write
+
+jobs:
+  pr-title:
+    name: Validate PR Title
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Validate PR Title Follows Conventional Commits
+        uses: amannn/action-semantic-pull-request@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          types: |
+            build
+            chore
+            ci
+            docs
+            feat
+            fix
+            perf
+            refactor
+            revert
+            style
+            test
+          requireScope: false
+          subjectPattern: '^[^A-Z].+'
+          subjectPatternError: >-
+            The subject must start with a lowercase letter and may not be empty.
