@@ -1,0 +1,98 @@
+name: Version bump on merge
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  bump-version:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect bump level from commit message
+        id: commit_info
+        run: |
+          last_commit="$(git log -1 --pretty=%B)"
+          first_line="$(printf '%s\n' "$last_commit" | head -n 1)"
+
+          if printf '%s' "$last_commit" | grep -qi 'BREAKING CHANGE'; then
+            level=major
+          elif printf '%s' "$first_line" | grep -qE '^[a-zA-Z]+!:'; then
+            level=major
+          elif printf '%s' "$first_line" | grep -qE '^feat(\(|:)?'; then
+            level=minor
+          else
+            level=patch
+          fi
+
+          echo "level=$level" >> "$GITHUB_OUTPUT"
+          printf 'commit_message<<EOF\n%s\nEOF\n' "$last_commit" >> "$GITHUB_OUTPUT"
+
+      - name: Bump version in pom.xml
+        id: bump
+        env:
+          BUMP_LEVEL: ${{ steps.commit_info.outputs.level }}
+        run: |
+          python - <<'PY'
+          import os
+          import re
+          from pathlib import Path
+
+          level = os.environ["BUMP_LEVEL"]
+          pom_path = Path("pom.xml")
+          text = pom_path.read_text()
+
+          pattern = re.compile(
+              r"(<artifactId>team-manager</artifactId>\s*<version>)([0-9]+\.[0-9]+\.[0-9]+)(</version>)",
+              re.MULTILINE,
+          )
+
+          match = pattern.search(text)
+          if not match:
+              raise SystemExit("Unable to locate project version in pom.xml")
+
+          current_version = match.group(2)
+          major, minor, patch = (int(part) for part in current_version.split("."))
+
+          if level == "major":
+              major, minor, patch = major + 1, 0, 0
+          elif level == "minor":
+              minor, patch = minor + 1, 0
+          else:
+              patch += 1
+
+          new_version = f"{major}.{minor}.{patch}"
+          new_text = pattern.sub(f"\\1{new_version}\\3", text, count=1)
+          pom_path.write_text(new_text)
+
+          Path("new_version.txt").write_text(new_version)
+          print(f"current_version={current_version}")
+          print(f"new_version={new_version}")
+          PY
+
+          echo "new_version=$(cat new_version.txt)" >> "$GITHUB_OUTPUT"
+
+      - name: Commit and push version bump
+        env:
+          NEW_VERSION: ${{ steps.bump.outputs.new_version }}
+        run: |
+          if git diff --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add pom.xml
+          git commit -m "chore: bump version to ${NEW_VERSION}"
+          git push
