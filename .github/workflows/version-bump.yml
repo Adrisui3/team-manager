@@ -71,7 +71,7 @@ jobs:
               patch += 1
 
           new_version = f"{major}.{minor}.{patch}"
-          new_text = pattern.sub(f"\\1{new_version}\\3", text, count=1)
+          new_text = pattern.sub(f"\\g<1>{new_version}\\g<3>", text, count=1)
           pom_path.write_text(new_text)
 
           Path("new_version.txt").write_text(new_version)
