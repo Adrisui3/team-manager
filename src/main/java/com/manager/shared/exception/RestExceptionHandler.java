@@ -33,11 +33,11 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(GenericException.class)
     public ResponseEntity<ResponseDto<String>> handleGenericException(GenericException e) {
         HttpStatus httpStatus = switch (e.getStatus()) {
-            case OK -> HttpStatus.OK;
             case NOT_FOUND -> HttpStatus.NOT_FOUND;
             case INVALID_STATE -> HttpStatus.BAD_REQUEST;
             case UNAUTHORIZED -> HttpStatus.UNAUTHORIZED;
             case FORBIDDEN -> HttpStatus.FORBIDDEN;
+            case ERROR -> HttpStatus.INTERNAL_SERVER_ERROR;
         };
 
         return ResponseEntity.status(httpStatus).body(new ResponseDto<>(httpStatus.value(), e.getMessage()));

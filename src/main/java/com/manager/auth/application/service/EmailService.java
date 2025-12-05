@@ -1,5 +1,6 @@
 package com.manager.auth.application.service;
 
+import com.manager.auth.model.exceptions.VerificationEmailFailedException;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -34,7 +35,7 @@ public class EmailService {
         try {
             sendEmail(to, subject, htmlMessage);
         } catch (MessagingException e) {
-            e.printStackTrace();
+            throw new VerificationEmailFailedException(e.getMessage());
         }
     }
 

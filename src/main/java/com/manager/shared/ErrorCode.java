@@ -1,9 +1,9 @@
 package com.manager.shared;
 
-public enum GenericStatus {
-    OK,
+public enum ErrorCode {
     NOT_FOUND,
     INVALID_STATE,
     UNAUTHORIZED,
-    FORBIDDEN
+    FORBIDDEN,
+    ERROR
 }
