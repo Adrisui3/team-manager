@@ -1,11 +1,8 @@
 name: PR Title Check
 
 on:
-  pull_request_target:
-    types: [ opened, edited, reopened, synchronize ]
-
-permissions:
-  pull-requests: write
+  pull_request:
+    branches: [ "main" ]
 
 jobs:
   pr-title:
