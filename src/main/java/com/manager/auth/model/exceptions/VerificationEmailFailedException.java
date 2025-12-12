@@ -5,6 +5,6 @@ import com.manager.shared.exception.GenericException;
 
 public class VerificationEmailFailedException extends GenericException {
     public VerificationEmailFailedException(String message) {
-        super(message, ErrorCode.INVALID_STATE);
+        super(message, ErrorCode.ERROR);
     }
 }
