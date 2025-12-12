@@ -41,7 +41,10 @@ jobs:
               raise SystemExit("Unable to locate project version in pom.xml")
 
           print(f"APP_VERSION={version.text}")
-          with open("${GITHUB_ENV}", "a", encoding="utf-8") as env_file:
+          import os
+
+          github_env = os.environ["GITHUB_ENV"]
+          with open(github_env, "a", encoding="utf-8") as env_file:
               env_file.write(f"APP_VERSION={version.text}\n")
           PY
 
