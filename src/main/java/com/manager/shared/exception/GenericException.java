@@ -1,12 +1,12 @@
 package com.manager.shared.exception;
 
-import com.manager.shared.GenericStatus;
+import com.manager.shared.ErrorCode;
 
 public abstract class GenericException extends RuntimeException {
     protected final String message;
-    protected final GenericStatus status;
+    protected final ErrorCode status;
 
-    protected GenericException(String message, GenericStatus status) {
+    protected GenericException(String message, ErrorCode status) {
         super(message);
         this.message = message;
         this.status = status;
@@ -17,7 +17,7 @@ public abstract class GenericException extends RuntimeException {
         return message;
     }
 
-    public GenericStatus getStatus() {
+    public ErrorCode getStatus() {
         return status;
     }
 }
