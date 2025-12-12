@@ -15,7 +15,7 @@ FROM eclipse-temurin:21-jre
 WORKDIR /app
 
 # Copy the packaged Spring Boot jar from the builder image
-COPY --from=builder /workspace/app/target/team-manager-0.0.1-SNAPSHOT.jar app.jar
+COPY --from=builder /workspace/app/target/team-manager-*.jar app.jar
 
 EXPOSE 8080
 ENTRYPOINT ["java","-jar","/app/app.jar"]

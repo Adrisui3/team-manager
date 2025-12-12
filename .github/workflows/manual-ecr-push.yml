@@ -1,0 +1,57 @@
+name: Publish Docker image to ECR (manual)
+
+on:
+  workflow_dispatch:
+
+env:
+  ECR_REPOSITORY: team-manager
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Log in to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Read project version
+        id: read_version
+        run: |
+          python - <<'PY'
+          import xml.etree.ElementTree as ET
+
+          pom = ET.parse("pom.xml")
+          namespace = pom.getroot().tag.split("}")[0].strip("{")
+          ns = {"m": namespace}
+          version = pom.getroot().find("m:version", ns)
+
+          if version is None or not version.text:
+              raise SystemExit("Unable to locate project version in pom.xml")
+
+          print(f"APP_VERSION={version.text}")
+          import os
+
+          github_env = os.environ["GITHUB_ENV"]
+          with open(github_env, "a", encoding="utf-8") as env_file:
+              env_file.write(f"APP_VERSION={version.text}\n")
+          PY
+
+      - name: Build and push Docker image
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          IMAGE_TAG="${REGISTRY}/${ECR_REPOSITORY}:${APP_VERSION}"
+          docker build -t "${IMAGE_TAG}" .
+          docker push "${IMAGE_TAG}"
