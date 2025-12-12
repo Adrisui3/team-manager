@@ -35,7 +35,7 @@ public class EmailService {
         try {
             sendEmail(to, subject, htmlMessage);
         } catch (MessagingException e) {
-            throw new VerificationEmailFailedException(e.getMessage());
+            throw new VerificationEmailFailedException("Could no send verification email");
         }
     }
 
