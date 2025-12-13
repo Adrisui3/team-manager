@@ -29,3 +29,13 @@ security:
   jwt:
     secret-key: "${JWT_SECRET_KEY:Oiwsq+C/otaBytHLWJ5GVdAC60Nh2b/4HblLqh1J7MSK04JYazy7TzjD5aMJbvme15m+Vknl71sWqXEYQvo4BA==}"
     expiration-time: 3600000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - health
+  endpoint:
+    health:
+      show-details: always
