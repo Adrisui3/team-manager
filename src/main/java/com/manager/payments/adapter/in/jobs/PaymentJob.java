@@ -1,7 +1,6 @@
 package com.manager.payments.adapter.in.jobs;
 
 import com.manager.payments.application.port.in.ProcessExpiredPaymentsUseCase;
-import jakarta.transaction.Transactional;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -16,8 +15,7 @@ public class PaymentJob {
         this.processExpiredPaymentsUseCase = processExpiredPaymentsUseCase;
     }
 
-    @Scheduled(cron = "0 0 0 * * *")
-    @Transactional
+    @Scheduled(cron = "${scheduled-jobs.payments.cron}")
     public void updateExpiredPayments() {
         LocalDate now = LocalDate.now();
         processExpiredPaymentsUseCase.processExpiredPayments(now);
