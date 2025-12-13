@@ -39,6 +39,8 @@ public class SecurityConfiguration {
     private static final String[] PUBLIC_ROUTES = {
             "/v1/auth/login",
             "/v1/auth/set-password",
+            "/actuator/health",
+            "/actuator/health/**",
     };
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
@@ -50,7 +52,10 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, ObjectMapper om) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(authorize -> authorize.requestMatchers(DOCS).permitAll().requestMatchers(PUBLIC_ROUTES).permitAll().anyRequest().authenticated())
+                .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers(DOCS).permitAll()
+                        .requestMatchers(PUBLIC_ROUTES).permitAll()
+                        .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint((req, res, ex1) ->
