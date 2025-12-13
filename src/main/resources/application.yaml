@@ -30,6 +30,16 @@ security:
     secret-key: "${JWT_SECRET_KEY:Oiwsq+C/otaBytHLWJ5GVdAC60Nh2b/4HblLqh1J7MSK04JYazy7TzjD5aMJbvme15m+Vknl71sWqXEYQvo4BA==}"
     expiration-time: 3600000
 
+scheduled-jobs:
+  billing:
+    cron: "0 0 1 * * *"
+
+  payments:
+    cron: "0 0 0 * * *"
+
+  receipts:
+    cron: "0 0 0 * * *"
+
 management:
   endpoints:
     web:

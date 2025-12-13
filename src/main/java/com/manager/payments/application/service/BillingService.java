@@ -9,6 +9,7 @@ import com.manager.payments.model.receipts.Receipt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -16,6 +17,7 @@ import java.util.Optional;
 import java.util.function.Predicate;
 
 @Service
+@Transactional
 public class BillingService implements IssueNewReceiptsUseCase {
 
     private final Logger logger = LoggerFactory.getLogger(BillingService.class);

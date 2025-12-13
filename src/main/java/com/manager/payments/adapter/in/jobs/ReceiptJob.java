@@ -3,7 +3,6 @@ package com.manager.payments.adapter.in.jobs;
 import com.manager.payments.application.port.in.ProcessOverdueReceiptsUseCase;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 
@@ -16,8 +15,7 @@ public class ReceiptJob {
         this.processOverdueReceiptsUseCase = processOverdueReceiptsUseCase;
     }
 
-    @Scheduled(cron = "0 0 0 * * *")
-    @Transactional
+    @Scheduled(cron = "${scheduled-jobs.receipts.cron}")
     public void updateOverdueReceipts() {
         LocalDate now = LocalDate.now();
         processOverdueReceiptsUseCase.processOverdueReceipts(now);

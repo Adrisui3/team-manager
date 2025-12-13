@@ -12,13 +12,14 @@ import com.manager.payments.model.exceptions.*;
 import com.manager.payments.model.payments.Payment;
 import com.manager.payments.model.players.Player;
 import com.manager.payments.model.players.PlayerStatus;
-import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@Transactional
 public class PlayerService implements CreatePlayerUseCase, AssignPaymentToPlayerUseCase {
 
     private final PlayerPaymentAssignmentRepository playerPaymentAssignmentRepository;
@@ -47,7 +48,6 @@ public class PlayerService implements CreatePlayerUseCase, AssignPaymentToPlayer
     }
 
     @Override
-    @Transactional
     public PlayerPaymentAssignment assignPaymentToPlayer(UUID playerId, UUID paymentId) {
         Player player = playerRepository.findById(playerId).orElseThrow(() -> new PlayerNotFoundException(playerId));
         Payment payment =
@@ -61,7 +61,6 @@ public class PlayerService implements CreatePlayerUseCase, AssignPaymentToPlayer
     }
 
     @Override
-    @Transactional
     public void unassignPaymentToPlayer(UUID playerId, UUID paymentId) {
         if (!playerRepository.existsById(playerId)) {
             throw new PlayerNotFoundException(playerId);
