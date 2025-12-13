@@ -7,7 +7,7 @@ import com.manager.payments.model.receipts.ReceiptFactory;
 
 import java.time.LocalDate;
 import java.util.Optional;
-import java.util.function.Function;
+import java.util.function.Predicate;
 
 public class BillingProcessor {
 
@@ -15,7 +15,7 @@ public class BillingProcessor {
     }
 
     public static Optional<Receipt> process(PlayerPaymentAssignment playerPaymentAssignment, LocalDate date,
-                                            Function<Receipt, Boolean> receiptExists) {
+                                            Predicate<Receipt> receiptExists) {
         Payment payment = playerPaymentAssignment.payment();
         if (date.isAfter(payment.endDate()))
             return Optional.empty();
@@ -28,7 +28,7 @@ public class BillingProcessor {
             case ONCE -> ReceiptFactory.buildForUniquePayment(playerPaymentAssignment, date);
         };
 
-        if (!receiptExists.apply(receipt)) {
+        if (!receiptExists.test(receipt)) {
             return Optional.of(receipt);
         }
 

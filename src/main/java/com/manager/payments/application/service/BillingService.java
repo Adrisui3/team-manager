@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
+import java.util.function.Predicate;
 
 @Service
 public class BillingService implements IssueNewReceiptsUseCase {
@@ -36,7 +36,7 @@ public class BillingService implements IssueNewReceiptsUseCase {
                 playerPaymentAssignmentRepository.findAllActiveAndStartDateBeforeOrEqual(date);
         logger.info("Processing {} player-payment assignments", assignments.size());
         for (PlayerPaymentAssignment assignment : assignments) {
-            Function<Receipt, Boolean> playerExists = switch (assignment.payment().periodicity()) {
+            Predicate<Receipt> playerExists = switch (assignment.payment().periodicity()) {
                 case MONTHLY, QUARTERLY -> receiptRepository::existsByPlayerPaymentAndPeriod;
                 case ONCE -> receiptRepository::existsByPlayerAndPayment;
             };
