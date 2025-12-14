@@ -1,7 +1,7 @@
 package com.manager.auth.application.service;
 
-import com.manager.auth.adapter.dto.LoginResponseDto;
-import com.manager.auth.adapter.dto.LoginUserDto;
+import com.manager.auth.adapter.dto.models.LoginResponseDto;
+import com.manager.auth.adapter.dto.requests.LoginUserRequestDto;
 import com.manager.auth.application.port.in.AuthenticateUserUseCase;
 import com.manager.auth.application.port.out.UserRepository;
 import com.manager.auth.model.exceptions.InvalidEmailOrPasswordException;
@@ -24,10 +24,10 @@ public class AuthenticationService implements AuthenticateUserUseCase {
     }
 
     @Override
-    public LoginResponseDto authenticate(LoginUserDto loginUserDto) {
+    public LoginResponseDto authenticate(LoginUserRequestDto loginUserRequestDto) {
         User user =
-                userRepository.findByEmail(loginUserDto.email()).orElseThrow(InvalidEmailOrPasswordException::new);
-        user.authenticate(loginUserDto.password(), passwordEncoder);
+                userRepository.findByEmail(loginUserRequestDto.email()).orElseThrow(InvalidEmailOrPasswordException::new);
+        user.authenticate(loginUserRequestDto.password(), passwordEncoder);
         User savedUser = userRepository.save(user);
         return new LoginResponseDto(jwtService.generateToken(savedUser.getEmail()),
                 jwtService.getJwtExpiration());

@@ -1,6 +1,11 @@
 package com.manager.auth.adapter.in.rest;
 
-import com.manager.auth.adapter.dto.*;
+import com.manager.auth.adapter.dto.models.LoginResponseDto;
+import com.manager.auth.adapter.dto.models.UserDto;
+import com.manager.auth.adapter.dto.requests.ChangeUserPasswordRequestDto;
+import com.manager.auth.adapter.dto.requests.LoginUserRequestDto;
+import com.manager.auth.adapter.dto.requests.RegisterUserRequestDto;
+import com.manager.auth.adapter.dto.requests.SetUserPasswordRequestDto;
 import com.manager.auth.adapter.in.security.AuthenticatedUserProvider;
 import com.manager.auth.adapter.out.persistence.mapper.UserMapper;
 import com.manager.auth.application.port.in.AuthenticateUserUseCase;
@@ -13,6 +18,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -46,8 +52,8 @@ public class AuthenticationController {
     })
     @PostMapping("/signup")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ResponseDto<UserDto>> registerUser(@RequestBody RegisterUserDto registerUserDto) {
-        User registeredUser = signUpUserUseCase.signup(registerUserDto);
+    public ResponseEntity<ResponseDto<UserDto>> registerUser(@Valid @RequestBody RegisterUserRequestDto registerUserRequestDto) {
+        User registeredUser = signUpUserUseCase.signup(registerUserRequestDto);
         return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(), userMapper.toUserDto(registeredUser)));
     }
 
@@ -59,8 +65,8 @@ public class AuthenticationController {
                             ResponseDto.class)))
     })
     @PostMapping("/login")
-    public ResponseEntity<ResponseDto<LoginResponseDto>> authenticate(@RequestBody LoginUserDto loginUserDto) {
-        LoginResponseDto loginResponseDto = authenticateUserUseCase.authenticate(loginUserDto);
+    public ResponseEntity<ResponseDto<LoginResponseDto>> authenticate(@Valid @RequestBody LoginUserRequestDto loginUserRequestDto) {
+        LoginResponseDto loginResponseDto = authenticateUserUseCase.authenticate(loginUserRequestDto);
         return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(), loginResponseDto));
     }
 
@@ -76,8 +82,8 @@ public class AuthenticationController {
                             ResponseDto.class)))
     })
     @PostMapping("/set-password")
-    public ResponseEntity<ResponseDto<String>> setPassword(@RequestBody SetUserPasswordDto setUserPasswordDto) {
-        signUpUserUseCase.setPassword(setUserPasswordDto);
+    public ResponseEntity<ResponseDto<String>> setPassword(@Valid @RequestBody SetUserPasswordRequestDto setUserPasswordRequestDto) {
+        signUpUserUseCase.setPassword(setUserPasswordRequestDto);
         return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(), "Password set successfully,"));
     }
 
@@ -90,9 +96,9 @@ public class AuthenticationController {
                             ResponseDto.class)))
     })
     @PutMapping("/change-password")
-    public ResponseEntity<ResponseDto<String>> changePassword(@RequestBody ChangeUserPasswordDto changeUserPasswordDto) {
+    public ResponseEntity<ResponseDto<String>> changePassword(@Valid @RequestBody ChangeUserPasswordRequestDto changeUserPasswordRequestDto) {
         User authenticatedUser = authenticatedUserProvider.getAuthenticatedUser();
-        signUpUserUseCase.changePassword(changeUserPasswordDto, authenticatedUser);
+        signUpUserUseCase.changePassword(changeUserPasswordRequestDto, authenticatedUser);
         return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(), "Password changed successfully,"));
     }
 

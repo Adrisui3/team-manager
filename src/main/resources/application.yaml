@@ -23,7 +23,7 @@ spring:
 
 admin:
   email: "${ADMIN_EMAIL:admin@test.com}"
-  password: "${ADMIN_PASSWORD:pass}"
+  password: "${ADMIN_PASSWORD:password}"
 
 security:
   jwt:
