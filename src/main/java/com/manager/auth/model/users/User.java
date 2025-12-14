@@ -47,7 +47,7 @@ public class User {
         }
 
         if (getVerification().getVerificationCode().equals(verificationCode)) {
-            if (password.isBlank())
+            if (newPassword.isBlank())
                 throw new InvalidPasswordException("Password cannot be blank");
 
             setEnabled(true);
