@@ -1,6 +1,6 @@
 package com.manager.auth.adapter.out.persistence.mapper;
 
-import com.manager.auth.adapter.dto.UserDto;
+import com.manager.auth.adapter.dto.models.UserDto;
 import com.manager.auth.adapter.out.persistence.users.UserJpaEntity;
 import com.manager.auth.model.users.User;
 import org.mapstruct.AfterMapping;
