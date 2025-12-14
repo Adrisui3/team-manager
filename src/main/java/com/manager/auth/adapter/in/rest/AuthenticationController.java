@@ -1,6 +1,7 @@
 package com.manager.auth.adapter.in.rest;
 
 import com.manager.auth.adapter.dto.*;
+import com.manager.auth.adapter.in.security.AuthenticatedUserProvider;
 import com.manager.auth.adapter.out.persistence.mapper.UserMapper;
 import com.manager.auth.application.port.in.AuthenticateUserUseCase;
 import com.manager.auth.application.port.in.SignUpUserUseCase;
@@ -15,10 +16,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Authentication management endpoints")
 @RestController
@@ -28,12 +26,15 @@ public class AuthenticationController {
     private final SignUpUserUseCase signUpUserUseCase;
     private final AuthenticateUserUseCase authenticateUserUseCase;
     private final UserMapper userMapper;
+    private final AuthenticatedUserProvider authenticatedUserProvider;
 
     public AuthenticationController(SignUpUserUseCase signUpUserUseCase,
-                                    AuthenticateUserUseCase authenticateUserUseCase, UserMapper userMapper) {
+                                    AuthenticateUserUseCase authenticateUserUseCase, UserMapper userMapper,
+                                    AuthenticatedUserProvider authenticatedUserProvider) {
         this.signUpUserUseCase = signUpUserUseCase;
         this.authenticateUserUseCase = authenticateUserUseCase;
         this.userMapper = userMapper;
+        this.authenticatedUserProvider = authenticatedUserProvider;
     }
 
     @Operation(summary = "Create a new user", description = "Only users with ADMIN role can perform this action")
@@ -78,6 +79,21 @@ public class AuthenticationController {
     public ResponseEntity<ResponseDto<String>> setPassword(@RequestBody SetUserPasswordDto setUserPasswordDto) {
         signUpUserUseCase.setPassword(setUserPasswordDto);
         return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(), "Password set successfully,"));
+    }
+
+    @Operation(summary = "Change a user's password.", description = "A given user can only change their own password.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Password successfully changed.", useReturnTypeSchema =
+                    true),
+            @ApiResponse(responseCode = "400", description = "Email or password do not match authenticated user's.",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation =
+                            ResponseDto.class)))
+    })
+    @PutMapping("/change-password")
+    public ResponseEntity<ResponseDto<String>> changePassword(@RequestBody ChangeUserPasswordDto changeUserPasswordDto) {
+        User authenticatedUser = authenticatedUserProvider.getAuthenticatedUser();
+        signUpUserUseCase.changePassword(changeUserPasswordDto, authenticatedUser);
+        return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(), "Password changed successfully,"));
     }
 
     @Operation(summary = "Reset a user's password", description = "Only users with ADMIN role can perform this action.")

@@ -1,5 +1,6 @@
 package com.manager.auth.application.service;
 
+import com.manager.auth.adapter.dto.ChangeUserPasswordDto;
 import com.manager.auth.adapter.dto.RegisterUserDto;
 import com.manager.auth.adapter.dto.SetUserPasswordDto;
 import com.manager.auth.application.port.in.SignUpUserUseCase;
@@ -56,5 +57,12 @@ public class SignUpService implements SignUpUserUseCase {
 
         emailService.sendInvitationEmail(user.getEmail(), user.getVerification().getVerificationCode());
         userRepository.save(user);
+    }
+
+    @Override
+    public void changePassword(ChangeUserPasswordDto changeUserPasswordDto, User authenticatedUser) {
+        authenticatedUser.changePassword(changeUserPasswordDto.email(), changeUserPasswordDto.oldPassword(),
+                changeUserPasswordDto.newPassword(), passwordEncoder);
+        userRepository.save(authenticatedUser);
     }
 }

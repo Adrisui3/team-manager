@@ -47,12 +47,30 @@ public class User {
         }
 
         if (getVerification().getVerificationCode().equals(verificationCode)) {
+            if (password.isBlank())
+                throw new InvalidPasswordException("Password cannot be blank");
+
             setEnabled(true);
             setPassword(passwordEncoder.encode(newPassword));
             setVerification(null);
         } else {
             throw new InvalidVerificationCodeException();
         }
+    }
+
+    public void changePassword(String email, String oldPassword, String newPassword, PasswordEncoder passwordEncoder) {
+        if (!email.equals(this.email) || !passwordEncoder.matches(oldPassword, getPassword())) {
+            throw new InvalidPasswordChangeException();
+        }
+
+        if (passwordEncoder.matches(newPassword, getPassword())) {
+            throw new EqualNewPasswordException();
+        }
+
+        if (newPassword.isBlank())
+            throw new InvalidPasswordException("Password cannot be blank");
+
+        setPassword(passwordEncoder.encode(newPassword));
     }
 
     public void setVerification() {
