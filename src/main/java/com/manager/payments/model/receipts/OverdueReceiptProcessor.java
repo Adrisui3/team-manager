@@ -8,6 +8,6 @@ public class OverdueReceiptProcessor {
     }
 
     public static List<Receipt> process(List<Receipt> receipts) {
-        return receipts.stream().map(receipt -> receipt.withStatus(ReceiptStatus.OVERDUE)).toList();
+        return receipts.stream().map(receipt -> receipt.toBuilder().status(ReceiptStatus.OVERDUE).build()).toList();
     }
 }

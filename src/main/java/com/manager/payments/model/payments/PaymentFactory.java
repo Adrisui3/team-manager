@@ -4,6 +4,7 @@ import com.manager.payments.model.exceptions.PaymentAlreadyExpired;
 import com.manager.payments.model.exceptions.PaymentInvalidDateInterval;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 
 public class PaymentFactory {
@@ -23,6 +24,15 @@ public class PaymentFactory {
         }
 
         PaymentStatus status = startDate.isAfter(now) ? PaymentStatus.INACTIVE : PaymentStatus.ACTIVE;
-        return new Payment(code, amount, name, description, startDate, endDate, periodicity, status);
+        return Payment.builder()
+                .amount(amount.setScale(2, RoundingMode.HALF_UP))
+                .code(code)
+                .name(name)
+                .description(description)
+                .startDate(startDate)
+                .endDate(endDate)
+                .periodicity(periodicity)
+                .status(status)
+                .build();
     }
 }

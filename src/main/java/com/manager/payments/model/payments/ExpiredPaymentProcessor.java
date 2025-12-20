@@ -8,6 +8,6 @@ public class ExpiredPaymentProcessor {
     }
 
     public static List<Payment> processExpiredPayments(List<Payment> expiredPayments) {
-        return expiredPayments.stream().map(payment -> payment.withStatus(PaymentStatus.EXPIRED)).toList();
+        return expiredPayments.stream().map(payment -> payment.toBuilder().status(PaymentStatus.EXPIRED).build()).toList();
     }
 }

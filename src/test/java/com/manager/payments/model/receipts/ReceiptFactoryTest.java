@@ -6,9 +6,7 @@ import com.manager.payments.model.billing.BillingPeriodFactory;
 import com.manager.payments.model.payments.Payment;
 import com.manager.payments.model.payments.PaymentStatus;
 import com.manager.payments.model.payments.Periodicity;
-import com.manager.payments.model.players.Category;
 import com.manager.payments.model.players.Player;
-import com.manager.payments.model.players.PlayerStatus;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -24,11 +22,22 @@ class ReceiptFactoryTest {
         // given
         LocalDate startDate = LocalDate.of(2025, 9, 1);
         LocalDate endDate = LocalDate.of(2025, 9, 30);
-        Player player = new Player("123456789A", "", "", "", null, Category.NONE, PlayerStatus.ENABLED);
-        Payment payment = new Payment("PAYMENT", BigDecimal.valueOf(50), "", "", startDate, endDate,
-                Periodicity.MONTHLY, PaymentStatus.ACTIVE);
+        Player player = Player.builder()
+                .personalId("123456789A")
+                .build();
+        Payment payment = Payment.builder()
+                .code("PAYMENT")
+                .amount(new BigDecimal("50.00"))
+                .startDate(startDate)
+                .endDate(endDate)
+                .periodicity(Periodicity.MONTHLY)
+                .status(PaymentStatus.ACTIVE)
+                .build();
         BillingPeriod billingPeriod = BillingPeriodFactory.build(payment, startDate);
-        PlayerPaymentAssignment playerPaymentAssignment = new PlayerPaymentAssignment(player, payment);
+        PlayerPaymentAssignment playerPaymentAssignment = PlayerPaymentAssignment.builder()
+                .player(player)
+                .payment(payment)
+                .build();
 
         //then
         Receipt receipt = ReceiptFactory.buildForBillingPeriod(playerPaymentAssignment, billingPeriod, startDate);
@@ -44,11 +53,22 @@ class ReceiptFactoryTest {
         LocalDate startDate = LocalDate.of(2025, 9, 1);
         LocalDate endDate = LocalDate.of(2025, 9, 30);
         LocalDate currentDate = LocalDate.of(2025, 9, 16);
-        Player player = new Player("123456789A", "", "", "", null, Category.NONE, PlayerStatus.ENABLED);
-        Payment payment = new Payment("PAYMENT", BigDecimal.valueOf(50), "", "", startDate, endDate,
-                Periodicity.MONTHLY, PaymentStatus.ACTIVE);
+        Player player = Player.builder()
+                .personalId("123456789A")
+                .build();
+        Payment payment = Payment.builder()
+                .code("PAYMENT")
+                .amount(new BigDecimal("50.00"))
+                .startDate(startDate)
+                .endDate(endDate)
+                .periodicity(Periodicity.MONTHLY)
+                .status(PaymentStatus.ACTIVE)
+                .build();
         BillingPeriod billingPeriod = BillingPeriodFactory.build(payment, startDate);
-        PlayerPaymentAssignment playerPaymentAssignment = new PlayerPaymentAssignment(player, payment);
+        PlayerPaymentAssignment playerPaymentAssignment = PlayerPaymentAssignment.builder()
+                .player(player)
+                .payment(payment)
+                .build();
 
         //then
         Receipt receipt = ReceiptFactory.buildForBillingPeriod(playerPaymentAssignment, billingPeriod, currentDate);
@@ -63,11 +83,22 @@ class ReceiptFactoryTest {
         LocalDate startDate = LocalDate.of(2025, 9, 1);
         LocalDate endDate = LocalDate.of(2025, 9, 30);
         LocalDate currentDate = LocalDate.of(2025, 10, 16);
-        Player player = new Player("123456789A", "", "", "", null, Category.NONE, PlayerStatus.ENABLED);
-        Payment payment = new Payment("PAYMENT", BigDecimal.valueOf(50), "", "", startDate, endDate,
-                Periodicity.MONTHLY, PaymentStatus.ACTIVE);
+        Player player = Player.builder()
+                .personalId("123456789A")
+                .build();
+        Payment payment = Payment.builder()
+                .code("PAYMENT")
+                .amount(new BigDecimal("50.00"))
+                .startDate(startDate)
+                .endDate(endDate)
+                .periodicity(Periodicity.MONTHLY)
+                .status(PaymentStatus.ACTIVE)
+                .build();
         BillingPeriod billingPeriod = BillingPeriodFactory.build(payment, startDate);
-        PlayerPaymentAssignment playerPaymentAssignment = new PlayerPaymentAssignment(player, payment);
+        PlayerPaymentAssignment playerPaymentAssignment = PlayerPaymentAssignment.builder()
+                .player(player)
+                .payment(payment)
+                .build();
 
         //then
         Receipt receipt = ReceiptFactory.buildForBillingPeriod(playerPaymentAssignment, billingPeriod, currentDate);
@@ -82,11 +113,22 @@ class ReceiptFactoryTest {
         LocalDate startDate = LocalDate.of(2025, 9, 1);
         LocalDate endDate = LocalDate.of(2025, 9, 30);
         LocalDate currentDate = LocalDate.of(2025, 10, 16);
-        Player player = new Player("123456789A", "", "", "", null, Category.NONE, PlayerStatus.ENABLED);
-        Payment payment = new Payment("PAYMENT", BigDecimal.valueOf(50), "", "", startDate, endDate,
-                Periodicity.ONCE, PaymentStatus.ACTIVE);
+        Player player = Player.builder()
+                .personalId("123456789A")
+                .build();
+        Payment payment = Payment.builder()
+                .code("PAYMENT")
+                .amount(new BigDecimal("50.00"))
+                .startDate(startDate)
+                .endDate(endDate)
+                .periodicity(Periodicity.ONCE)
+                .status(PaymentStatus.ACTIVE)
+                .build();
         BillingPeriod billingPeriod = BillingPeriodFactory.build(payment, startDate);
-        PlayerPaymentAssignment playerPaymentAssignment = new PlayerPaymentAssignment(player, payment);
+        PlayerPaymentAssignment playerPaymentAssignment = PlayerPaymentAssignment.builder()
+                .player(player)
+                .payment(payment)
+                .build();
 
         //then
         Receipt receipt = ReceiptFactory.buildForBillingPeriod(playerPaymentAssignment, billingPeriod, currentDate);
