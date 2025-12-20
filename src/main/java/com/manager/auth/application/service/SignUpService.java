@@ -8,23 +8,19 @@ import com.manager.auth.application.port.out.UserRepository;
 import com.manager.auth.model.exceptions.UserAlreadyExists;
 import com.manager.auth.model.exceptions.UserNotFound;
 import com.manager.auth.model.users.User;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
 @Service
+@RequiredArgsConstructor
 public class SignUpService implements SignUpUserUseCase {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
-
-    public SignUpService(UserRepository userRepository, PasswordEncoder passwordEncoder, EmailService emailService) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.emailService = emailService;
-    }
 
     @Override
     public User signup(RegisterUserRequestDto registerUserRequestDto) {
