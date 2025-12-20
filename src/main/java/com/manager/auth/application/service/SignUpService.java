@@ -62,9 +62,9 @@ public class SignUpService implements SignUpUserUseCase {
 
     @Override
     public void changePassword(ChangeUserPasswordRequestDto changeUserPasswordRequestDto, User authenticatedUser) {
-        authenticatedUser.changePassword(changeUserPasswordRequestDto.email(),
-                changeUserPasswordRequestDto.oldPassword(),
-                changeUserPasswordRequestDto.newPassword(), passwordEncoder);
-        userRepository.save(authenticatedUser);
+        User updatedUser = authenticatedUser.changePassword(changeUserPasswordRequestDto.email(),
+                changeUserPasswordRequestDto.oldPassword(), changeUserPasswordRequestDto.newPassword(),
+                passwordEncoder);
+        userRepository.save(updatedUser);
     }
 }
