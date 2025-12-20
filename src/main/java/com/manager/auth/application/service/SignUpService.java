@@ -32,7 +32,7 @@ public class SignUpService implements SignUpUserUseCase {
                 .name(registerUserRequestDto.name())
                 .surname(registerUserRequestDto.surname())
                 .role(registerUserRequestDto.role())
-                .enabled(true)
+                .enabled(false)
                 .build()
                 .initializeVerification();
 
