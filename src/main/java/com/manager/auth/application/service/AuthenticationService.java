@@ -27,9 +27,9 @@ public class AuthenticationService implements AuthenticateUserUseCase {
     public LoginResponseDto authenticate(LoginUserRequestDto loginUserRequestDto) {
         User user =
                 userRepository.findByEmail(loginUserRequestDto.email()).orElseThrow(InvalidEmailOrPasswordException::new);
-        user.authenticate(loginUserRequestDto.password(), passwordEncoder);
-        User savedUser = userRepository.save(user);
-        return new LoginResponseDto(jwtService.generateToken(savedUser.getEmail()),
+        User authenticatedUser = user.authenticate(loginUserRequestDto.password(), passwordEncoder);
+        User savedUser = userRepository.save(authenticatedUser);
+        return new LoginResponseDto(jwtService.generateToken(savedUser.email()),
                 jwtService.getJwtExpiration());
     }
 }

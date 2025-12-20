@@ -34,13 +34,14 @@ public class DefaultAdminInitializer implements ApplicationRunner {
             return;
         }
 
-        User admin = new User();
-        admin.setEmail(adminConfigurationProperties.email());
-        admin.setPassword(passwordEncoder.encode(adminConfigurationProperties.password()));
-        admin.setName("Admin");
-        admin.setSurname("Admin");
-        admin.setEnabled(true);
-        admin.setRole(Role.ADMIN);
+        User admin = User.builder()
+                .email(adminConfigurationProperties.email())
+                .password(passwordEncoder.encode(adminConfigurationProperties.password()))
+                .name("Admin")
+                .surname("Admin")
+                .enabled(true)
+                .role(Role.ADMIN)
+                .build();
 
         userRepository.save(admin);
         logger.info("Default admin user created");

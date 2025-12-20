@@ -31,15 +31,16 @@ public class SignUpService implements SignUpUserUseCase {
         if (userRepository.existsByEmail(registerUserRequestDto.email()))
             throw new UserAlreadyExists(registerUserRequestDto.email());
 
-        User user = new User();
-        user.setEmail(registerUserRequestDto.email());
-        user.setName(registerUserRequestDto.name());
-        user.setSurname(registerUserRequestDto.surname());
-        user.setRole(registerUserRequestDto.role());
-        user.setEnabled(false);
-        user.setVerification();
+        User user = User.builder()
+                .email(registerUserRequestDto.email())
+                .name(registerUserRequestDto.name())
+                .surname(registerUserRequestDto.surname())
+                .role(registerUserRequestDto.role())
+                .enabled(true)
+                .build()
+                .initializeVerification();
 
-        emailService.sendInvitationEmail(user.getEmail(), user.getVerification().getVerificationCode());
+        emailService.sendInvitationEmail(user.email(), user.verification().verificationCode());
         return userRepository.save(user);
     }
 
@@ -47,20 +48,20 @@ public class SignUpService implements SignUpUserUseCase {
     public void setPassword(SetUserPasswordRequestDto setUserPasswordRequestDto) {
         User user = userRepository.findByEmail(setUserPasswordRequestDto.email()).orElseThrow(UserNotFound::new);
         LocalDateTime now = LocalDateTime.now();
-        user.setPassword(setUserPasswordRequestDto.verificationCode(), setUserPasswordRequestDto.password(),
-                passwordEncoder, now);
+        User updatedUser = user.setPassword(setUserPasswordRequestDto.verificationCode(),
+                setUserPasswordRequestDto.password(), passwordEncoder, now);
 
-        userRepository.save(user);
+        userRepository.save(updatedUser);
     }
 
     @Override
     public void resetPassword(String email) {
         User user =
                 userRepository.findByEmail(email).orElseThrow(UserNotFound::new);
-        user.setVerification();
+        User updatedUser = user.initializeVerification();
 
-        emailService.sendInvitationEmail(user.getEmail(), user.getVerification().getVerificationCode());
-        userRepository.save(user);
+        emailService.sendInvitationEmail(updatedUser.email(), updatedUser.verification().verificationCode());
+        userRepository.save(updatedUser);
     }
 
     @Override

@@ -14,12 +14,11 @@ public class UserVerificationFactory {
     }
 
     public static UserVerification build(User user) {
-        UserVerification userVerification = new UserVerification();
-        userVerification.setVerificationCode(generateToken());
-        userVerification.setExpirationDate(LocalDateTime.now().plusMinutes(USER_VERIFICATION_TIME_MINUTES));
-        userVerification.setUserId(user.getId());
-
-        return userVerification;
+        return UserVerification.builder()
+                .verificationCode(generateToken())
+                .expirationDate(LocalDateTime.now().plusMinutes(USER_VERIFICATION_TIME_MINUTES))
+                .userId(user.id())
+                .build();
     }
 
     private static String generateToken() {
