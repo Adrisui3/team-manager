@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,15 +27,11 @@ import java.util.UUID;
 @Tag(name = "Receipts", description = "Receipts management endpoints")
 @RestController
 @RequestMapping("/v1/receipts")
+@RequiredArgsConstructor
 public class ReceiptController {
 
     private final ReceiptRepository receiptRepository;
     private final ReceiptMapper receiptMapper;
-
-    public ReceiptController(ReceiptRepository receiptRepository, ReceiptMapper receiptMapper) {
-        this.receiptRepository = receiptRepository;
-        this.receiptMapper = receiptMapper;
-    }
 
     @Operation(summary = "Get all receipts", description = "Supports pagination via Spring Data's pageable")
     @ApiResponses(value = {

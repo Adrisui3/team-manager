@@ -27,6 +27,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -41,6 +42,7 @@ import java.util.UUID;
 @Tag(name = "Players", description = "Players management endpoints")
 @RestController
 @RequestMapping("/v1/players")
+@RequiredArgsConstructor
 public class PlayerController {
 
     private final PlayerPaymentAssignmentMapper playerPaymentAssignmentMapper;
@@ -51,21 +53,6 @@ public class PlayerController {
     private final ReceiptMapper receiptMapper;
     private final ReceiptRepository receiptRepository;
     private final PaymentMapper paymentMapper;
-
-    public PlayerController(PlayerPaymentAssignmentMapper playerPaymentAssignmentMapper,
-                            CreatePlayerUseCase createPlayerUseCase, PlayerRepository playerRepository,
-                            AssignPaymentToPlayerUseCase assignPaymentToPlayerUseCase, PlayerMapper playerMapper,
-                            ReceiptMapper receiptMapper, ReceiptRepository receiptRepository,
-                            PaymentMapper paymentMapper) {
-        this.playerPaymentAssignmentMapper = playerPaymentAssignmentMapper;
-        this.createPlayerUseCase = createPlayerUseCase;
-        this.playerRepository = playerRepository;
-        this.assignPaymentToPlayerUseCase = assignPaymentToPlayerUseCase;
-        this.playerMapper = playerMapper;
-        this.receiptMapper = receiptMapper;
-        this.receiptRepository = receiptRepository;
-        this.paymentMapper = paymentMapper;
-    }
 
     @Operation(summary = "Get all players", description = "Supports pagination via Spring Data's pagination")
     @ApiResponses(value = {

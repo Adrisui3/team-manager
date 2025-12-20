@@ -8,8 +8,8 @@ import com.manager.payments.model.exceptions.PaymentAlreadyExistsException;
 import com.manager.payments.model.payments.ExpiredPaymentProcessor;
 import com.manager.payments.model.payments.Payment;
 import com.manager.payments.model.payments.PaymentFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,14 +19,11 @@ import java.util.List;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
+@Slf4j
 public class PaymentService implements CreatePaymentUseCase, ProcessExpiredPaymentsUseCase {
 
-    private final Logger logger = LoggerFactory.getLogger(PaymentService.class);
     private final PaymentRepository paymentRepository;
-
-    public PaymentService(PaymentRepository paymentRepository) {
-        this.paymentRepository = paymentRepository;
-    }
 
     @Override
     public Payment createPayment(CreatePaymentRequestDTO requestDTO) {
@@ -41,11 +38,11 @@ public class PaymentService implements CreatePaymentUseCase, ProcessExpiredPayme
 
     @Override
     public void processExpiredPayments(LocalDate date) {
-        logger.info("Updating expired payments at {}", date);
+        log.info("Updating expired payments at {}", date);
         List<Payment> expiredPayments = paymentRepository.findAllActiveAndEndDateBefore(date);
-        logger.info("Found {} expired payments", expiredPayments.size());
+        log.info("Found {} expired payments", expiredPayments.size());
         List<Payment> processedPaymens = ExpiredPaymentProcessor.processExpiredPayments(expiredPayments);
-        logger.info("Processed {} expired payments", processedPaymens.size());
+        log.info("Processed {} expired payments", processedPaymens.size());
         paymentRepository.saveAll(processedPaymens);
     }
 }

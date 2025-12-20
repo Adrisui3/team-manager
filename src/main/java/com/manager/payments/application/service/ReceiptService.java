@@ -4,8 +4,8 @@ import com.manager.payments.application.port.in.ProcessOverdueReceiptsUseCase;
 import com.manager.payments.application.port.out.ReceiptRepository;
 import com.manager.payments.model.receipts.OverdueReceiptProcessor;
 import com.manager.payments.model.receipts.Receipt;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,22 +14,19 @@ import java.util.List;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
+@Slf4j
 public class ReceiptService implements ProcessOverdueReceiptsUseCase {
 
-    private final Logger logger = LoggerFactory.getLogger(ReceiptService.class);
     private final ReceiptRepository receiptRepository;
-
-    public ReceiptService(ReceiptRepository receiptRepository) {
-        this.receiptRepository = receiptRepository;
-    }
 
     @Override
     public void processOverdueReceipts(LocalDate date) {
-        logger.info("Updating overdue receipts at {}", date);
+        log.info("Updating overdue receipts at {}", date);
         List<Receipt> overdueReceipts = receiptRepository.findAllPendingWithExpirationDateBefore(date);
-        logger.info("Found {} overdue receipts", overdueReceipts.size());
+        log.info("Found {} overdue receipts", overdueReceipts.size());
         List<Receipt> processedReceipts = OverdueReceiptProcessor.process(overdueReceipts);
-        logger.info("Processed {} overdue receipts", overdueReceipts.size());
+        log.info("Processed {} overdue receipts", overdueReceipts.size());
         receiptRepository.saveAll(processedReceipts);
     }
 }
