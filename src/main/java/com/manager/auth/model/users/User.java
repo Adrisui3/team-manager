@@ -54,7 +54,7 @@ public record User(UUID id, String email, String password, String name, String s
     }
 
     public User initializeVerification() {
-        UserVerification userVerification = UserVerificationFactory.build(this);
+        UserVerification userVerification = UserVerification.build(this);
         return toBuilder().verification(userVerification).build();
     }
 }
