@@ -3,34 +3,26 @@ package com.manager.auth.adapter.config.admin;
 import com.manager.auth.application.port.out.UserRepository;
 import com.manager.auth.model.roles.Role;
 import com.manager.auth.model.users.User;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
+@Slf4j
 public class DefaultAdminInitializer implements ApplicationRunner {
-
-    private static final Logger logger = LoggerFactory.getLogger(DefaultAdminInitializer.class);
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AdminConfigurationProperties adminConfigurationProperties;
 
-    public DefaultAdminInitializer(UserRepository userRepository, PasswordEncoder passwordEncoder,
-                                   AdminConfigurationProperties adminConfigurationProperties) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.adminConfigurationProperties = adminConfigurationProperties;
-    }
-
-
     @Override
     public void run(ApplicationArguments args) {
         if (userRepository.existsByEmail(adminConfigurationProperties.email())) {
-            logger.info("Default admin user already present; skipping bootstrap");
+            log.info("Default admin user already present; skipping bootstrap");
             return;
         }
 
@@ -44,6 +36,6 @@ public class DefaultAdminInitializer implements ApplicationRunner {
                 .build();
 
         userRepository.save(admin);
-        logger.info("Default admin user created");
+        log.info("Default admin user created");
     }
 }
