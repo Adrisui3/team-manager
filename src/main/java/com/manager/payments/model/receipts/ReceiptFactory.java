@@ -2,22 +2,32 @@ package com.manager.payments.model.receipts;
 
 import com.manager.payments.model.assignments.PlayerPaymentAssignment;
 import com.manager.payments.model.billing.BillingPeriod;
-import io.micrometer.common.lang.Nullable;
+import jakarta.annotation.Nullable;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 
 public class ReceiptFactory {
 
+    private static final int RECEIPT_EXPIRATION_DAYS = 15;
+
     private ReceiptFactory() {
     }
 
     public static Receipt buildForUniquePayment(PlayerPaymentAssignment playerPaymentAssignment, LocalDate date) {
         String code = buildReceiptCode(playerPaymentAssignment, null);
-        return new Receipt(code, playerPaymentAssignment.payment().amount(), date, null, null, ReceiptStatus.PENDING,
-                playerPaymentAssignment.player(), playerPaymentAssignment.payment());
+        return Receipt.builder()
+                .code(code)
+                .amount(playerPaymentAssignment.payment().amount().setScale(2, RoundingMode.HALF_UP))
+                .issuedDate(date)
+                .expiryDate(date.plusDays(RECEIPT_EXPIRATION_DAYS))
+                .status(ReceiptStatus.PENDING)
+                .player(playerPaymentAssignment.player())
+                .payment(playerPaymentAssignment.payment())
+                .build();
     }
 
     public static Receipt buildForBillingPeriod(PlayerPaymentAssignment playerPaymentAssignment,
@@ -33,9 +43,17 @@ public class ReceiptFactory {
         BigDecimal amount =
                 playerPaymentAssignment.payment().amount().multiply(BigDecimal.valueOf(remainderPercentage));
         String code = buildReceiptCode(playerPaymentAssignment, billingPeriod);
-
-        return new Receipt(code, amount, date, billingPeriod.start(), billingPeriod.end(), ReceiptStatus.PENDING,
-                playerPaymentAssignment.player(), playerPaymentAssignment.payment());
+        return Receipt.builder()
+                .code(code)
+                .amount(amount.setScale(2, RoundingMode.HALF_UP))
+                .issuedDate(date)
+                .expiryDate(date.plusDays(RECEIPT_EXPIRATION_DAYS))
+                .periodStartDate(billingPeriod.start())
+                .periodEndDate(billingPeriod.end())
+                .status(ReceiptStatus.PENDING)
+                .player(playerPaymentAssignment.player())
+                .payment(playerPaymentAssignment.payment())
+                .build();
     }
 
     private static String buildReceiptCode(PlayerPaymentAssignment playerPaymentAssignment,

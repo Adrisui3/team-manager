@@ -12,6 +12,7 @@ import com.manager.payments.model.exceptions.*;
 import com.manager.payments.model.payments.Payment;
 import com.manager.payments.model.players.Player;
 import com.manager.payments.model.players.PlayerStatus;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,19 +21,12 @@ import java.util.UUID;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class PlayerService implements CreatePlayerUseCase, AssignPaymentToPlayerUseCase {
 
     private final PlayerPaymentAssignmentRepository playerPaymentAssignmentRepository;
     private final PaymentRepository paymentRepository;
     private final PlayerRepository playerRepository;
-
-    public PlayerService(PlayerPaymentAssignmentRepository playerPaymentAssignmentRepository,
-                         PaymentRepository paymentRepository,
-                         PlayerRepository playerRepository) {
-        this.playerPaymentAssignmentRepository = playerPaymentAssignmentRepository;
-        this.paymentRepository = paymentRepository;
-        this.playerRepository = playerRepository;
-    }
 
     @Override
     public Player createPlayer(CreatePlayerRequestDTO requestDTO) {
@@ -42,8 +36,16 @@ public class PlayerService implements CreatePlayerUseCase, AssignPaymentToPlayer
             throw new PlayerAlreadyExistsException(requestDTO.personalId());
         }
 
-        Player newPlayer = new Player(requestDTO.personalId(), requestDTO.name(), requestDTO.surname(),
-                requestDTO.email(), requestDTO.birthDate(), requestDTO.category(), PlayerStatus.ENABLED);
+        Player newPlayer = Player.builder()
+                .personalId(requestDTO.personalId())
+                .name(requestDTO.name())
+                .surname(requestDTO.surname())
+                .email(requestDTO.email())
+                .birthDate(requestDTO.birthDate())
+                .category(requestDTO.category())
+                .status(PlayerStatus.ENABLED)
+                .build();
+
         return playerRepository.save(newPlayer);
     }
 

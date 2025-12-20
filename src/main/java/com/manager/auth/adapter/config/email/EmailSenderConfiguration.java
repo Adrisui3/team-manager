@@ -1,5 +1,6 @@
 package com.manager.auth.adapter.config.email;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -8,13 +9,10 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import java.util.Properties;
 
 @Configuration
+@RequiredArgsConstructor
 public class EmailSenderConfiguration {
 
     private final EmailConfigurationProperties emailConfigurationProperties;
-
-    public EmailSenderConfiguration(EmailConfigurationProperties emailConfigurationProperties) {
-        this.emailConfigurationProperties = emailConfigurationProperties;
-    }
 
     @Bean
     public JavaMailSender getJavaMailSender() {

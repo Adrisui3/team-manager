@@ -17,26 +17,28 @@ class UserTest {
     @Test
     void shouldAuthenticateUserWhenPasswordIsValid() {
         //given
-        User user = new User();
-        user.setPassword("password");
-        user.setEnabled(true);
+        User user = User.builder()
+                .password("password")
+                .enabled(true)
+                .build();
 
         PasswordEncoder encoder = Mockito.mock(PasswordEncoder.class);
         Mockito.when(encoder.matches(eq("password"), anyString())).thenReturn(true);
 
         //when
-        user.authenticate("password", encoder);
+        User authenticatedUser = user.authenticate("password", encoder);
 
         //then
-        assertThat(user.getLastLogIn()).isNotNull();
+        assertThat(authenticatedUser.lastLogIn()).isNotNull();
     }
 
     @Test
     void shouldThrowExceptionWhenPasswordIsNotValid() {
         //given
-        User user = new User();
-        user.setPassword("password");
-        user.setEnabled(true);
+        User user = User.builder()
+                .password("password")
+                .enabled(true)
+                .build();
 
         PasswordEncoder encoder = Mockito.mock(PasswordEncoder.class);
         Mockito.when(encoder.matches(eq("password"), anyString())).thenReturn(false);
@@ -48,9 +50,10 @@ class UserTest {
     @Test
     void shouldThrowExceptionWhenUserIsDisabled() {
         //given
-        User user = new User();
-        user.setPassword("password");
-        user.setEnabled(false);
+        User user = User.builder()
+                .password("password")
+                .enabled(false)
+                .build();
 
         PasswordEncoder encoder = Mockito.mock(PasswordEncoder.class);
         Mockito.when(encoder.matches(eq("password"), anyString())).thenReturn(true);
@@ -62,11 +65,12 @@ class UserTest {
     @Test
     void shouldSetUserPasswordWhenVerificationCodeIsValid() {
         //given
-        User user = new User();
         UserVerification userVerification = Mockito.mock(UserVerification.class);
-        Mockito.when(userVerification.getExpirationDate()).thenReturn(LocalDateTime.of(2025, 12, 15, 10, 0));
-        Mockito.when(userVerification.getVerificationCode()).thenReturn("1234");
-        user.setVerification(userVerification);
+        Mockito.when(userVerification.expirationDate()).thenReturn(LocalDateTime.of(2025, 12, 15, 10, 0));
+        Mockito.when(userVerification.verificationCode()).thenReturn("1234");
+        User user = User.builder()
+                .verification(userVerification)
+                .build();
 
         PasswordEncoder encoder = Mockito.mock(PasswordEncoder.class);
         Mockito.when(encoder.encode(eq("password"))).thenReturn("hashedPassword");
@@ -74,18 +78,18 @@ class UserTest {
         LocalDateTime now = LocalDateTime.of(2025, 12, 14, 10, 0);
 
         //when
-        user.setPassword("1234", "password", encoder, now);
+        User updatedUser = user.setPassword("1234", "password", encoder, now);
 
         //then
-        assertThat(user.getPassword()).isEqualTo("hashedPassword");
-        assertThat(user.isEnabled()).isEqualTo(true);
-        assertThat(user.getVerification()).isNull();
+        assertThat(updatedUser.password()).isEqualTo("hashedPassword");
+        assertThat(updatedUser.enabled()).isEqualTo(true);
+        assertThat(updatedUser.verification()).isNull();
     }
 
     @Test
     void shouldThrowExceptionWhenVerificationIsNull() {
         //given
-        User user = new User();
+        User user = User.builder().build();
         PasswordEncoder encoder = Mockito.mock(PasswordEncoder.class);
         LocalDateTime now = LocalDateTime.of(2025, 12, 14, 10, 0);
 
@@ -96,11 +100,10 @@ class UserTest {
     @Test
     void shouldThrowExceptionWhenVerificationIsExpired() {
         //given
-        User user = new User();
         UserVerification userVerification = Mockito.mock(UserVerification.class);
-        Mockito.when(userVerification.getExpirationDate()).thenReturn(LocalDateTime.of(2025, 12, 15, 10, 0));
-        Mockito.when(userVerification.getVerificationCode()).thenReturn("1234");
-        user.setVerification(userVerification);
+        Mockito.when(userVerification.expirationDate()).thenReturn(LocalDateTime.of(2025, 12, 15, 10, 0));
+        Mockito.when(userVerification.verificationCode()).thenReturn("1234");
+        User user = User.builder().verification(userVerification).build();
 
         PasswordEncoder encoder = Mockito.mock(PasswordEncoder.class);
         LocalDateTime now = LocalDateTime.of(2025, 12, 20, 10, 0);
@@ -112,11 +115,11 @@ class UserTest {
     @Test
     void shouldThrowExceptionWhenVerificationCodeIsNotCorrect() {
         //given
-        User user = new User();
         UserVerification userVerification = Mockito.mock(UserVerification.class);
-        Mockito.when(userVerification.getExpirationDate()).thenReturn(LocalDateTime.of(2025, 12, 15, 10, 0));
-        Mockito.when(userVerification.getVerificationCode()).thenReturn("1234");
-        user.setVerification(userVerification);
+        Mockito.when(userVerification.expirationDate()).thenReturn(LocalDateTime.of(2025, 12, 15, 10, 0));
+        Mockito.when(userVerification.verificationCode()).thenReturn("1234");
+        User user = User.builder().verification(userVerification).build();
+        ;
 
         PasswordEncoder encoder = Mockito.mock(PasswordEncoder.class);
         Mockito.when(encoder.encode(eq("password"))).thenReturn("hashedPassword");
@@ -130,32 +133,34 @@ class UserTest {
     @Test
     void shouldChangePasswordWhenRequestIsValid() {
         //given
-        User user = new User();
-        user.setEmail("test@email.com");
-        user.setPassword("oldPasswordHash");
+        User user = User.builder()
+                .email("test@email.com")
+                .password("oldPasswordHash")
+                .build();
 
         PasswordEncoder encoder = Mockito.mock(PasswordEncoder.class);
-        Mockito.when(encoder.matches(eq("oldPassword"), eq(user.getPassword()))).thenReturn(true);
-        Mockito.when(encoder.matches(eq("newPassword"), eq(user.getPassword()))).thenReturn(false);
+        Mockito.when(encoder.matches(eq("oldPassword"), eq(user.password()))).thenReturn(true);
+        Mockito.when(encoder.matches(eq("newPassword"), eq(user.password()))).thenReturn(false);
         Mockito.when(encoder.encode(eq("newPassword"))).thenReturn("newPasswordHash");
 
         //when
-        user.changePassword("test@email.com", "oldPassword", "newPassword", encoder);
+        User updatedUser = user.changePassword("test@email.com", "oldPassword", "newPassword", encoder);
 
         //then
-        assertThat(user.getPassword()).isEqualTo("newPasswordHash");
+        assertThat(updatedUser.password()).isEqualTo("newPasswordHash");
     }
 
     @Test
     void shouldThrowExceptionWhenEmailDoesNotMatch() {
         //given
-        User user = new User();
-        user.setEmail("test@email.com");
-        user.setPassword("oldPasswordHash");
+        User user = User.builder()
+                .email("test@email.com")
+                .password("oldPasswordHash")
+                .build();
 
         PasswordEncoder encoder = Mockito.mock(PasswordEncoder.class);
-        Mockito.when(encoder.matches(eq("oldPassword"), eq(user.getPassword()))).thenReturn(true);
-        Mockito.when(encoder.matches(eq("newPassword"), eq(user.getPassword()))).thenReturn(false);
+        Mockito.when(encoder.matches(eq("oldPassword"), eq(user.password()))).thenReturn(true);
+        Mockito.when(encoder.matches(eq("newPassword"), eq(user.password()))).thenReturn(false);
         Mockito.when(encoder.encode(eq("newPassword"))).thenReturn("newPasswordHash");
 
         //when - then
@@ -165,13 +170,14 @@ class UserTest {
     @Test
     void shouldThrowExceptionWhenCurrentPasswordDoesNotMatch() {
         //given
-        User user = new User();
-        user.setEmail("test@email.com");
-        user.setPassword("oldPasswordHash");
+        User user = User.builder()
+                .email("test@email.com")
+                .password("oldPasswordHash")
+                .build();
 
         PasswordEncoder encoder = Mockito.mock(PasswordEncoder.class);
-        Mockito.when(encoder.matches(eq("oldPassword"), eq(user.getPassword()))).thenReturn(false);
-        Mockito.when(encoder.matches(eq("newPassword"), eq(user.getPassword()))).thenReturn(false);
+        Mockito.when(encoder.matches(eq("oldPassword"), eq(user.password()))).thenReturn(false);
+        Mockito.when(encoder.matches(eq("newPassword"), eq(user.password()))).thenReturn(false);
         Mockito.when(encoder.encode(eq("newPassword"))).thenReturn("newPasswordHash");
 
         //when - then
@@ -181,13 +187,14 @@ class UserTest {
     @Test
     void shouldThrowExceptionWhenCurrentAndNewPasswordMatch() {
         //given
-        User user = new User();
-        user.setEmail("test@email.com");
-        user.setPassword("oldPasswordHash");
+        User user = User.builder()
+                .email("test@email.com")
+                .password("oldPasswordHash")
+                .build();
 
         PasswordEncoder encoder = Mockito.mock(PasswordEncoder.class);
-        Mockito.when(encoder.matches(eq("oldPassword"), eq(user.getPassword()))).thenReturn(true);
-        Mockito.when(encoder.matches(eq("newPassword"), eq(user.getPassword()))).thenReturn(true);
+        Mockito.when(encoder.matches(eq("oldPassword"), eq(user.password()))).thenReturn(true);
+        Mockito.when(encoder.matches(eq("newPassword"), eq(user.password()))).thenReturn(true);
         Mockito.when(encoder.encode(eq("newPassword"))).thenReturn("newPasswordHash");
 
         //when - then

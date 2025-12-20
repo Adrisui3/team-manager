@@ -3,21 +3,18 @@ package com.manager.auth.application.service;
 import com.manager.auth.model.exceptions.VerificationEmailFailedException;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
+@Slf4j
 public class EmailService {
 
-    private static final Logger logger = LoggerFactory.getLogger(EmailService.class);
     private final JavaMailSender mailSender;
-
-    public EmailService(JavaMailSender mailSender) {
-        this.mailSender = mailSender;
-    }
 
     public void sendInvitationEmail(String to, String invitationCode) {
         String subject = "Set up your account";
@@ -38,7 +35,7 @@ public class EmailService {
         try {
             sendEmail(to, subject, htmlMessage);
         } catch (MessagingException e) {
-            logger.error("Failed to send verification email to {}", to, e);
+            log.error("Failed to send verification email to {}", to, e);
             throw new VerificationEmailFailedException("Could no send verification email");
         }
     }

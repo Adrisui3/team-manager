@@ -11,16 +11,16 @@ public record SecurityUserDetails(User user) implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SecurityRoleDetails(user.getRole()));
+        return List.of(new SecurityRoleDetails(user.role()));
     }
 
     @Override
     public String getPassword() {
-        return user.getPassword();
+        return user.password();
     }
 
     @Override
     public String getUsername() {
-        return user.getEmail();
+        return user.email();
     }
 }

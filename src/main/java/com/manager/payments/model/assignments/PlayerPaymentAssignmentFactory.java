@@ -21,7 +21,9 @@ public class PlayerPaymentAssignmentFactory {
             throw new PaymentExpiredException();
         }
 
-        return new PlayerPaymentAssignment(player, payment);
+        return PlayerPaymentAssignment.builder()
+                .player(player)
+                .payment(payment)
+                .build();
     }
-
 }

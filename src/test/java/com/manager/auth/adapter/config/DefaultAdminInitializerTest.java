@@ -40,10 +40,10 @@ class DefaultAdminInitializerTest {
         verify(userRepository).save(userCaptor.capture());
 
         User savedUser = userCaptor.getValue();
-        assertThat(savedUser.getEmail()).isEqualTo("admin@payments.local");
-        assertThat(savedUser.getPassword()).isEqualTo("encoded-secret");
-        assertThat(savedUser.isEnabled()).isTrue();
-        assertThat(savedUser.getRole()).isEqualTo(Role.ADMIN);
+        assertThat(savedUser.email()).isEqualTo("admin@payments.local");
+        assertThat(savedUser.password()).isEqualTo("encoded-secret");
+        assertThat(savedUser.enabled()).isTrue();
+        assertThat(savedUser.role()).isEqualTo(Role.ADMIN);
         verifyNoMoreInteractions(userRepository);
     }
 

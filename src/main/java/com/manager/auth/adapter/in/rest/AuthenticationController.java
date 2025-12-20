@@ -19,6 +19,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -27,21 +28,13 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Authentication management endpoints")
 @RestController
 @RequestMapping("/v1/auth")
+@RequiredArgsConstructor
 public class AuthenticationController {
 
     private final SignUpUserUseCase signUpUserUseCase;
     private final AuthenticateUserUseCase authenticateUserUseCase;
     private final UserMapper userMapper;
     private final AuthenticatedUserProvider authenticatedUserProvider;
-
-    public AuthenticationController(SignUpUserUseCase signUpUserUseCase,
-                                    AuthenticateUserUseCase authenticateUserUseCase, UserMapper userMapper,
-                                    AuthenticatedUserProvider authenticatedUserProvider) {
-        this.signUpUserUseCase = signUpUserUseCase;
-        this.authenticateUserUseCase = authenticateUserUseCase;
-        this.userMapper = userMapper;
-        this.authenticatedUserProvider = authenticatedUserProvider;
-    }
 
     @Operation(summary = "Create a new user", description = "Only users with ADMIN role can perform this action")
     @ApiResponses(value = {

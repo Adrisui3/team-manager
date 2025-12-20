@@ -1,44 +1,30 @@
 package com.manager.auth.model.users;
 
+import lombok.Builder;
+
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
+import java.util.Base64;
 import java.util.UUID;
 
-public class UserVerification {
+@Builder(toBuilder = true)
+public record UserVerification(UUID id, LocalDateTime expirationDate, String verificationCode, UUID userId) {
 
-    private UUID id;
-    private LocalDateTime expirationDate;
-    private String verificationCode;
-    private UUID userId;
+    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
+    private static final int NUM_BYTES = 16;
+    private static final int USER_VERIFICATION_TIME_MINUTES = 15;
 
-    public UUID getId() {
-        return id;
+    public static UserVerification build(User user) {
+        return UserVerification.builder()
+                .verificationCode(generateToken())
+                .expirationDate(LocalDateTime.now().plusMinutes(USER_VERIFICATION_TIME_MINUTES))
+                .userId(user.id())
+                .build();
     }
 
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public LocalDateTime getExpirationDate() {
-        return expirationDate;
-    }
-
-    public void setExpirationDate(LocalDateTime expirationDate) {
-        this.expirationDate = expirationDate;
-    }
-
-    public String getVerificationCode() {
-        return verificationCode;
-    }
-
-    public void setVerificationCode(String verificationCode) {
-        this.verificationCode = verificationCode;
-    }
-
-    public UUID getUserId() {
-        return userId;
-    }
-
-    public void setUserId(UUID userId) {
-        this.userId = userId;
+    private static String generateToken() {
+        byte[] bytes = new byte[NUM_BYTES];
+        SECURE_RANDOM.nextBytes(bytes);
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
     }
 }
