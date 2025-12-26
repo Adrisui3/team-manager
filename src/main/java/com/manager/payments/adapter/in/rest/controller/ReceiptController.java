@@ -6,6 +6,7 @@ import com.manager.payments.application.port.out.ReceiptRepository;
 import com.manager.payments.model.exceptions.ReceiptNotFoundException;
 import com.manager.payments.model.receipts.Receipt;
 import com.manager.payments.model.receipts.ReceiptStatus;
+import com.manager.shared.response.ErrorResponse;
 import com.manager.shared.response.PageResponse;
 import com.manager.shared.response.ResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
@@ -18,7 +19,6 @@ import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -48,25 +48,25 @@ public class ReceiptController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Receipt found", useReturnTypeSchema = true),
             @ApiResponse(responseCode = "404", description = "Receipt not found", content = @Content(mediaType =
-                    "application/json", schema = @Schema(implementation = ResponseDto.class)))
+                    "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     })
     @GetMapping("/{receiptId}")
     public ResponseEntity<ResponseDto<ReceiptDto>> getReceipt(@PathVariable("receiptId") UUID receiptId) {
         Receipt receipt =
                 receiptRepository.findById(receiptId).orElseThrow(() -> new ReceiptNotFoundException(receiptId));
-        return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(), receiptMapper.toReceiptDto(receipt)));
+        return ResponseEntity.ok(new ResponseDto<>(receiptMapper.toReceiptDto(receipt)));
     }
 
     @Operation(summary = "Update the status of a receipt")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Receipt' status updated", useReturnTypeSchema = true),
             @ApiResponse(responseCode = "404", description = "Receipt not found", content = @Content(mediaType =
-                    "application/json", schema = @Schema(implementation = ResponseDto.class)))
+                    "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     })
     @PutMapping("/{receiptId}/update-status/{newStatus}")
     public ResponseEntity<ResponseDto<ReceiptDto>> updateReceiptStatus(@PathVariable UUID receiptId,
                                                                        @PathVariable ReceiptStatus newStatus) {
         Receipt updatedReceipt = receiptRepository.updateStatus(receiptId, newStatus);
-        return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(), receiptMapper.toReceiptDto(updatedReceipt)));
+        return ResponseEntity.ok(new ResponseDto<>(receiptMapper.toReceiptDto(updatedReceipt)));
     }
 }

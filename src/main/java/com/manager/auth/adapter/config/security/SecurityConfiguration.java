@@ -91,6 +91,6 @@ public class SecurityConfiguration {
     private void writeDto(HttpServletResponse res, ObjectMapper om, HttpStatus status, String message) throws IOException {
         res.setStatus(status.value());
         res.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        om.writeValue(res.getOutputStream(), new ResponseDto<>(status.value(), message));
+        om.writeValue(res.getOutputStream(), new ResponseDto<>(message));
     }
 }

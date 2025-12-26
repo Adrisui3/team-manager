@@ -11,6 +11,7 @@ import com.manager.payments.application.port.out.ReceiptRepository;
 import com.manager.payments.model.exceptions.PaymentNotFoundException;
 import com.manager.payments.model.payments.Payment;
 import com.manager.payments.model.receipts.Receipt;
+import com.manager.shared.response.ErrorResponse;
 import com.manager.shared.response.PageResponse;
 import com.manager.shared.response.ResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,7 +24,6 @@ import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -58,13 +58,13 @@ public class PaymentController {
             @ApiResponse(responseCode = "200", description = "Payment found", useReturnTypeSchema = true),
             @ApiResponse(responseCode = "404", description = "Payment not found",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation =
-                            ResponseDto.class)))
+                            ErrorResponse.class)))
     })
     @GetMapping("/{paymentId}")
     public ResponseEntity<ResponseDto<PaymentDto>> getPayment(@PathVariable UUID paymentId) {
         Payment payment =
                 paymentRepository.findById(paymentId).orElseThrow(() -> new PaymentNotFoundException(paymentId));
-        return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(), paymentMapper.toPaymentDto(payment)));
+        return ResponseEntity.ok(new ResponseDto<>(paymentMapper.toPaymentDto(payment)));
     }
 
     @Operation(summary = "Get a payment's receipts")
@@ -74,7 +74,7 @@ public class PaymentController {
     @GetMapping("/{paymentId}/receipts")
     public ResponseEntity<ResponseDto<List<ReceiptDto>>> getPaymentReceipts(@PathVariable UUID paymentId) {
         List<Receipt> receipts = receiptRepository.findAllByPaymentId(paymentId);
-        return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(),
+        return ResponseEntity.ok(new ResponseDto<>(
                 receipts.stream().map(receiptMapper::toReceiptDto).toList()));
     }
 
@@ -83,12 +83,12 @@ public class PaymentController {
             @ApiResponse(responseCode = "201", description = "Payment created", useReturnTypeSchema = true),
             @ApiResponse(responseCode = "400", description = "Payment already exists",
                     content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ResponseDto.class)))
+                            schema = @Schema(implementation = ErrorResponse.class)))
     })
     @PostMapping
     public ResponseEntity<ResponseDto<PaymentDto>> createPayment(@RequestBody CreatePaymentRequestDTO requestDTO) {
         Payment payment = createPaymentUseCase.createPayment(requestDTO);
-        return ResponseEntity.created(URI.create("/v1/payments/" + payment.id())).body(new ResponseDto<>(HttpStatus.OK.value(), paymentMapper.toPaymentDto(payment)));
+        return ResponseEntity.created(URI.create("/v1/payments/" + payment.id())).body(new ResponseDto<>(paymentMapper.toPaymentDto(payment)));
     }
 
     @Operation(summary = "Delete payment")
@@ -96,12 +96,12 @@ public class PaymentController {
             @ApiResponse(responseCode = "200", description = "Payment deleted", useReturnTypeSchema = true),
             @ApiResponse(responseCode = "404", description = "Payment not found",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation =
-                            ResponseDto.class))),
+                            ErrorResponse.class))),
     })
     @DeleteMapping("/{paymentId}")
     public ResponseEntity<ResponseDto<String>> deletePayment(@PathVariable UUID paymentId) {
         paymentRepository.deleteById(paymentId);
-        return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(), "Payment with id " + paymentId + " has been" +
+        return ResponseEntity.ok(new ResponseDto<>("Payment with id " + paymentId + " has been" +
                 " deleted."));
     }
 }

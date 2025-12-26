@@ -11,6 +11,7 @@ import com.manager.auth.adapter.out.persistence.mapper.UserMapper;
 import com.manager.auth.application.port.in.AuthenticateUserUseCase;
 import com.manager.auth.application.port.in.SignUpUserUseCase;
 import com.manager.auth.model.users.User;
+import com.manager.shared.response.ErrorResponse;
 import com.manager.shared.response.ResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -20,7 +21,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -41,13 +41,13 @@ public class AuthenticationController {
             @ApiResponse(responseCode = "200", description = "User created", useReturnTypeSchema = true),
             @ApiResponse(responseCode = "400", description = "User already exists",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation =
-                            ResponseDto.class)))
+                            ErrorResponse.class)))
     })
     @PostMapping("/signup")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ResponseDto<UserDto>> registerUser(@Valid @RequestBody RegisterUserRequestDto registerUserRequestDto) {
         User registeredUser = signUpUserUseCase.signup(registerUserRequestDto);
-        return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(), userMapper.toUserDto(registeredUser)));
+        return ResponseEntity.ok(new ResponseDto<>(userMapper.toUserDto(registeredUser)));
     }
 
     @Operation(summary = "Login")
@@ -55,12 +55,12 @@ public class AuthenticationController {
             @ApiResponse(responseCode = "200", description = "User successfully logged in", useReturnTypeSchema = true),
             @ApiResponse(responseCode = "400", description = "Invalid email or password",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation =
-                            ResponseDto.class)))
+                            ErrorResponse.class)))
     })
     @PostMapping("/login")
     public ResponseEntity<ResponseDto<LoginResponseDto>> authenticate(@Valid @RequestBody LoginUserRequestDto loginUserRequestDto) {
         LoginResponseDto loginResponseDto = authenticateUserUseCase.authenticate(loginUserRequestDto);
-        return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(), loginResponseDto));
+        return ResponseEntity.ok(new ResponseDto<>(loginResponseDto));
     }
 
     @Operation(summary = "Set user's password")
@@ -69,15 +69,15 @@ public class AuthenticationController {
                     useReturnTypeSchema = true),
             @ApiResponse(responseCode = "404", description = "User or verification request not found",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation =
-                            ResponseDto.class))),
+                            ErrorResponse.class))),
             @ApiResponse(responseCode = "400", description = "Verification code expired or invalid",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation =
-                            ResponseDto.class)))
+                            ErrorResponse.class)))
     })
     @PostMapping("/set-password")
     public ResponseEntity<ResponseDto<String>> setPassword(@Valid @RequestBody SetUserPasswordRequestDto setUserPasswordRequestDto) {
         signUpUserUseCase.setPassword(setUserPasswordRequestDto);
-        return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(), "Password set successfully,"));
+        return ResponseEntity.ok(new ResponseDto<>("Password set successfully,"));
     }
 
     @Operation(summary = "Change a user's password.", description = "A given user can only change their own password.")
@@ -86,13 +86,13 @@ public class AuthenticationController {
                     true),
             @ApiResponse(responseCode = "400", description = "Email or password do not match authenticated user's.",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation =
-                            ResponseDto.class)))
+                            ErrorResponse.class)))
     })
     @PutMapping("/change-password")
     public ResponseEntity<ResponseDto<String>> changePassword(@Valid @RequestBody ChangeUserPasswordRequestDto changeUserPasswordRequestDto) {
         User authenticatedUser = authenticatedUserProvider.getAuthenticatedUser();
         signUpUserUseCase.changePassword(changeUserPasswordRequestDto, authenticatedUser);
-        return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(), "Password changed successfully,"));
+        return ResponseEntity.ok(new ResponseDto<>("Password changed successfully,"));
     }
 
     @Operation(summary = "Reset a user's password", description = "Only users with ADMIN role can perform this action.")
@@ -101,12 +101,12 @@ public class AuthenticationController {
                     useReturnTypeSchema = true),
             @ApiResponse(responseCode = "404", description = "User not found",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation =
-                            ResponseDto.class)))
+                            ErrorResponse.class)))
     })
     @PostMapping("/reset-password")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ResponseDto<String>> resetPassword(@RequestBody String email) {
         signUpUserUseCase.resetPassword(email);
-        return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(), "Verification code resent."));
+        return ResponseEntity.ok(new ResponseDto<>("Verification code resent."));
     }
 }
