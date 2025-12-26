@@ -1,7 +1,8 @@
 package com.manager.auth.adapter.config.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.manager.shared.response.ResponseDto;
+import com.manager.shared.ErrorCode;
+import com.manager.shared.response.ErrorResponse;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -89,8 +90,10 @@ public class SecurityConfiguration {
     }
 
     private void writeDto(HttpServletResponse res, ObjectMapper om, HttpStatus status, String message) throws IOException {
+        ErrorCode code = status.equals(HttpStatus.FORBIDDEN) ? ErrorCode.FORBIDDEN : ErrorCode.UNAUTHORIZED;
+
         res.setStatus(status.value());
         res.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        om.writeValue(res.getOutputStream(), new ResponseDto<>(message));
+        om.writeValue(res.getOutputStream(), new ErrorResponse(code, message));
     }
 }
