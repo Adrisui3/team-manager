@@ -2,11 +2,9 @@ package com.manager.shared.exception;
 
 import com.manager.shared.ErrorCode;
 import com.manager.shared.response.ErrorResponse;
-import com.manager.shared.response.ResponseDto;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.*;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -28,9 +26,8 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import java.util.stream.Collectors;
 
 @RestControllerAdvice
+@Slf4j
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(RestExceptionHandler.class);
 
     @ExceptionHandler(GenericException.class)
     public ResponseEntity<ErrorResponse> handleGenericException(GenericException e) {
@@ -81,8 +78,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
                                                                           @NonNull WebRequest request) {
 
         String msg = "Missing request parameter: " + ex.getParameterName();
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseDto<>(
-                msg));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(ErrorCode.ERROR, msg));
     }
 
     @Override
@@ -90,8 +86,8 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
                                                                   @NonNull HttpHeaders headers,
                                                                   @NonNull HttpStatusCode status,
                                                                   @NonNull WebRequest request) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseDto<>(
-                "Malformed JSON request."));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(ErrorCode.ERROR, "Malformed JSON " +
+                "request."));
     }
 
     @Override
@@ -101,7 +97,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
                                                                    @NonNull WebRequest request) {
 
         String msg = "No handler found for %s %s".formatted(ex.getHttpMethod(), ex.getRequestURL());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponseDto<>(msg));
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(ErrorCode.ERROR, msg));
     }
 
     @Override
@@ -110,7 +106,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
                                                                          @NonNull HttpStatusCode status,
                                                                          @NonNull WebRequest request) {
         String msg = "Method %s not allowed.".formatted(ex.getMethod());
-        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(new ResponseDto<>(msg));
+        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(new ErrorResponse(ErrorCode.ERROR, msg));
     }
 
     @Override
@@ -122,8 +118,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
                 .map(MediaType::toString)
                 .collect(Collectors.joining(", "));
         String msg = "Unsupported media type. Supported: " + (supported.isBlank() ? "—" : supported);
-        return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body(new ResponseDto<>(
-                msg));
+        return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body(new ErrorResponse(ErrorCode.ERROR, msg));
     }
 
     @Override
@@ -152,7 +147,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(Throwable.class)
     public ResponseEntity<ErrorResponse> handleUnexpected(Throwable ex, HttpServletRequest req) {
-        LOGGER.error("Unexpected error on {} {}", req.getMethod(), req.getRequestURI(), ex);
+        log.error("Unexpected error on {} {}", req.getMethod(), req.getRequestURI(), ex);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse(ErrorCode.ERROR,
                 "Internal server error"));
     }
