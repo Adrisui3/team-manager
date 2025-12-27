@@ -97,7 +97,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
                                                                    @NonNull WebRequest request) {
 
         String msg = "No handler found for %s %s".formatted(ex.getHttpMethod(), ex.getRequestURL());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(ErrorCode.ERROR, msg));
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(ErrorCode.NOT_FOUND, msg));
     }
 
     @Override
