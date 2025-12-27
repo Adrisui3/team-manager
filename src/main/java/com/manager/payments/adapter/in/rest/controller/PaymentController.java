@@ -69,10 +69,17 @@ public class PaymentController {
 
     @Operation(summary = "Get a payment's receipts")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Payment's receipts", useReturnTypeSchema = true)
+            @ApiResponse(responseCode = "200", description = "Payment's receipts", useReturnTypeSchema = true),
+            @ApiResponse(responseCode = "404", description = "Payment not found",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation =
+                            ErrorResponse.class)))
     })
     @GetMapping("/{paymentId}/receipts")
     public ResponseEntity<ResponseDto<List<ReceiptDto>>> getPaymentReceipts(@PathVariable UUID paymentId) {
+        if (!paymentRepository.existsById(paymentId)) {
+            throw new PaymentNotFoundException(paymentId);
+        }
+
         List<Receipt> receipts = receiptRepository.findAllByPaymentId(paymentId);
         return ResponseEntity.ok(new ResponseDto<>(
                 receipts.stream().map(receiptMapper::toReceiptDto).toList()));

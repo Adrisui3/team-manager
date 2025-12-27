@@ -80,9 +80,16 @@ public class PlayerController {
     @Operation(summary = "Get a player's receipts")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Player's receipts", useReturnTypeSchema = true),
+            @ApiResponse(responseCode = "404", description = "Player not found",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation =
+                            ErrorResponse.class)))
     })
     @GetMapping("/{playerId}/receipts")
     public ResponseEntity<ResponseDto<List<ReceiptDto>>> getPlayerReceipts(@PathVariable UUID playerId) {
+        if (!playerRepository.existsById(playerId)) {
+            throw new PlayerNotFoundException(playerId);
+        }
+
         List<Receipt> receipts = receiptRepository.findAllByPlayerId(playerId);
         return ResponseEntity.ok(new ResponseDto<>(
                 receipts.stream().map(receiptMapper::toReceiptDto).toList()));
