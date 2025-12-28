@@ -5,6 +5,6 @@ import com.manager.shared.exception.GenericException;
 
 public class PaymentInvalidDateInterval extends GenericException {
     public PaymentInvalidDateInterval() {
-        super("Start date cannot be after end date.", ErrorCode.ALREADY_EXISTS);
+        super("Start date cannot be after end date.", ErrorCode.INVALID);
     }
 }
