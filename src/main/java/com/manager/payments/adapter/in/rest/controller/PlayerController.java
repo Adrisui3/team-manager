@@ -98,7 +98,7 @@ public class PlayerController {
     @Operation(summary = "Create a new player")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Player created", useReturnTypeSchema = true),
-            @ApiResponse(responseCode = "400", description = "Player already exists",
+            @ApiResponse(responseCode = "409", description = "Player already exists",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorResponse.class)))
     })
@@ -115,7 +115,7 @@ public class PlayerController {
             @ApiResponse(responseCode = "404", description = "Player or payment not found",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation =
                             ErrorResponse.class))),
-            @ApiResponse(responseCode = "400", description = "Assignment already exists",
+            @ApiResponse(responseCode = "409", description = "Assignment already exists",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation =
                             ErrorResponse.class)))
     })
