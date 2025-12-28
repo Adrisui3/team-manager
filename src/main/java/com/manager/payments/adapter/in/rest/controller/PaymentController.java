@@ -88,7 +88,7 @@ public class PaymentController {
     @Operation(summary = "Create a new payment")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Payment created", useReturnTypeSchema = true),
-            @ApiResponse(responseCode = "400", description = "Payment already exists",
+            @ApiResponse(responseCode = "409", description = "Payment already exists",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorResponse.class)))
     })
