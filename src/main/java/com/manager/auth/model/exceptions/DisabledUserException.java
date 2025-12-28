@@ -5,6 +5,6 @@ import com.manager.shared.exception.GenericException;
 
 public class DisabledUserException extends GenericException {
     public DisabledUserException() {
-        super("User account disabled.", ErrorCode.FORBIDDEN);
+        super("User account disabled.", ErrorCode.DISABLED);
     }
 }

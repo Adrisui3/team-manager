@@ -39,7 +39,7 @@ public class AuthenticationController {
     @Operation(summary = "Create a new user", description = "Only users with ADMIN role can perform this action")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "User created", useReturnTypeSchema = true),
-            @ApiResponse(responseCode = "400", description = "User already exists",
+            @ApiResponse(responseCode = "409", description = "User already exists",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation =
                             ErrorResponse.class)))
     })
@@ -53,7 +53,10 @@ public class AuthenticationController {
     @Operation(summary = "Login")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "User successfully logged in", useReturnTypeSchema = true),
-            @ApiResponse(responseCode = "400", description = "Invalid email or password",
+            @ApiResponse(responseCode = "401", description = "Invalid email or password",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation =
+                            ErrorResponse.class))),
+            @ApiResponse(responseCode = "409", description = "User disabled.",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation =
                             ErrorResponse.class)))
     })
@@ -70,7 +73,10 @@ public class AuthenticationController {
             @ApiResponse(responseCode = "404", description = "User or verification request not found",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation =
                             ErrorResponse.class))),
-            @ApiResponse(responseCode = "400", description = "Verification code expired or invalid",
+            @ApiResponse(responseCode = "410", description = "Verification code expired",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation =
+                            ErrorResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Verification code invalid",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation =
                             ErrorResponse.class)))
     })
@@ -100,6 +106,9 @@ public class AuthenticationController {
             @ApiResponse(responseCode = "200", description = "User's password successfully reset",
                     useReturnTypeSchema = true),
             @ApiResponse(responseCode = "404", description = "User not found",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation =
+                            ErrorResponse.class))),
+            @ApiResponse(responseCode = "409", description = "User disabled.",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation =
                             ErrorResponse.class)))
     })

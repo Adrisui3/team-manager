@@ -5,6 +5,7 @@ import com.manager.auth.adapter.dto.requests.RegisterUserRequestDto;
 import com.manager.auth.adapter.dto.requests.SetUserPasswordRequestDto;
 import com.manager.auth.application.port.in.SignUpUserUseCase;
 import com.manager.auth.application.port.out.UserRepository;
+import com.manager.auth.model.exceptions.DisabledUserException;
 import com.manager.auth.model.exceptions.UserAlreadyExists;
 import com.manager.auth.model.exceptions.UserNotFound;
 import com.manager.auth.model.users.User;
@@ -54,6 +55,9 @@ public class SignUpService implements SignUpUserUseCase {
     public void resetPassword(String email) {
         User user =
                 userRepository.findByEmail(email).orElseThrow(UserNotFound::new);
+        if (!user.enabled())
+            throw new DisabledUserException();
+
         User updatedUser = user.initializeVerification();
 
         emailService.sendInvitationEmail(updatedUser.email(), updatedUser.verification().verificationCode());
