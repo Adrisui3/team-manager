@@ -5,6 +5,6 @@ import com.manager.shared.exception.GenericException;
 
 public class InvalidVerificationCodeException extends GenericException {
     public InvalidVerificationCodeException() {
-        super("Invalid verification code", ErrorCode.INVALID_STATE);
+        super("Invalid verification code", ErrorCode.INVALID);
     }
 }

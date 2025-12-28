@@ -5,6 +5,6 @@ import com.manager.shared.exception.GenericException;
 
 public class InvalidPasswordChangeException extends GenericException {
     public InvalidPasswordChangeException() {
-        super("Password change request does not match authenticated user", ErrorCode.INVALID_STATE);
+        super("Password change request does not match authenticated user", ErrorCode.INVALID);
     }
 }

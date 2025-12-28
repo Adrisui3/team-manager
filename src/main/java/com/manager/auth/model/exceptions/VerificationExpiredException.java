@@ -5,6 +5,6 @@ import com.manager.shared.exception.GenericException;
 
 public class VerificationExpiredException extends GenericException {
     public VerificationExpiredException() {
-        super("Verification code expired", ErrorCode.INVALID_STATE);
+        super("Verification code expired", ErrorCode.EXPIRED);
     }
 }

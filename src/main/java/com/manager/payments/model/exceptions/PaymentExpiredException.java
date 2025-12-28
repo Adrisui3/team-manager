@@ -5,6 +5,6 @@ import com.manager.shared.exception.GenericException;
 
 public class PaymentExpiredException extends GenericException {
     public PaymentExpiredException() {
-        super("Cannot perform action on expired payment", ErrorCode.INVALID_STATE);
+        super("Cannot perform action on expired payment", ErrorCode.EXPIRED);
     }
 }

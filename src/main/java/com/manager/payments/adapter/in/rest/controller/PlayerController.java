@@ -18,6 +18,7 @@ import com.manager.payments.model.exceptions.PlayerNotFoundException;
 import com.manager.payments.model.payments.Payment;
 import com.manager.payments.model.players.Player;
 import com.manager.payments.model.receipts.Receipt;
+import com.manager.shared.response.ErrorResponse;
 import com.manager.shared.response.PageResponse;
 import com.manager.shared.response.ResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
@@ -31,7 +32,6 @@ import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -69,36 +69,43 @@ public class PlayerController {
             @ApiResponse(responseCode = "200", description = "Player found", useReturnTypeSchema = true),
             @ApiResponse(responseCode = "404", description = "Player not found",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation =
-                            ResponseDto.class)))
+                            ErrorResponse.class)))
     })
     @GetMapping("/{playerId}")
     public ResponseEntity<ResponseDto<PlayerDto>> getPlayer(@PathVariable UUID playerId) {
         Player player = playerRepository.findById(playerId).orElseThrow(() -> new PlayerNotFoundException(playerId));
-        return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(), playerMapper.toPlayerDto(player)));
+        return ResponseEntity.ok(new ResponseDto<>(playerMapper.toPlayerDto(player)));
     }
 
     @Operation(summary = "Get a player's receipts")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Player's receipts", useReturnTypeSchema = true),
+            @ApiResponse(responseCode = "404", description = "Player not found",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation =
+                            ErrorResponse.class)))
     })
     @GetMapping("/{playerId}/receipts")
     public ResponseEntity<ResponseDto<List<ReceiptDto>>> getPlayerReceipts(@PathVariable UUID playerId) {
+        if (!playerRepository.existsById(playerId)) {
+            throw new PlayerNotFoundException(playerId);
+        }
+
         List<Receipt> receipts = receiptRepository.findAllByPlayerId(playerId);
-        return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(),
+        return ResponseEntity.ok(new ResponseDto<>(
                 receipts.stream().map(receiptMapper::toReceiptDto).toList()));
     }
 
     @Operation(summary = "Create a new player")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Player created", useReturnTypeSchema = true),
-            @ApiResponse(responseCode = "400", description = "Player already exists",
+            @ApiResponse(responseCode = "409", description = "Player already exists",
                     content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ResponseDto.class)))
+                            schema = @Schema(implementation = ErrorResponse.class)))
     })
     @PostMapping
     public ResponseEntity<ResponseDto<PlayerDto>> createUser(@Valid @RequestBody CreatePlayerRequestDTO requestDTO) {
         Player newPlayer = createPlayerUseCase.createPlayer(requestDTO);
-        return ResponseEntity.created(URI.create("/v1/players/" + newPlayer.id())).body(new ResponseDto<>(HttpStatus.CREATED.value(), playerMapper.toPlayerDto(newPlayer)));
+        return ResponseEntity.created(URI.create("/v1/players/" + newPlayer.id())).body(new ResponseDto<>(playerMapper.toPlayerDto(newPlayer)));
     }
 
     @Operation(summary = "Assigns payment to player")
@@ -107,16 +114,16 @@ public class PlayerController {
                     useReturnTypeSchema = true),
             @ApiResponse(responseCode = "404", description = "Player or payment not found",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation =
-                            ResponseDto.class))),
-            @ApiResponse(responseCode = "400", description = "Assignment already exists",
+                            ErrorResponse.class))),
+            @ApiResponse(responseCode = "409", description = "Assignment already exists",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation =
-                            ResponseDto.class)))
+                            ErrorResponse.class)))
     })
     @PostMapping("/{playerId}/assign/{paymentId}")
     public ResponseEntity<ResponseDto<PlayerPaymentAssignmentDto>> assignPaymentToPlayer(@PathVariable UUID playerId,
                                                                                          @PathVariable UUID paymentId) {
         PlayerPaymentAssignment assignment = assignPaymentToPlayerUseCase.assignPaymentToPlayer(playerId, paymentId);
-        return ResponseEntity.created(URI.create("/v1/players/" + playerId + "/payments")).body(new ResponseDto<>(HttpStatus.CREATED.value(),
+        return ResponseEntity.created(URI.create("/v1/players/" + playerId + "/payments")).body(new ResponseDto<>(
                 playerPaymentAssignmentMapper.toPlayerPaymentAssignmentDto(assignment)));
     }
 
@@ -126,12 +133,12 @@ public class PlayerController {
                     useReturnTypeSchema = true),
             @ApiResponse(responseCode = "404", description = "Player not found",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation =
-                            ResponseDto.class))),
+                            ErrorResponse.class))),
     })
     @GetMapping("/{playerId}/payments")
     public ResponseEntity<ResponseDto<List<PaymentDto>>> getPlayerPayments(@PathVariable UUID playerId) {
         List<Payment> assignedPayments = playerRepository.findAllAssignedPayments(playerId);
-        return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(),
+        return ResponseEntity.ok(new ResponseDto<>(
                 assignedPayments.stream().map(paymentMapper::toPaymentDto).toList()));
     }
 
@@ -141,13 +148,13 @@ public class PlayerController {
                     useReturnTypeSchema = true),
             @ApiResponse(responseCode = "404", description = "Player, payment or assignment not found",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation =
-                            ResponseDto.class))),
+                            ErrorResponse.class))),
     })
     @DeleteMapping("/{playerId}/unassign/{paymentId}")
     public ResponseEntity<ResponseDto<String>> unassignPaymentFromPlayer(@PathVariable UUID playerId,
                                                                          @PathVariable UUID paymentId) {
         assignPaymentToPlayerUseCase.unassignPaymentToPlayer(playerId, paymentId);
-        return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(), "Payment with id " + playerId + " was " +
+        return ResponseEntity.ok(new ResponseDto<>("Payment with id " + playerId + " was " +
                 "unassigned from player with id " + playerId));
     }
 
@@ -157,12 +164,12 @@ public class PlayerController {
                     useReturnTypeSchema = true),
             @ApiResponse(responseCode = "404", description = "Player not found",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation =
-                            ResponseDto.class))),
+                            ErrorResponse.class))),
     })
     @DeleteMapping("/{playerId}")
     public ResponseEntity<ResponseDto<String>> deleteUser(@PathVariable UUID playerId) {
         playerRepository.deleteById(playerId);
-        return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(), "Player with id " + playerId + " was " +
+        return ResponseEntity.ok(new ResponseDto<>("Player with id " + playerId + " was " +
                 "deleted"));
     }
 }
