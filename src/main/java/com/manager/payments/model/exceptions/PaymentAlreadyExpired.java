@@ -5,6 +5,6 @@ import com.manager.shared.exception.GenericException;
 
 public class PaymentAlreadyExpired extends GenericException {
     public PaymentAlreadyExpired() {
-        super("End date cannot be in the past.", ErrorCode.INVALID_STATE);
+        super("End date cannot be in the past.", ErrorCode.EXPIRED);
     }
 }

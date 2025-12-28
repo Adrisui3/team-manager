@@ -5,6 +5,6 @@ import com.manager.shared.exception.GenericException;
 
 public class PlayerAlreadyExistsException extends GenericException {
     public PlayerAlreadyExistsException(String personalId) {
-        super("Player with personal id " + personalId + " already exists", ErrorCode.INVALID_STATE);
+        super("Player with personal id " + personalId + " already exists", ErrorCode.ALREADY_EXISTS);
     }
 }

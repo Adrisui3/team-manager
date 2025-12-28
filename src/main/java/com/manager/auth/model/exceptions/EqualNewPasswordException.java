@@ -5,6 +5,6 @@ import com.manager.shared.exception.GenericException;
 
 public class EqualNewPasswordException extends GenericException {
     public EqualNewPasswordException() {
-        super("New and old password must be different", ErrorCode.INVALID_STATE);
+        super("New and old password must be different", ErrorCode.INVALID);
     }
 }

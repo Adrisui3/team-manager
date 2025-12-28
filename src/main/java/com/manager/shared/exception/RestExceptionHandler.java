@@ -33,7 +33,9 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<ErrorResponse> handleGenericException(GenericException e) {
         HttpStatus httpStatus = switch (e.getStatus()) {
             case NOT_FOUND -> HttpStatus.NOT_FOUND;
-            case INVALID_STATE -> HttpStatus.BAD_REQUEST;
+            case ALREADY_EXISTS, DISABLED -> HttpStatus.CONFLICT;
+            case INVALID -> HttpStatus.BAD_REQUEST;
+            case EXPIRED -> HttpStatus.GONE;
             case UNAUTHORIZED -> HttpStatus.UNAUTHORIZED;
             case FORBIDDEN -> HttpStatus.FORBIDDEN;
             case ERROR -> HttpStatus.INTERNAL_SERVER_ERROR;
@@ -53,7 +55,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
                 .map(fe -> fe.getField() + ": " + fe.getDefaultMessage())
                 .distinct()
                 .collect(Collectors.joining("; "));
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(ErrorCode.ERROR, msg));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(ErrorCode.INVALID, msg));
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
@@ -61,14 +63,14 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         String msg = ex.getConstraintViolations().stream()
                 .map(v -> v.getPropertyPath() + ": " + v.getMessage())
                 .collect(Collectors.joining("; "));
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(ErrorCode.ERROR, msg));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(ErrorCode.INVALID, msg));
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ErrorResponse> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
         String expected = ex.getRequiredType() != null ? ex.getRequiredType().getSimpleName() : "required type";
         String msg = "Parameter '%s' must be of type %s.".formatted(ex.getName(), expected);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(ErrorCode.ERROR, msg));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(ErrorCode.INVALID, msg));
     }
 
     @Override
@@ -78,7 +80,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
                                                                           @NonNull WebRequest request) {
 
         String msg = "Missing request parameter: " + ex.getParameterName();
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(ErrorCode.ERROR, msg));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(ErrorCode.INVALID, msg));
     }
 
     @Override
@@ -86,7 +88,8 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
                                                                   @NonNull HttpHeaders headers,
                                                                   @NonNull HttpStatusCode status,
                                                                   @NonNull WebRequest request) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(ErrorCode.ERROR, "Malformed JSON " +
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(ErrorCode.INVALID, "Malformed " +
+                "JSON " +
                 "request."));
     }
 
@@ -106,7 +109,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
                                                                          @NonNull HttpStatusCode status,
                                                                          @NonNull WebRequest request) {
         String msg = "Method %s not allowed.".formatted(ex.getMethod());
-        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(new ErrorResponse(ErrorCode.ERROR, msg));
+        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(new ErrorResponse(ErrorCode.INVALID, msg));
     }
 
     @Override
@@ -118,13 +121,13 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
                 .map(MediaType::toString)
                 .collect(Collectors.joining(", "));
         String msg = "Unsupported media type. Supported: " + (supported.isBlank() ? "—" : supported);
-        return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body(new ErrorResponse(ErrorCode.ERROR, msg));
+        return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body(new ErrorResponse(ErrorCode.INVALID, msg));
     }
 
     @Override
     protected ResponseEntity<Object> handleHttpMediaTypeNotAcceptable(@NonNull HttpMediaTypeNotAcceptableException ex
             , @NonNull HttpHeaders headers, @NonNull HttpStatusCode status, @NonNull WebRequest request) {
-        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(new ErrorResponse(ErrorCode.INVALID_STATE, "Not " +
+        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(new ErrorResponse(ErrorCode.INVALID, "Not " +
                 "acceptable."));
     }
 
@@ -141,7 +144,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ErrorResponse> handleDataIntegrity(DataIntegrityViolationException ex) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorResponse(ErrorCode.ERROR, "Data integrity " +
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorResponse(ErrorCode.INVALID, "Data integrity " +
                 "violation"));
     }
 
