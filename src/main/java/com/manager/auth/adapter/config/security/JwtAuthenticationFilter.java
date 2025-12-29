@@ -3,7 +3,9 @@ package com.manager.auth.adapter.config.security;
 import com.manager.auth.adapter.in.security.SecurityUserDetails;
 import com.manager.auth.application.port.out.UserRepository;
 import com.manager.auth.application.service.JwtService;
+import com.manager.auth.model.exceptions.ExpiredSessionException;
 import com.manager.auth.model.users.User;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -62,6 +64,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
 
             filterChain.doFilter(request, response);
+        } catch (ExpiredJwtException e) {
+            handlerExceptionResolver.resolveException(request, response, null, new ExpiredSessionException());
         } catch (Exception ex) {
             handlerExceptionResolver.resolveException(request, response, null, ex);
         }

@@ -6,6 +6,7 @@ public enum ErrorCode {
     INVALID,
     DISABLED,
     EXPIRED,
+    EXPIRED_TOKEN,
     UNAUTHORIZED,
     FORBIDDEN,
     ERROR
