@@ -3,12 +3,10 @@ package com.manager.payments.adapter.in.rest.controller;
 import com.manager.payments.adapter.in.rest.dto.models.PaymentDto;
 import com.manager.payments.adapter.in.rest.dto.models.PlayerDto;
 import com.manager.payments.adapter.in.rest.dto.models.PlayerPaymentAssignmentDto;
-import com.manager.payments.adapter.in.rest.dto.models.ReceiptDto;
 import com.manager.payments.adapter.in.rest.dto.request.CreatePlayerRequestDTO;
 import com.manager.payments.adapter.out.persistence.assignments.PlayerPaymentAssignmentMapper;
 import com.manager.payments.adapter.out.persistence.payments.PaymentMapper;
 import com.manager.payments.adapter.out.persistence.players.PlayerMapper;
-import com.manager.payments.adapter.out.persistence.receipts.ReceiptMapper;
 import com.manager.payments.application.port.in.AssignPaymentToPlayerUseCase;
 import com.manager.payments.application.port.in.CreatePlayerUseCase;
 import com.manager.payments.application.port.out.PlayerRepository;
@@ -18,6 +16,7 @@ import com.manager.payments.model.exceptions.PlayerNotFoundException;
 import com.manager.payments.model.payments.Payment;
 import com.manager.payments.model.players.Player;
 import com.manager.payments.model.receipts.Receipt;
+import com.manager.payments.model.receipts.ReceiptStatus;
 import com.manager.shared.response.ErrorResponse;
 import com.manager.shared.response.PageResponse;
 import com.manager.shared.response.ResponseDto;
@@ -50,7 +49,6 @@ public class PlayerController {
     private final PlayerRepository playerRepository;
     private final AssignPaymentToPlayerUseCase assignPaymentToPlayerUseCase;
     private final PlayerMapper playerMapper;
-    private final ReceiptMapper receiptMapper;
     private final ReceiptRepository receiptRepository;
     private final PaymentMapper paymentMapper;
 
@@ -85,14 +83,16 @@ public class PlayerController {
                             ErrorResponse.class)))
     })
     @GetMapping("/{playerId}/receipts")
-    public ResponseEntity<ResponseDto<List<ReceiptDto>>> getPlayerReceipts(@PathVariable UUID playerId) {
+    public ResponseEntity<PageResponse<Receipt>> getPlayerReceipts(@ParameterObject Pageable pageable,
+                                                                   @PathVariable UUID playerId,
+                                                                   @RequestParam(required = false) ReceiptStatus status) {
         if (!playerRepository.existsById(playerId)) {
             throw new PlayerNotFoundException(playerId);
         }
 
-        List<Receipt> receipts = receiptRepository.findAllByPlayerId(playerId);
-        return ResponseEntity.ok(new ResponseDto<>(
-                receipts.stream().map(receiptMapper::toReceiptDto).toList()));
+        Page<Receipt> receipts = status == null ? receiptRepository.findAllByPlayerId(playerId, pageable) :
+                receiptRepository.findAllByPlayerIdAndStatus(playerId, pageable, status);
+        return ResponseEntity.ok(PageResponse.of(receipts));
     }
 
     @Operation(summary = "Create a new player")
