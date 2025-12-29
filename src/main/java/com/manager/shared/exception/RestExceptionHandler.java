@@ -36,7 +36,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
             case ALREADY_EXISTS, DISABLED -> HttpStatus.CONFLICT;
             case INVALID -> HttpStatus.BAD_REQUEST;
             case EXPIRED -> HttpStatus.GONE;
-            case UNAUTHORIZED -> HttpStatus.UNAUTHORIZED;
+            case UNAUTHORIZED, EXPIRED_TOKEN -> HttpStatus.UNAUTHORIZED;
             case FORBIDDEN -> HttpStatus.FORBIDDEN;
             case ERROR -> HttpStatus.INTERNAL_SERVER_ERROR;
         };
