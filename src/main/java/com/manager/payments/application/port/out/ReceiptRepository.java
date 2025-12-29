@@ -28,7 +28,9 @@ public interface ReceiptRepository {
 
     boolean existsByPlayerAndPayment(Receipt receipt);
 
-    List<Receipt> findAllByPlayerId(UUID playerId);
+    Page<Receipt> findAllByPlayerId(UUID playerId, Pageable pageable);
+
+    Page<Receipt> findAllByPlayerIdAndStatus(UUID playerId, Pageable pageable, ReceiptStatus status);
 
     List<Receipt> findAllByPaymentId(UUID paymentId);
 }

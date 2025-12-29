@@ -15,73 +15,80 @@ import java.util.UUID;
 @Repository
 public class ReceiptRepositoryAdapter implements ReceiptRepository {
 
-    private final ReceiptJpaRepository receiptJpaRepository;
-    private final ReceiptMapper receiptMapper;
+    private final ReceiptJpaRepository repository;
+    private final ReceiptMapper mapper;
 
-    public ReceiptRepositoryAdapter(ReceiptJpaRepository receiptJpaRepository, ReceiptMapper receiptMapper) {
-        this.receiptJpaRepository = receiptJpaRepository;
-        this.receiptMapper = receiptMapper;
+    public ReceiptRepositoryAdapter(ReceiptJpaRepository repository, ReceiptMapper mapper) {
+        this.repository = repository;
+        this.mapper = mapper;
     }
 
     @Override
     public Page<Receipt> findAll(Pageable pageable) {
-        Page<ReceiptJpaEntity> receipts = receiptJpaRepository.findAll(pageable);
-        return receipts.map(receiptMapper::toReceipt);
+        Page<ReceiptJpaEntity> receipts = repository.findAll(pageable);
+        return receipts.map(mapper::toReceipt);
     }
 
     @Override
     public Optional<Receipt> findById(UUID id) {
-        Optional<ReceiptJpaEntity> receiptJpaEntity = receiptJpaRepository.findById(id);
-        return receiptJpaEntity.map(receiptMapper::toReceipt);
+        Optional<ReceiptJpaEntity> receiptJpaEntity = repository.findById(id);
+        return receiptJpaEntity.map(mapper::toReceipt);
     }
 
     @Override
     public Page<Receipt> findAllByStatus(Pageable pageable, ReceiptStatus status) {
-        Page<ReceiptJpaEntity> receipts = receiptJpaRepository.findAllByStatus(pageable, status);
-        return receipts.map(receiptMapper::toReceipt);
+        Page<ReceiptJpaEntity> receipts = repository.findAllByStatus(status, pageable);
+        return receipts.map(mapper::toReceipt);
     }
 
     @Override
     public List<Receipt> findAllPendingWithExpirationDateBefore(LocalDate date) {
         List<ReceiptJpaEntity> receipts =
-                receiptJpaRepository.findAllByStatusAndExpiryDateBefore(ReceiptStatus.PENDING, date);
-        return receipts.stream().map(receiptMapper::toReceipt).toList();
+                repository.findAllByStatusAndExpiryDateBefore(ReceiptStatus.PENDING, date);
+        return receipts.stream().map(mapper::toReceipt).toList();
     }
 
     @Override
     public Receipt save(Receipt receipt) {
-        ReceiptJpaEntity receiptJpaEntity = receiptMapper.toReceiptJpaEntity(receipt);
-        ReceiptJpaEntity savedReceipt = receiptJpaRepository.save(receiptJpaEntity);
-        return receiptMapper.toReceipt(savedReceipt);
+        ReceiptJpaEntity receiptJpaEntity = mapper.toReceiptJpaEntity(receipt);
+        ReceiptJpaEntity savedReceipt = repository.save(receiptJpaEntity);
+        return mapper.toReceipt(savedReceipt);
     }
 
     @Override
     public List<Receipt> saveAll(List<Receipt> receipts) {
         List<ReceiptJpaEntity> receiptJpaEntities =
-                receipts.stream().map(receiptMapper::toReceiptJpaEntity).toList();
-        List<ReceiptJpaEntity> savedEntities = receiptJpaRepository.saveAll(receiptJpaEntities);
-        return savedEntities.stream().map(receiptMapper::toReceipt).toList();
+                receipts.stream().map(mapper::toReceiptJpaEntity).toList();
+        List<ReceiptJpaEntity> savedEntities = repository.saveAll(receiptJpaEntities);
+        return savedEntities.stream().map(mapper::toReceipt).toList();
     }
 
     @Override
     public boolean existsByPlayerPaymentAndPeriod(Receipt receipt) {
-        return receiptJpaRepository.existsByPlayer_IdAndPayment_IdAndPeriodStartDateAndPeriodEndDate(receipt.player().id(), receipt.payment().id(), receipt.periodStartDate(), receipt.periodEndDate());
+        return repository.existsByPlayer_IdAndPayment_IdAndPeriodStartDateAndPeriodEndDate(receipt.player().id(),
+                receipt.payment().id(), receipt.periodStartDate(), receipt.periodEndDate());
     }
 
     @Override
     public boolean existsByPlayerAndPayment(Receipt receipt) {
-        return receiptJpaRepository.existsByPlayer_IdAndPayment_Id(receipt.player().id(), receipt.payment().id());
+        return repository.existsByPlayer_IdAndPayment_Id(receipt.player().id(), receipt.payment().id());
     }
 
     @Override
-    public List<Receipt> findAllByPlayerId(UUID playerId) {
-        List<ReceiptJpaEntity> receipt = receiptJpaRepository.findAllByPlayer_Id(playerId);
-        return receipt.stream().map(receiptMapper::toReceipt).toList();
+    public Page<Receipt> findAllByPlayerId(UUID playerId, Pageable pageable) {
+        Page<ReceiptJpaEntity> receipts = repository.findAllByPlayer_Id(playerId, pageable);
+        return receipts.map(mapper::toReceipt);
+    }
+
+    @Override
+    public Page<Receipt> findAllByPlayerIdAndStatus(UUID playerId, Pageable pageable, ReceiptStatus status) {
+        Page<ReceiptJpaEntity> receipts = repository.findAllByPlayer_IdAndStatus(playerId, status, pageable);
+        return receipts.map(mapper::toReceipt);
     }
 
     @Override
     public List<Receipt> findAllByPaymentId(UUID paymentId) {
-        List<ReceiptJpaEntity> receipt = receiptJpaRepository.findAllByPayment_Id(paymentId);
-        return receipt.stream().map(receiptMapper::toReceipt).toList();
+        List<ReceiptJpaEntity> receipt = repository.findAllByPayment_Id(paymentId);
+        return receipt.stream().map(mapper::toReceipt).toList();
     }
 }
