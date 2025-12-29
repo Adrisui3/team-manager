@@ -16,13 +16,13 @@ public interface ReceiptRepository {
 
     Optional<Receipt> findById(UUID id);
 
+    Page<Receipt> findAllByStatus(Pageable pageable, ReceiptStatus status);
+
     List<Receipt> findAllPendingWithExpirationDateBefore(LocalDate date);
 
     Receipt save(Receipt receipt);
 
     List<Receipt> saveAll(List<Receipt> receipts);
-
-    Receipt updateStatus(UUID receiptId, ReceiptStatus status);
 
     boolean existsByPlayerPaymentAndPeriod(Receipt receipt);
 

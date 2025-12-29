@@ -1,6 +1,8 @@
 package com.manager.payments.adapter.out.persistence.receipts;
 
 import com.manager.payments.model.receipts.ReceiptStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDate;
@@ -19,4 +21,6 @@ public interface ReceiptJpaRepository extends JpaRepository<ReceiptJpaEntity, UU
     List<ReceiptJpaEntity> findAllByPayment_Id(UUID paymentId);
 
     boolean existsByPlayer_IdAndPayment_Id(UUID playerId, UUID paymentId);
+
+    Page<ReceiptJpaEntity> findAllByStatus(Pageable pageable, ReceiptStatus status);
 }
