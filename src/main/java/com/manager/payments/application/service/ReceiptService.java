@@ -35,15 +35,17 @@ public class ReceiptService implements ProcessOverdueReceiptsUseCase, UpdateRece
     }
 
     @Override
-    public Receipt updateStatus(UUID receiptId, ReceiptStatus receiptStatus) {
+    public Receipt updateStatus(UUID receiptId, ReceiptStatus newStatus) {
         Receipt receipt = repository.findById(receiptId).orElseThrow(() -> new ReceiptNotFoundException(receiptId));
-        LocalDate paymentDate = receipt.paymentDate();
-        if (!receipt.status().equals(ReceiptStatus.PAID)) {
-            paymentDate = receiptStatus.equals(ReceiptStatus.PAID) ? LocalDate.now() : null;
+        LocalDate paymentDate;
+        if (!newStatus.equals(ReceiptStatus.PAID)) {
+            paymentDate = null;
+        } else {
+            paymentDate = receipt.status().equals(ReceiptStatus.PAID) ? receipt.paymentDate() : LocalDate.now();
         }
 
         Receipt updatedReceipt = receipt.toBuilder()
-                .status(receiptStatus)
+                .status(newStatus)
                 .paymentDate(paymentDate)
                 .build();
 
