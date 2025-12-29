@@ -4,7 +4,15 @@ import com.manager.shared.ErrorCode;
 import com.manager.shared.exception.GenericException;
 
 public class PlayerAlreadyExistsException extends GenericException {
-    public PlayerAlreadyExistsException(String personalId) {
-        super("Player with personal id " + personalId + " already exists", ErrorCode.ALREADY_EXISTS);
+    private PlayerAlreadyExistsException(String message) {
+        super(message, ErrorCode.ALREADY_EXISTS);
+    }
+
+    public static PlayerAlreadyExistsException byEmail(String message) {
+        return new PlayerAlreadyExistsException("Player with email " + message + " already exists");
+    }
+
+    public static PlayerAlreadyExistsException byPersonalId(String personalId) {
+        return new PlayerAlreadyExistsException("Player with personal id " + personalId + " already exists");
     }
 }

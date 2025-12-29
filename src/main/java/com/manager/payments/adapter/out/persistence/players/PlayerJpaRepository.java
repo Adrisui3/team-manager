@@ -9,4 +9,7 @@ public interface PlayerJpaRepository extends JpaRepository<PlayerJpaEntity, UUID
 
     Optional<PlayerJpaEntity> findByPersonalId(String personalId);
 
+    boolean existsByPersonalId(String personalId);
+
+    boolean existsByEmail(String email);
 }

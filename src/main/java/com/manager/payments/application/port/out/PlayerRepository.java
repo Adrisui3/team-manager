@@ -21,6 +21,10 @@ public interface PlayerRepository {
 
     Optional<Player> findByPersonalId(String personalId);
 
+    boolean existsByPersonalId(String personalId);
+
+    boolean existsByEmail(String email);
+
     void deleteById(UUID id);
 
     List<Payment> findAllAssignedPayments(UUID playerId);

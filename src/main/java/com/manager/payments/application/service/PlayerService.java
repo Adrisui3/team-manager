@@ -16,7 +16,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -30,10 +29,11 @@ public class PlayerService implements CreatePlayerUseCase, AssignPaymentToPlayer
 
     @Override
     public Player createPlayer(CreatePlayerRequestDTO requestDTO) {
-        Optional<Player> existingPlayer =
-                playerRepository.findByPersonalId(requestDTO.personalId());
-        if (existingPlayer.isPresent()) {
-            throw new PlayerAlreadyExistsException(requestDTO.personalId());
+        if (playerRepository.existsByPersonalId(requestDTO.personalId()))
+            throw PlayerAlreadyExistsException.byPersonalId(requestDTO.personalId());
+
+        if (playerRepository.existsByEmail(requestDTO.email())) {
+            throw PlayerAlreadyExistsException.byEmail(requestDTO.email());
         }
 
         Player newPlayer = Player.builder()
