@@ -41,8 +41,10 @@ public class ReceiptController {
                     useReturnTypeSchema = true)
     })
     @GetMapping
-    public ResponseEntity<PageResponse<ReceiptDto>> getAllReceipts(@ParameterObject Pageable pageable) {
-        Page<Receipt> receipts = repository.findAll(pageable);
+    public ResponseEntity<PageResponse<ReceiptDto>> getAllReceipts(@ParameterObject Pageable pageable,
+                                                                   @RequestParam(required = false) ReceiptStatus status) {
+        Page<Receipt> receipts = status == null ? repository.findAll(pageable) : repository.findAllByStatus(pageable,
+                status);
         return ResponseEntity.ok(PageResponse.of(receipts.map(mapper::toReceiptDto)));
     }
 
@@ -65,9 +67,9 @@ public class ReceiptController {
             @ApiResponse(responseCode = "404", description = "Receipt not found", content = @Content(mediaType =
                     "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     })
-    @PutMapping("/{receiptId}/update-status/{newStatus}")
+    @PutMapping("/{receiptId}/update-status")
     public ResponseEntity<ResponseDto<ReceiptDto>> updateReceiptStatus(@PathVariable UUID receiptId,
-                                                                       @PathVariable ReceiptStatus newStatus) {
+                                                                       @RequestParam ReceiptStatus newStatus) {
         Receipt updatedReceipt = updateReceiptStatusUseCase.updateStatus(receiptId, newStatus);
         return ResponseEntity.ok(new ResponseDto<>(mapper.toReceiptDto(updatedReceipt)));
     }

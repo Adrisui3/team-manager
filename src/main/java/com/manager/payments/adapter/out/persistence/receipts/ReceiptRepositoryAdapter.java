@@ -1,7 +1,6 @@
 package com.manager.payments.adapter.out.persistence.receipts;
 
 import com.manager.payments.application.port.out.ReceiptRepository;
-import com.manager.payments.model.exceptions.ReceiptNotFoundException;
 import com.manager.payments.model.receipts.Receipt;
 import com.manager.payments.model.receipts.ReceiptStatus;
 import org.springframework.data.domain.Page;
@@ -37,6 +36,12 @@ public class ReceiptRepositoryAdapter implements ReceiptRepository {
     }
 
     @Override
+    public Page<Receipt> findAllByStatus(Pageable pageable, ReceiptStatus status) {
+        Page<ReceiptJpaEntity> receipts = receiptJpaRepository.findAllByStatus(pageable, status);
+        return receipts.map(receiptMapper::toReceipt);
+    }
+
+    @Override
     public List<Receipt> findAllPendingWithExpirationDateBefore(LocalDate date) {
         List<ReceiptJpaEntity> receipts =
                 receiptJpaRepository.findAllByStatusAndExpiryDateBefore(ReceiptStatus.PENDING, date);
@@ -56,14 +61,6 @@ public class ReceiptRepositoryAdapter implements ReceiptRepository {
                 receipts.stream().map(receiptMapper::toReceiptJpaEntity).toList();
         List<ReceiptJpaEntity> savedEntities = receiptJpaRepository.saveAll(receiptJpaEntities);
         return savedEntities.stream().map(receiptMapper::toReceipt).toList();
-    }
-
-    @Override
-    public Receipt updateStatus(UUID receiptId, ReceiptStatus status) {
-        ReceiptJpaEntity receipt =
-                receiptJpaRepository.findById(receiptId).orElseThrow(() -> new ReceiptNotFoundException(receiptId));
-        receipt.setStatus(status);
-        return receiptMapper.toReceipt(receiptJpaRepository.save(receipt));
     }
 
     @Override
