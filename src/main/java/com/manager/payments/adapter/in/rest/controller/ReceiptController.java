@@ -2,6 +2,7 @@ package com.manager.payments.adapter.in.rest.controller;
 
 import com.manager.payments.adapter.in.rest.dto.models.ReceiptDto;
 import com.manager.payments.adapter.out.persistence.receipts.ReceiptMapper;
+import com.manager.payments.application.port.in.UpdateReceiptStatusUseCase;
 import com.manager.payments.application.port.out.ReceiptRepository;
 import com.manager.payments.model.exceptions.ReceiptNotFoundException;
 import com.manager.payments.model.receipts.Receipt;
@@ -30,8 +31,9 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ReceiptController {
 
-    private final ReceiptRepository receiptRepository;
-    private final ReceiptMapper receiptMapper;
+    private final ReceiptRepository repository;
+    private final ReceiptMapper mapper;
+    private final UpdateReceiptStatusUseCase updateReceiptStatusUseCase;
 
     @Operation(summary = "Get all receipts", description = "Supports pagination via Spring Data's pageable")
     @ApiResponses(value = {
@@ -40,8 +42,8 @@ public class ReceiptController {
     })
     @GetMapping
     public ResponseEntity<PageResponse<ReceiptDto>> getAllReceipts(@ParameterObject Pageable pageable) {
-        Page<Receipt> receipts = receiptRepository.findAll(pageable);
-        return ResponseEntity.ok(PageResponse.of(receipts.map(receiptMapper::toReceiptDto)));
+        Page<Receipt> receipts = repository.findAll(pageable);
+        return ResponseEntity.ok(PageResponse.of(receipts.map(mapper::toReceiptDto)));
     }
 
     @Operation(summary = "Get a receipt by id")
@@ -53,8 +55,8 @@ public class ReceiptController {
     @GetMapping("/{receiptId}")
     public ResponseEntity<ResponseDto<ReceiptDto>> getReceipt(@PathVariable("receiptId") UUID receiptId) {
         Receipt receipt =
-                receiptRepository.findById(receiptId).orElseThrow(() -> new ReceiptNotFoundException(receiptId));
-        return ResponseEntity.ok(new ResponseDto<>(receiptMapper.toReceiptDto(receipt)));
+                repository.findById(receiptId).orElseThrow(() -> new ReceiptNotFoundException(receiptId));
+        return ResponseEntity.ok(new ResponseDto<>(mapper.toReceiptDto(receipt)));
     }
 
     @Operation(summary = "Update the status of a receipt")
@@ -66,7 +68,7 @@ public class ReceiptController {
     @PutMapping("/{receiptId}/update-status/{newStatus}")
     public ResponseEntity<ResponseDto<ReceiptDto>> updateReceiptStatus(@PathVariable UUID receiptId,
                                                                        @PathVariable ReceiptStatus newStatus) {
-        Receipt updatedReceipt = receiptRepository.updateStatus(receiptId, newStatus);
-        return ResponseEntity.ok(new ResponseDto<>(receiptMapper.toReceiptDto(updatedReceipt)));
+        Receipt updatedReceipt = updateReceiptStatusUseCase.updateStatus(receiptId, newStatus);
+        return ResponseEntity.ok(new ResponseDto<>(mapper.toReceiptDto(updatedReceipt)));
     }
 }
