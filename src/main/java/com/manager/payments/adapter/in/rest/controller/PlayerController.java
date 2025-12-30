@@ -1,14 +1,13 @@
 package com.manager.payments.adapter.in.rest.controller;
 
-import com.manager.payments.adapter.in.rest.dto.models.PaymentDto;
 import com.manager.payments.adapter.in.rest.dto.models.PlayerDto;
 import com.manager.payments.adapter.in.rest.dto.models.PlayerPaymentAssignmentDto;
 import com.manager.payments.adapter.in.rest.dto.request.CreatePlayerRequestDTO;
 import com.manager.payments.adapter.out.persistence.assignments.PlayerPaymentAssignmentMapper;
-import com.manager.payments.adapter.out.persistence.payments.PaymentMapper;
 import com.manager.payments.adapter.out.persistence.players.PlayerMapper;
 import com.manager.payments.application.port.in.AssignPaymentToPlayerUseCase;
 import com.manager.payments.application.port.in.CreatePlayerUseCase;
+import com.manager.payments.application.port.out.PlayerPaymentAssignmentRepository;
 import com.manager.payments.application.port.out.PlayerRepository;
 import com.manager.payments.application.port.out.ReceiptRepository;
 import com.manager.payments.model.assignments.PlayerPaymentAssignment;
@@ -35,7 +34,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.util.List;
 import java.util.UUID;
 
 @Tag(name = "Players", description = "Players management endpoints")
@@ -45,14 +43,14 @@ import java.util.UUID;
 public class PlayerController {
 
     private final PlayerPaymentAssignmentMapper playerPaymentAssignmentMapper;
+    private final PlayerPaymentAssignmentRepository playerPaymentAssignmentRepository;
     private final CreatePlayerUseCase createPlayerUseCase;
     private final PlayerRepository playerRepository;
     private final AssignPaymentToPlayerUseCase assignPaymentToPlayerUseCase;
     private final PlayerMapper playerMapper;
     private final ReceiptRepository receiptRepository;
-    private final PaymentMapper paymentMapper;
 
-    @Operation(summary = "Get all players", description = "Supports pagination via Spring Data's pagination")
+    @Operation(summary = "Get all players", description = "Supports pagination")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "List of players", useReturnTypeSchema = true)
     })
@@ -127,7 +125,7 @@ public class PlayerController {
                 playerPaymentAssignmentMapper.toPlayerPaymentAssignmentDto(assignment)));
     }
 
-    @Operation(summary = "Get payments assigned to a player")
+    @Operation(summary = "Get payments assigned to a player", description = "Supports pagination")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "List of payments assigned to the player",
                     useReturnTypeSchema = true),
@@ -136,10 +134,14 @@ public class PlayerController {
                             ErrorResponse.class))),
     })
     @GetMapping("/{playerId}/payments")
-    public ResponseEntity<ResponseDto<List<PaymentDto>>> getPlayerPayments(@PathVariable UUID playerId) {
-        List<Payment> assignedPayments = playerRepository.findAllAssignedPayments(playerId);
-        return ResponseEntity.ok(new ResponseDto<>(
-                assignedPayments.stream().map(paymentMapper::toPaymentDto).toList()));
+    public ResponseEntity<PageResponse<Payment>> getPlayerPayments(@PathVariable UUID playerId,
+                                                                   @ParameterObject Pageable pageable) {
+        if (!playerRepository.existsById(playerId)) {
+            throw new PlayerNotFoundException(playerId);
+        }
+
+        Page<Payment> payments = playerPaymentAssignmentRepository.findAllPaymentsByPlayerId(playerId, pageable);
+        return ResponseEntity.ok(PageResponse.of(payments));
     }
 
     @Operation(summary = "Unassigns a payment from a given player")
