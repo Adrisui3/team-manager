@@ -1,6 +1,9 @@
 package com.manager.payments.application.port.out;
 
 import com.manager.payments.model.assignments.PlayerPaymentAssignment;
+import com.manager.payments.model.payments.Payment;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -18,4 +21,6 @@ public interface PlayerPaymentAssignmentRepository {
     List<PlayerPaymentAssignment> findAllActiveAndStartDateBeforeOrEqual(LocalDate date);
 
     void deleteByPlayerIdAndPaymentId(UUID playerId, UUID paymentId);
+
+    Page<Payment> findAllPaymentsByPlayerId(UUID playerId, Pageable pageable);
 }
