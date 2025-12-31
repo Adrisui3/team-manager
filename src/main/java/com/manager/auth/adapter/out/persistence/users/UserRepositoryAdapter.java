@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 @RequiredArgsConstructor
@@ -21,6 +22,11 @@ public class UserRepositoryAdapter implements UserRepository {
     public User save(User user) {
         UserJpaEntity userJpaEntity = mapper.toUserJpaEntity(user);
         return mapper.toUser(repository.save(userJpaEntity));
+    }
+
+    @Override
+    public Optional<User> findById(UUID id) {
+        return repository.findById(id).map(mapper::toUser);
     }
 
     @Override
