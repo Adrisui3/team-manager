@@ -4,6 +4,8 @@ import com.manager.auth.adapter.out.persistence.mapper.UserMapper;
 import com.manager.auth.application.port.out.UserRepository;
 import com.manager.auth.model.users.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -12,22 +14,28 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserRepositoryAdapter implements UserRepository {
 
-    private final UserJpaRepository userJpaRepository;
-    private final UserMapper userMapper;
+    private final UserJpaRepository repository;
+    private final UserMapper mapper;
 
     @Override
     public User save(User user) {
-        UserJpaEntity userJpaEntity = userMapper.toUserJpaEntity(user);
-        return userMapper.toUser(userJpaRepository.save(userJpaEntity));
+        UserJpaEntity userJpaEntity = mapper.toUserJpaEntity(user);
+        return mapper.toUser(repository.save(userJpaEntity));
     }
 
     @Override
     public Optional<User> findByEmail(String email) {
-        return userJpaRepository.findByEmail(email).map(userMapper::toUser);
+        return repository.findByEmail(email).map(mapper::toUser);
     }
 
     @Override
     public boolean existsByEmail(String email) {
-        return userJpaRepository.existsByEmail(email);
+        return repository.existsByEmail(email);
+    }
+
+    @Override
+    public Page<User> findAll(Pageable pageable) {
+        Page<UserJpaEntity> users = repository.findAll(pageable);
+        return users.map(mapper::toUser);
     }
 }
