@@ -1,10 +1,14 @@
 package com.manager.payments.adapter.in.rest.controller;
 
+import com.manager.payments.adapter.in.rest.dto.models.PaymentDto;
 import com.manager.payments.adapter.in.rest.dto.models.PlayerDto;
 import com.manager.payments.adapter.in.rest.dto.models.PlayerPaymentAssignmentDto;
+import com.manager.payments.adapter.in.rest.dto.models.ReceiptDto;
 import com.manager.payments.adapter.in.rest.dto.request.CreatePlayerRequestDTO;
 import com.manager.payments.adapter.out.persistence.assignments.PlayerPaymentAssignmentMapper;
+import com.manager.payments.adapter.out.persistence.payments.PaymentMapper;
 import com.manager.payments.adapter.out.persistence.players.PlayerMapper;
+import com.manager.payments.adapter.out.persistence.receipts.ReceiptMapper;
 import com.manager.payments.application.port.in.AssignPaymentToPlayerUseCase;
 import com.manager.payments.application.port.in.CreatePlayerUseCase;
 import com.manager.payments.application.port.out.PlayerPaymentAssignmentRepository;
@@ -49,6 +53,8 @@ public class PlayerController {
     private final AssignPaymentToPlayerUseCase assignPaymentToPlayerUseCase;
     private final PlayerMapper playerMapper;
     private final ReceiptRepository receiptRepository;
+    private final ReceiptMapper receiptMapper;
+    private final PaymentMapper paymentMapper;
 
     @Operation(summary = "Get all players", description = "Supports pagination")
     @ApiResponses(value = {
@@ -81,16 +87,16 @@ public class PlayerController {
                             ErrorResponse.class)))
     })
     @GetMapping("/{playerId}/receipts")
-    public ResponseEntity<PageResponse<Receipt>> getPlayerReceipts(@ParameterObject Pageable pageable,
-                                                                   @PathVariable UUID playerId,
-                                                                   @RequestParam(required = false) ReceiptStatus status) {
+    public ResponseEntity<PageResponse<ReceiptDto>> getPlayerReceipts(@ParameterObject Pageable pageable,
+                                                                      @PathVariable UUID playerId,
+                                                                      @RequestParam(required = false) ReceiptStatus status) {
         if (!playerRepository.existsById(playerId)) {
             throw new PlayerNotFoundException(playerId);
         }
 
         Page<Receipt> receipts = status == null ? receiptRepository.findAllByPlayerId(playerId, pageable) :
                 receiptRepository.findAllByPlayerIdAndStatus(playerId, pageable, status);
-        return ResponseEntity.ok(PageResponse.of(receipts));
+        return ResponseEntity.ok(PageResponse.of(receipts.map(receiptMapper::toReceiptDto)));
     }
 
     @Operation(summary = "Create a new player")
@@ -134,14 +140,14 @@ public class PlayerController {
                             ErrorResponse.class))),
     })
     @GetMapping("/{playerId}/payments")
-    public ResponseEntity<PageResponse<Payment>> getPlayerPayments(@PathVariable UUID playerId,
-                                                                   @ParameterObject Pageable pageable) {
+    public ResponseEntity<PageResponse<PaymentDto>> getPlayerPayments(@PathVariable UUID playerId,
+                                                                      @ParameterObject Pageable pageable) {
         if (!playerRepository.existsById(playerId)) {
             throw new PlayerNotFoundException(playerId);
         }
 
         Page<Payment> payments = playerPaymentAssignmentRepository.findAllPaymentsByPlayerId(playerId, pageable);
-        return ResponseEntity.ok(PageResponse.of(payments));
+        return ResponseEntity.ok(PageResponse.of(payments.map(paymentMapper::toPaymentDto)));
     }
 
     @Operation(summary = "Unassigns a payment from a given player")
@@ -169,7 +175,7 @@ public class PlayerController {
                             ErrorResponse.class))),
     })
     @DeleteMapping("/{playerId}")
-    public ResponseEntity<ResponseDto<String>> deleteUser(@PathVariable UUID playerId) {
+    public ResponseEntity<ResponseDto<String>> deletePlayer(@PathVariable UUID playerId) {
         playerRepository.deleteById(playerId);
         return ResponseEntity.ok(new ResponseDto<>("Player with id " + playerId + " was " +
                 "deleted"));
