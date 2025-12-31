@@ -101,7 +101,7 @@ public class PlayerController {
                             schema = @Schema(implementation = ErrorResponse.class)))
     })
     @PostMapping
-    public ResponseEntity<ResponseDto<PlayerDto>> createUser(@Valid @RequestBody CreatePlayerRequestDTO requestDTO) {
+    public ResponseEntity<ResponseDto<PlayerDto>> createPlayer(@Valid @RequestBody CreatePlayerRequestDTO requestDTO) {
         Player newPlayer = createPlayerUseCase.createPlayer(requestDTO);
         return ResponseEntity.created(URI.create("/v1/players/" + newPlayer.id())).body(new ResponseDto<>(playerMapper.toPlayerDto(newPlayer)));
     }
