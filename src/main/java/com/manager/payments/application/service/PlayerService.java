@@ -1,8 +1,10 @@
 package com.manager.payments.application.service;
 
 import com.manager.payments.adapter.in.rest.dto.request.CreatePlayerRequestDTO;
+import com.manager.payments.adapter.in.rest.dto.request.UpdatePlayerRequestDTO;
 import com.manager.payments.application.port.in.AssignPaymentToPlayerUseCase;
 import com.manager.payments.application.port.in.CreatePlayerUseCase;
+import com.manager.payments.application.port.in.UpdatePlayerUseCase;
 import com.manager.payments.application.port.out.PaymentRepository;
 import com.manager.payments.application.port.out.PlayerPaymentAssignmentRepository;
 import com.manager.payments.application.port.out.PlayerRepository;
@@ -13,6 +15,7 @@ import com.manager.payments.model.payments.Payment;
 import com.manager.payments.model.players.Player;
 import com.manager.payments.model.players.PlayerStatus;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,7 +24,8 @@ import java.util.UUID;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class PlayerService implements CreatePlayerUseCase, AssignPaymentToPlayerUseCase {
+@Slf4j
+public class PlayerService implements CreatePlayerUseCase, AssignPaymentToPlayerUseCase, UpdatePlayerUseCase {
 
     private final PlayerPaymentAssignmentRepository playerPaymentAssignmentRepository;
     private final PaymentRepository paymentRepository;
@@ -51,7 +55,7 @@ public class PlayerService implements CreatePlayerUseCase, AssignPaymentToPlayer
 
     @Override
     public PlayerPaymentAssignment assignPaymentToPlayer(UUID playerId, UUID paymentId) {
-        Player player = playerRepository.findById(playerId).orElseThrow(() -> new PlayerNotFoundException(playerId));
+        Player player = playerRepository.findById(playerId).orElseThrow(() -> PlayerNotFoundException.byId(playerId));
         Payment payment =
                 paymentRepository.findById(paymentId).orElseThrow(() -> new PaymentNotFoundException(paymentId));
         if (playerPaymentAssignmentRepository.existsByPlayerIdAndPaymentId(playerId, paymentId)) {
@@ -65,7 +69,7 @@ public class PlayerService implements CreatePlayerUseCase, AssignPaymentToPlayer
     @Override
     public void unassignPaymentToPlayer(UUID playerId, UUID paymentId) {
         if (!playerRepository.existsById(playerId)) {
-            throw new PlayerNotFoundException(playerId);
+            throw PlayerNotFoundException.byId(playerId);
         }
 
         if (!paymentRepository.existsById(paymentId)) {
@@ -77,5 +81,26 @@ public class PlayerService implements CreatePlayerUseCase, AssignPaymentToPlayer
         }
 
         playerPaymentAssignmentRepository.deleteByPlayerIdAndPaymentId(playerId, paymentId);
+    }
+
+    @Override
+    public Player updatePlayer(UUID playerId, UpdatePlayerRequestDTO request) {
+        Player player =
+                playerRepository.findById(playerId).orElseThrow(() -> PlayerNotFoundException.byId(playerId));
+
+        if (!request.email().equals(player.email()) && playerRepository.existsByEmail(request.email())) {
+            throw PlayerAlreadyExistsException.byEmail(request.email());
+        }
+
+        Player updatedPlayer = player.toBuilder()
+                .name(request.name())
+                .surname(request.surname())
+                .email(request.email())
+                .birthDate(request.birthDate())
+                .category(request.category())
+                .status(request.status())
+                .build();
+
+        return playerRepository.save(updatedPlayer);
     }
 }
