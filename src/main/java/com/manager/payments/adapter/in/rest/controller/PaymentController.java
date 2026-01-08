@@ -3,9 +3,11 @@ package com.manager.payments.adapter.in.rest.controller;
 import com.manager.payments.adapter.in.rest.dto.models.PaymentDto;
 import com.manager.payments.adapter.in.rest.dto.models.ReceiptDto;
 import com.manager.payments.adapter.in.rest.dto.request.CreatePaymentRequestDTO;
+import com.manager.payments.adapter.in.rest.dto.request.UpdatePaymentRequestDTO;
 import com.manager.payments.adapter.out.persistence.payments.PaymentMapper;
 import com.manager.payments.adapter.out.persistence.receipts.ReceiptMapper;
 import com.manager.payments.application.port.in.CreatePaymentUseCase;
+import com.manager.payments.application.port.in.UpdatePaymentUseCase;
 import com.manager.payments.application.port.out.PaymentRepository;
 import com.manager.payments.application.port.out.ReceiptRepository;
 import com.manager.payments.model.exceptions.PaymentNotFoundException;
@@ -39,6 +41,7 @@ public class PaymentController {
 
     private final PaymentRepository paymentRepository;
     private final CreatePaymentUseCase createPaymentUseCase;
+    private final UpdatePaymentUseCase updatePaymentUseCase;
     private final PaymentMapper paymentMapper;
     private final ReceiptRepository receiptRepository;
     private final ReceiptMapper receiptMapper;
@@ -110,5 +113,19 @@ public class PaymentController {
         paymentRepository.deleteById(paymentId);
         return ResponseEntity.ok(new ResponseDto<>("Payment with id " + paymentId + " has been" +
                 " deleted."));
+    }
+
+    @Operation(summary = "Update payment data")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Payment updated", useReturnTypeSchema = true),
+            @ApiResponse(responseCode = "404", description = "Payment not found", content = @Content(mediaType =
+                    "application/json", schema = @Schema(implementation =
+                    ErrorResponse.class)))
+    })
+    @PutMapping("/{paymentId}")
+    public ResponseEntity<ResponseDto<PaymentDto>> updatePayment(@PathVariable UUID paymentId,
+                                                                 @RequestBody UpdatePaymentRequestDTO requestDTO) {
+        Payment updatedPayment = updatePaymentUseCase.updatePayment(paymentId, requestDTO);
+        return ResponseEntity.ok(new ResponseDto<>(paymentMapper.toPaymentDto(updatedPayment)));
     }
 }
