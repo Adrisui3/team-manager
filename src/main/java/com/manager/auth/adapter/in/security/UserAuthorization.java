@@ -21,4 +21,9 @@ public class UserAuthorization {
 
         return authenticatedUser.id().equals(targetUserId);
     }
+
+    public boolean isCurrentUser(UUID targetUserId) {
+        User authenticatedUser = authenticatedUserProvider.getAuthenticatedUser();
+        return authenticatedUser.id().equals(targetUserId);
+    }
 }

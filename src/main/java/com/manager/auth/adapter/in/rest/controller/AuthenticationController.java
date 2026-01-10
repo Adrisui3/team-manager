@@ -2,11 +2,8 @@ package com.manager.auth.adapter.in.rest.controller;
 
 import com.manager.auth.adapter.in.rest.dto.models.LoginResponseDto;
 import com.manager.auth.adapter.in.rest.dto.models.UserDto;
-import com.manager.auth.adapter.in.rest.dto.requests.ChangeUserPasswordRequestDto;
 import com.manager.auth.adapter.in.rest.dto.requests.LoginUserRequestDto;
 import com.manager.auth.adapter.in.rest.dto.requests.RegisterUserRequestDto;
-import com.manager.auth.adapter.in.rest.dto.requests.SetUserPasswordRequestDto;
-import com.manager.auth.adapter.in.security.AuthenticatedUserProvider;
 import com.manager.auth.adapter.out.persistence.mapper.UserMapper;
 import com.manager.auth.application.port.in.AuthenticateUserUseCase;
 import com.manager.auth.application.port.in.SignUpUserUseCase;
@@ -23,7 +20,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "Authentication management endpoints")
 @RestController
@@ -34,7 +34,6 @@ public class AuthenticationController {
     private final SignUpUserUseCase signUpUserUseCase;
     private final AuthenticateUserUseCase authenticateUserUseCase;
     private final UserMapper userMapper;
-    private final AuthenticatedUserProvider authenticatedUserProvider;
 
     @Operation(summary = "Create a new user", description = "Only users with ADMIN role can perform this action")
     @ApiResponses(value = {
@@ -64,58 +63,5 @@ public class AuthenticationController {
     public ResponseEntity<ResponseDto<LoginResponseDto>> authenticate(@Valid @RequestBody LoginUserRequestDto loginUserRequestDto) {
         LoginResponseDto loginResponseDto = authenticateUserUseCase.authenticate(loginUserRequestDto);
         return ResponseEntity.ok(new ResponseDto<>(loginResponseDto));
-    }
-
-    @Operation(summary = "Set user's password")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "User's password successfully set",
-                    useReturnTypeSchema = true),
-            @ApiResponse(responseCode = "404", description = "User or verification request not found",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation =
-                            ErrorResponse.class))),
-            @ApiResponse(responseCode = "410", description = "Verification code expired",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation =
-                            ErrorResponse.class))),
-            @ApiResponse(responseCode = "400", description = "Verification code invalid",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation =
-                            ErrorResponse.class)))
-    })
-    @PostMapping("/set-password")
-    public ResponseEntity<ResponseDto<String>> setPassword(@Valid @RequestBody SetUserPasswordRequestDto setUserPasswordRequestDto) {
-        signUpUserUseCase.setPassword(setUserPasswordRequestDto);
-        return ResponseEntity.ok(new ResponseDto<>("Password set successfully,"));
-    }
-
-    @Operation(summary = "Change a user's password.", description = "A given user can only change their own password.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Password successfully changed.", useReturnTypeSchema =
-                    true),
-            @ApiResponse(responseCode = "400", description = "Email or password do not match authenticated user's.",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation =
-                            ErrorResponse.class)))
-    })
-    @PutMapping("/change-password")
-    public ResponseEntity<ResponseDto<String>> changePassword(@Valid @RequestBody ChangeUserPasswordRequestDto changeUserPasswordRequestDto) {
-        User authenticatedUser = authenticatedUserProvider.getAuthenticatedUser();
-        signUpUserUseCase.changePassword(changeUserPasswordRequestDto, authenticatedUser);
-        return ResponseEntity.ok(new ResponseDto<>("Password changed successfully,"));
-    }
-
-    @Operation(summary = "Reset a user's password", description = "Only users with ADMIN role can perform this action.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "User's password successfully reset",
-                    useReturnTypeSchema = true),
-            @ApiResponse(responseCode = "404", description = "User not found",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation =
-                            ErrorResponse.class))),
-            @ApiResponse(responseCode = "409", description = "User disabled.",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation =
-                            ErrorResponse.class)))
-    })
-    @PostMapping("/reset-password")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ResponseDto<String>> resetPassword(@RequestBody String email) {
-        signUpUserUseCase.resetPassword(email);
-        return ResponseEntity.ok(new ResponseDto<>("Verification code resent."));
     }
 }
