@@ -13,7 +13,7 @@ public interface UpdateUserUseCase {
 
     void setPassword(SetUserPasswordRequestDto setUserPasswordRequestDto);
 
-    void resetPassword(String email);
+    void resetPassword(UUID userId);
 
     void changePassword(UUID userId, ChangeUserPasswordRequestDto changeUserPasswordRequestDto);
 }

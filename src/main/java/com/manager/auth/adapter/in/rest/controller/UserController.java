@@ -139,10 +139,10 @@ public class UserController {
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation =
                             ErrorResponse.class)))
     })
-    @PutMapping("/reset-password")
+    @PutMapping("/reset-password/{userId}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ResponseDto<String>> resetPassword(@RequestBody String email) {
-        updateUserUseCase.resetPassword(email);
+    public ResponseEntity<ResponseDto<String>> resetPassword(@PathVariable UUID userId) {
+        updateUserUseCase.resetPassword(userId);
         return ResponseEntity.ok(new ResponseDto<>("Verification code resent."));
     }
 }

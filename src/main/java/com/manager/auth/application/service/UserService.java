@@ -52,9 +52,9 @@ public class UserService implements UpdateUserUseCase {
     }
 
     @Override
-    public void resetPassword(String email) {
+    public void resetPassword(UUID userId) {
         User user =
-                userRepository.findByEmail(email).orElseThrow(() -> UserNotFound.byEmail(email));
+                userRepository.findById(userId).orElseThrow(() -> UserNotFound.byId(userId));
         if (!user.enabled())
             throw new DisabledUserException();
 
@@ -66,12 +66,9 @@ public class UserService implements UpdateUserUseCase {
 
     @Override
     @Transactional
-    public void changePassword(UUID userId, ChangeUserPasswordRequestDto changeUserPasswordRequestDto) {
+    public void changePassword(UUID userId, ChangeUserPasswordRequestDto request) {
         User user = userRepository.findById(userId).orElseThrow(() -> UserNotFound.byId(userId));
-
-        User updatedUser = user.changePassword(changeUserPasswordRequestDto.email(),
-                changeUserPasswordRequestDto.oldPassword(), changeUserPasswordRequestDto.newPassword(),
-                passwordEncoder);
+        User updatedUser = user.changePassword(request.oldPassword(), request.newPassword(), passwordEncoder);
         userRepository.save(updatedUser);
     }
 }

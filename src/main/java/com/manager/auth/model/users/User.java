@@ -41,8 +41,8 @@ public record User(UUID id, String email, String password, String name, String s
         }
     }
 
-    public User changePassword(String email, String oldPassword, String newPassword, PasswordEncoder passwordEncoder) {
-        if (!email.equals(email()) || !passwordEncoder.matches(oldPassword, password())) {
+    public User changePassword(String oldPassword, String newPassword, PasswordEncoder passwordEncoder) {
+        if (!passwordEncoder.matches(oldPassword, password())) {
             throw new InvalidPasswordChangeException();
         }
 
