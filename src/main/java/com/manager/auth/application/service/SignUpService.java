@@ -12,24 +12,24 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class SignUpService implements SignUpUserUseCase {
 
-    private final UserRepository userRepository;
+    private final UserRepository repository;
     private final EmailService emailService;
 
     @Override
-    public User signup(RegisterUserRequestDto registerUserRequestDto) {
-        if (userRepository.existsByEmail(registerUserRequestDto.email()))
-            throw new UserAlreadyExists(registerUserRequestDto.email());
+    public User signup(RegisterUserRequestDto request) {
+        if (repository.existsByEmail(request.email()))
+            throw new UserAlreadyExists(request.email());
 
         User user = User.builder()
-                .email(registerUserRequestDto.email())
-                .name(registerUserRequestDto.name())
-                .surname(registerUserRequestDto.surname())
-                .role(registerUserRequestDto.role())
+                .email(request.email())
+                .name(request.name())
+                .surname(request.surname())
+                .role(request.role())
                 .enabled(false)
                 .build()
                 .initializeVerification();
 
         emailService.sendInvitationEmail(user.email(), user.verification().verificationCode());
-        return userRepository.save(user);
+        return repository.save(user);
     }
 }
