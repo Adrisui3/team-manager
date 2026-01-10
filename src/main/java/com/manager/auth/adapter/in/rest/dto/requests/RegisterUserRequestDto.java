@@ -1,4 +1,4 @@
-package com.manager.auth.adapter.dto.requests;
+package com.manager.auth.adapter.in.rest.dto.requests;
 
 import com.manager.auth.model.roles.Role;
 import io.swagger.v3.oas.annotations.media.Schema;

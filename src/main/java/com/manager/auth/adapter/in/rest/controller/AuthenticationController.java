@@ -1,11 +1,11 @@
-package com.manager.auth.adapter.in.rest;
+package com.manager.auth.adapter.in.rest.controller;
 
-import com.manager.auth.adapter.dto.models.LoginResponseDto;
-import com.manager.auth.adapter.dto.models.UserDto;
-import com.manager.auth.adapter.dto.requests.ChangeUserPasswordRequestDto;
-import com.manager.auth.adapter.dto.requests.LoginUserRequestDto;
-import com.manager.auth.adapter.dto.requests.RegisterUserRequestDto;
-import com.manager.auth.adapter.dto.requests.SetUserPasswordRequestDto;
+import com.manager.auth.adapter.in.rest.dto.models.LoginResponseDto;
+import com.manager.auth.adapter.in.rest.dto.models.UserDto;
+import com.manager.auth.adapter.in.rest.dto.requests.ChangeUserPasswordRequestDto;
+import com.manager.auth.adapter.in.rest.dto.requests.LoginUserRequestDto;
+import com.manager.auth.adapter.in.rest.dto.requests.RegisterUserRequestDto;
+import com.manager.auth.adapter.in.rest.dto.requests.SetUserPasswordRequestDto;
 import com.manager.auth.adapter.in.security.AuthenticatedUserProvider;
 import com.manager.auth.adapter.out.persistence.mapper.UserMapper;
 import com.manager.auth.application.port.in.AuthenticateUserUseCase;

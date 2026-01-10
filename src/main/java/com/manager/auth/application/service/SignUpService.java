@@ -1,8 +1,8 @@
 package com.manager.auth.application.service;
 
-import com.manager.auth.adapter.dto.requests.ChangeUserPasswordRequestDto;
-import com.manager.auth.adapter.dto.requests.RegisterUserRequestDto;
-import com.manager.auth.adapter.dto.requests.SetUserPasswordRequestDto;
+import com.manager.auth.adapter.in.rest.dto.requests.ChangeUserPasswordRequestDto;
+import com.manager.auth.adapter.in.rest.dto.requests.RegisterUserRequestDto;
+import com.manager.auth.adapter.in.rest.dto.requests.SetUserPasswordRequestDto;
 import com.manager.auth.application.port.in.SignUpUserUseCase;
 import com.manager.auth.application.port.out.UserRepository;
 import com.manager.auth.model.exceptions.DisabledUserException;

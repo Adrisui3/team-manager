@@ -1,4 +1,4 @@
-package com.manager.auth.adapter.dto.models;
+package com.manager.auth.adapter.in.rest.dto.models;
 
 import com.manager.auth.model.roles.Role;
 

@@ -1,7 +1,7 @@
 package com.manager.auth.application.port.in;
 
-import com.manager.auth.adapter.dto.models.LoginResponseDto;
-import com.manager.auth.adapter.dto.requests.LoginUserRequestDto;
+import com.manager.auth.adapter.in.rest.dto.models.LoginResponseDto;
+import com.manager.auth.adapter.in.rest.dto.requests.LoginUserRequestDto;
 
 public interface AuthenticateUserUseCase {
 

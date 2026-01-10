@@ -1,6 +1,6 @@
-package com.manager.auth.adapter.in.rest;
+package com.manager.auth.adapter.in.rest.controller;
 
-import com.manager.auth.adapter.dto.models.UserDto;
+import com.manager.auth.adapter.in.rest.dto.models.UserDto;
 import com.manager.auth.adapter.in.security.AuthenticatedUserProvider;
 import com.manager.auth.adapter.out.persistence.mapper.UserMapper;
 import com.manager.auth.application.port.out.UserRepository;
