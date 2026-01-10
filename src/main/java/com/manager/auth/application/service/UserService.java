@@ -22,53 +22,53 @@ import java.util.UUID;
 @Slf4j
 public class UserService implements UpdateUserUseCase {
 
-    private final UserRepository userRepository;
+    private final UserRepository repository;
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
 
     @Override
     @Transactional
     public User updateUser(UUID userId, UpdateUserRequestDto request) {
-        User user = userRepository.findById(userId).orElseThrow(() -> UserNotFound.byId(userId));
+        User user = repository.findById(userId).orElseThrow(() -> UserNotFound.byId(userId));
 
         User updatedUser = user.toBuilder()
                 .name(request.name())
                 .surname(request.surname())
                 .build();
 
-        return userRepository.save(updatedUser);
+        return repository.save(updatedUser);
     }
 
     @Override
     @Transactional
-    public void setPassword(SetUserPasswordRequestDto setUserPasswordRequestDto) {
+    public void setPassword(SetUserPasswordRequestDto request) {
         User user =
-                userRepository.findByEmail(setUserPasswordRequestDto.email()).orElseThrow(() -> UserNotFound.byEmail(setUserPasswordRequestDto.email()));
+                repository.findByEmail(request.email()).orElseThrow(() -> UserNotFound.byEmail(request.email()));
         LocalDateTime now = LocalDateTime.now();
-        User updatedUser = user.setPassword(setUserPasswordRequestDto.verificationCode(),
-                setUserPasswordRequestDto.password(), passwordEncoder, now);
+        User updatedUser = user.setPassword(request.verificationCode(),
+                request.password(), passwordEncoder, now);
 
-        userRepository.save(updatedUser);
+        repository.save(updatedUser);
     }
 
     @Override
     public void resetPassword(UUID userId) {
         User user =
-                userRepository.findById(userId).orElseThrow(() -> UserNotFound.byId(userId));
+                repository.findById(userId).orElseThrow(() -> UserNotFound.byId(userId));
         if (!user.enabled())
             throw new DisabledUserException();
 
         User updatedUser = user.initializeVerification();
 
         emailService.sendInvitationEmail(updatedUser.email(), updatedUser.verification().verificationCode());
-        userRepository.save(updatedUser);
+        repository.save(updatedUser);
     }
 
     @Override
     @Transactional
     public void changePassword(UUID userId, ChangeUserPasswordRequestDto request) {
-        User user = userRepository.findById(userId).orElseThrow(() -> UserNotFound.byId(userId));
+        User user = repository.findById(userId).orElseThrow(() -> UserNotFound.byId(userId));
         User updatedUser = user.changePassword(request.oldPassword(), request.newPassword(), passwordEncoder);
-        userRepository.save(updatedUser);
+        repository.save(updatedUser);
     }
 }
