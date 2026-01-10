@@ -12,6 +12,4 @@ import java.util.UUID;
 public record Receipt(UUID id, String code, BigDecimal amount, LocalDate issuedDate, LocalDate paymentDate,
                       LocalDate expiryDate, LocalDate periodStartDate, LocalDate periodEndDate, ReceiptStatus status,
                       Player player, Payment payment) {
-
-    private static final int RECEIPT_EXPIRATION_DAYS = 15;
 }
