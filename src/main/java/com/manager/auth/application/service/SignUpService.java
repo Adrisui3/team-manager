@@ -43,7 +43,8 @@ public class SignUpService implements SignUpUserUseCase {
 
     @Override
     public void setPassword(SetUserPasswordRequestDto setUserPasswordRequestDto) {
-        User user = userRepository.findByEmail(setUserPasswordRequestDto.email()).orElseThrow(UserNotFound::new);
+        User user =
+                userRepository.findByEmail(setUserPasswordRequestDto.email()).orElseThrow(() -> UserNotFound.byEmail(setUserPasswordRequestDto.email()));
         LocalDateTime now = LocalDateTime.now();
         User updatedUser = user.setPassword(setUserPasswordRequestDto.verificationCode(),
                 setUserPasswordRequestDto.password(), passwordEncoder, now);
@@ -54,7 +55,7 @@ public class SignUpService implements SignUpUserUseCase {
     @Override
     public void resetPassword(String email) {
         User user =
-                userRepository.findByEmail(email).orElseThrow(UserNotFound::new);
+                userRepository.findByEmail(email).orElseThrow(() -> UserNotFound.byEmail(email));
         if (!user.enabled())
             throw new DisabledUserException();
 
