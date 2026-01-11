@@ -5,6 +5,6 @@ import jakarta.validation.constraints.NotNull;
 
 @Schema(name = "UpdateUserStatus", description = "Payload to update a user' status")
 public record UpdateUserStatusDto(
-        @NotNull @Schema(description = "User status") boolean enabled
+        @NotNull @Schema(description = "User status") Boolean enabled
 ) {
 }
