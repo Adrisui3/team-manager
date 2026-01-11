@@ -3,6 +3,7 @@ package com.manager.auth.application.service;
 import com.manager.auth.adapter.in.rest.dto.requests.ChangeUserPasswordRequestDto;
 import com.manager.auth.adapter.in.rest.dto.requests.SetUserPasswordRequestDto;
 import com.manager.auth.adapter.in.rest.dto.requests.UpdateUserRequestDto;
+import com.manager.auth.adapter.in.rest.dto.requests.UpdateUserStatusDto;
 import com.manager.auth.application.port.in.UpdateUserUseCase;
 import com.manager.auth.application.port.out.UserRepository;
 import com.manager.auth.model.exceptions.DisabledUserException;
@@ -34,6 +35,17 @@ public class UserService implements UpdateUserUseCase {
         User updatedUser = user.toBuilder()
                 .name(request.name())
                 .surname(request.surname())
+                .build();
+
+        return repository.save(updatedUser);
+    }
+
+    @Override
+    public User updateUserStatus(UUID userId, UpdateUserStatusDto request) {
+        User user = repository.findById(userId).orElseThrow(() -> UserNotFound.byId(userId));
+
+        User updatedUser = user.toBuilder()
+                .enabled(request.enabled())
                 .build();
 
         return repository.save(updatedUser);

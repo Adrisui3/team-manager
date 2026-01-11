@@ -4,6 +4,7 @@ import com.manager.auth.adapter.in.rest.dto.models.UserDto;
 import com.manager.auth.adapter.in.rest.dto.requests.ChangeUserPasswordRequestDto;
 import com.manager.auth.adapter.in.rest.dto.requests.SetUserPasswordRequestDto;
 import com.manager.auth.adapter.in.rest.dto.requests.UpdateUserRequestDto;
+import com.manager.auth.adapter.in.rest.dto.requests.UpdateUserStatusDto;
 import com.manager.auth.adapter.in.security.AuthenticatedUserProvider;
 import com.manager.auth.adapter.out.persistence.mapper.UserMapper;
 import com.manager.auth.application.port.in.UpdateUserUseCase;
@@ -144,5 +145,21 @@ public class UserController {
     public ResponseEntity<ResponseDto<String>> resetPassword(@PathVariable UUID userId) {
         updateUserUseCase.resetPassword(userId);
         return ResponseEntity.ok(new ResponseDto<>("Verification code resent."));
+    }
+
+    @Operation(summary = "Update a user' status", description = "Only users with ADMIN role can perform this action.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User' status successfully updated",
+                    useReturnTypeSchema = true),
+            @ApiResponse(responseCode = "404", description = "User not found",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation =
+                            ErrorResponse.class)))
+    })
+    @PutMapping("/update-status/{userId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ResponseDto<UserDto>> updateUserStatus(@PathVariable UUID userId,
+                                                                 @Valid @RequestBody UpdateUserStatusDto request) {
+        User updatedUser = updateUserUseCase.updateUserStatus(userId, request);
+        return ResponseEntity.ok(new ResponseDto<>(mapper.toUserDto(updatedUser)));
     }
 }
