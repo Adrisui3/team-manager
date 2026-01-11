@@ -11,6 +11,7 @@ import com.manager.payments.model.exceptions.PaymentNotFoundException;
 import com.manager.payments.model.payments.ExpiredPaymentProcessor;
 import com.manager.payments.model.payments.Payment;
 import com.manager.payments.model.payments.PaymentFactory;
+import com.manager.payments.model.payments.PaymentStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -58,9 +59,14 @@ public class PaymentService implements CreatePaymentUseCase, ProcessExpiredPayme
         Payment payment =
                 paymentRepository.findById(paymentId).orElseThrow(() -> new PaymentNotFoundException(paymentId));
 
-        LocalDate currentDate = LocalDate.now();
-        Payment updatedPayment = payment.update(request.amount(), request.name(), request.description(),
-                request.startDate(), request.endDate(), request.periodicity(), request.status(), currentDate);
+        PaymentStatus updatedStatus = payment.status() == PaymentStatus.EXPIRED ? payment.status() :
+                PaymentStatus.valueOf(request.status().name());
+        Payment updatedPayment = payment.toBuilder()
+                .amount(BigDecimal.valueOf(request.amount()).setScale(2, RoundingMode.HALF_UP))
+                .name(request.name())
+                .description(request.description())
+                .status(updatedStatus)
+                .build();
 
         return paymentRepository.save(updatedPayment);
     }
