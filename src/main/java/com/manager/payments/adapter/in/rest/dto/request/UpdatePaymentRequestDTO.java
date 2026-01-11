@@ -1,5 +1,6 @@
 package com.manager.payments.adapter.in.rest.dto.request;
 
+import com.manager.payments.model.payments.PaymentStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -10,6 +11,6 @@ public record UpdatePaymentRequestDTO(
         @NotNull Double amount,
         @NotBlank @Size(min = 1, max = 60) @Schema(description = "Name") String name,
         @Size(max = 255) @Schema(description = "Description") String description,
-        @NotNull @Schema(description = "Payment status", example = "ACTIVE", implementation = PaymentStatusDto.class) PaymentStatusDto status
+        @NotNull @Schema(description = "Payment status", example = "ACTIVE", implementation = PaymentStatus.class) PaymentStatus status
 ) {
 }

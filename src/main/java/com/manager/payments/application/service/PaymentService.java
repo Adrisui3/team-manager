@@ -59,10 +59,11 @@ public class PaymentService implements CreatePaymentUseCase, ProcessExpiredPayme
         Payment payment =
                 paymentRepository.findById(paymentId).orElseThrow(() -> new PaymentNotFoundException(paymentId));
 
-        PaymentStatus updatedStatus = payment.status() == PaymentStatus.EXPIRED ? payment.status() :
-                PaymentStatus.valueOf(request.status().name());
-        BigDecimal updatedAmount = payment.status() == PaymentStatus.EXPIRED ? payment.amount() :
-                BigDecimal.valueOf(request.amount()).setScale(2, RoundingMode.HALF_UP);
+        PaymentStatus updatedStatus =
+                payment.status() == PaymentStatus.EXPIRED || request.status() == PaymentStatus.EXPIRED ?
+                payment.status() : request.status();
+        BigDecimal updatedAmount = payment.status() == PaymentStatus.EXPIRED ?
+                payment.amount() : BigDecimal.valueOf(request.amount()).setScale(2, RoundingMode.HALF_UP);
         Payment updatedPayment = payment.toBuilder()
                 .amount(updatedAmount)
                 .name(request.name())
