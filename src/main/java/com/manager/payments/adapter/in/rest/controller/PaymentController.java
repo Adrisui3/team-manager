@@ -31,6 +31,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -120,13 +121,17 @@ public class PaymentController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Payment updated", useReturnTypeSchema = true),
             @ApiResponse(responseCode = "404", description = "Payment not found", content = @Content(mediaType =
-                    "application/json", schema = @Schema(implementation =
-                    ErrorResponse.class)))
+                    "application/json", schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "400", description = "New payment status cannot be set to EXPIRED or a " +
+                    "payment cannot be activated outside its billing period", content = @Content(mediaType =
+                    "application/json",
+                    schema = @Schema(implementation = ErrorResponse.class)))
     })
     @PutMapping("/{paymentId}")
     public ResponseEntity<ResponseDto<PaymentDto>> updatePayment(@PathVariable UUID paymentId,
                                                                  @Valid @RequestBody UpdatePaymentRequestDTO requestDTO) {
-        Payment updatedPayment = updatePaymentUseCase.updatePayment(paymentId, requestDTO);
+        LocalDate currentDate = LocalDate.now();
+        Payment updatedPayment = updatePaymentUseCase.updatePayment(paymentId, requestDTO, currentDate);
         return ResponseEntity.ok(new ResponseDto<>(paymentMapper.toPaymentDto(updatedPayment)));
     }
 }
