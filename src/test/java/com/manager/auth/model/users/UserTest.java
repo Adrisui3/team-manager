@@ -144,27 +144,10 @@ class UserTest {
         Mockito.when(encoder.encode(eq("newPassword"))).thenReturn("newPasswordHash");
 
         //when
-        User updatedUser = user.changePassword("test@email.com", "oldPassword", "newPassword", encoder);
+        User updatedUser = user.changePassword("oldPassword", "newPassword", encoder);
 
         //then
         assertThat(updatedUser.password()).isEqualTo("newPasswordHash");
-    }
-
-    @Test
-    void shouldThrowExceptionWhenEmailDoesNotMatch() {
-        //given
-        User user = User.builder()
-                .email("test@email.com")
-                .password("oldPasswordHash")
-                .build();
-
-        PasswordEncoder encoder = Mockito.mock(PasswordEncoder.class);
-        Mockito.when(encoder.matches(eq("oldPassword"), eq(user.password()))).thenReturn(true);
-        Mockito.when(encoder.matches(eq("newPassword"), eq(user.password()))).thenReturn(false);
-        Mockito.when(encoder.encode(eq("newPassword"))).thenReturn("newPasswordHash");
-
-        //when - then
-        assertThatThrownBy(() -> user.changePassword("test2@email.com", "oldPassword", "newPassword", encoder)).isInstanceOf(InvalidPasswordChangeException.class);
     }
 
     @Test
@@ -181,7 +164,7 @@ class UserTest {
         Mockito.when(encoder.encode(eq("newPassword"))).thenReturn("newPasswordHash");
 
         //when - then
-        assertThatThrownBy(() -> user.changePassword("test@email.com", "oldPassword", "newPassword", encoder)).isInstanceOf(InvalidPasswordChangeException.class);
+        assertThatThrownBy(() -> user.changePassword("oldPassword", "newPassword", encoder)).isInstanceOf(InvalidPasswordChangeException.class);
     }
 
     @Test
@@ -198,6 +181,6 @@ class UserTest {
         Mockito.when(encoder.encode(eq("newPassword"))).thenReturn("newPasswordHash");
 
         //when - then
-        assertThatThrownBy(() -> user.changePassword("test@email.com", "oldPassword", "oldPassword", encoder)).isInstanceOf(EqualNewPasswordException.class);
+        assertThatThrownBy(() -> user.changePassword("oldPassword", "oldPassword", encoder)).isInstanceOf(EqualNewPasswordException.class);
     }
 }

@@ -1,7 +1,7 @@
 package com.manager.auth.application.service;
 
-import com.manager.auth.adapter.dto.models.LoginResponseDto;
-import com.manager.auth.adapter.dto.requests.LoginUserRequestDto;
+import com.manager.auth.adapter.in.rest.dto.models.LoginResponseDto;
+import com.manager.auth.adapter.in.rest.dto.requests.LoginUserRequestDto;
 import com.manager.auth.application.port.in.AuthenticateUserUseCase;
 import com.manager.auth.application.port.out.UserRepository;
 import com.manager.auth.model.exceptions.InvalidEmailOrPasswordException;

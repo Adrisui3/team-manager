@@ -1,74 +1,35 @@
 package com.manager.auth.application.service;
 
-import com.manager.auth.adapter.dto.requests.ChangeUserPasswordRequestDto;
-import com.manager.auth.adapter.dto.requests.RegisterUserRequestDto;
-import com.manager.auth.adapter.dto.requests.SetUserPasswordRequestDto;
+import com.manager.auth.adapter.in.rest.dto.requests.RegisterUserRequestDto;
 import com.manager.auth.application.port.in.SignUpUserUseCase;
 import com.manager.auth.application.port.out.UserRepository;
-import com.manager.auth.model.exceptions.DisabledUserException;
 import com.manager.auth.model.exceptions.UserAlreadyExists;
-import com.manager.auth.model.exceptions.UserNotFound;
 import com.manager.auth.model.users.User;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
 public class SignUpService implements SignUpUserUseCase {
 
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
+    private final UserRepository repository;
     private final EmailService emailService;
 
     @Override
-    public User signup(RegisterUserRequestDto registerUserRequestDto) {
-        if (userRepository.existsByEmail(registerUserRequestDto.email()))
-            throw new UserAlreadyExists(registerUserRequestDto.email());
+    public User signup(RegisterUserRequestDto request) {
+        if (repository.existsByEmail(request.email()))
+            throw new UserAlreadyExists(request.email());
 
         User user = User.builder()
-                .email(registerUserRequestDto.email())
-                .name(registerUserRequestDto.name())
-                .surname(registerUserRequestDto.surname())
-                .role(registerUserRequestDto.role())
+                .email(request.email())
+                .name(request.name())
+                .surname(request.surname())
+                .role(request.role())
                 .enabled(false)
                 .build()
                 .initializeVerification();
 
         emailService.sendInvitationEmail(user.email(), user.verification().verificationCode());
-        return userRepository.save(user);
-    }
-
-    @Override
-    public void setPassword(SetUserPasswordRequestDto setUserPasswordRequestDto) {
-        User user = userRepository.findByEmail(setUserPasswordRequestDto.email()).orElseThrow(UserNotFound::new);
-        LocalDateTime now = LocalDateTime.now();
-        User updatedUser = user.setPassword(setUserPasswordRequestDto.verificationCode(),
-                setUserPasswordRequestDto.password(), passwordEncoder, now);
-
-        userRepository.save(updatedUser);
-    }
-
-    @Override
-    public void resetPassword(String email) {
-        User user =
-                userRepository.findByEmail(email).orElseThrow(UserNotFound::new);
-        if (!user.enabled())
-            throw new DisabledUserException();
-
-        User updatedUser = user.initializeVerification();
-
-        emailService.sendInvitationEmail(updatedUser.email(), updatedUser.verification().verificationCode());
-        userRepository.save(updatedUser);
-    }
-
-    @Override
-    public void changePassword(ChangeUserPasswordRequestDto changeUserPasswordRequestDto, User authenticatedUser) {
-        User updatedUser = authenticatedUser.changePassword(changeUserPasswordRequestDto.email(),
-                changeUserPasswordRequestDto.oldPassword(), changeUserPasswordRequestDto.newPassword(),
-                passwordEncoder);
-        userRepository.save(updatedUser);
+        return repository.save(user);
     }
 }

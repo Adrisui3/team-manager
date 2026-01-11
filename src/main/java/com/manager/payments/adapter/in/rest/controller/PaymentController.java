@@ -3,9 +3,11 @@ package com.manager.payments.adapter.in.rest.controller;
 import com.manager.payments.adapter.in.rest.dto.models.PaymentDto;
 import com.manager.payments.adapter.in.rest.dto.models.ReceiptDto;
 import com.manager.payments.adapter.in.rest.dto.request.CreatePaymentRequestDTO;
+import com.manager.payments.adapter.in.rest.dto.request.UpdatePaymentRequestDTO;
 import com.manager.payments.adapter.out.persistence.payments.PaymentMapper;
 import com.manager.payments.adapter.out.persistence.receipts.ReceiptMapper;
 import com.manager.payments.application.port.in.CreatePaymentUseCase;
+import com.manager.payments.application.port.in.UpdatePaymentUseCase;
 import com.manager.payments.application.port.out.PaymentRepository;
 import com.manager.payments.application.port.out.ReceiptRepository;
 import com.manager.payments.model.exceptions.PaymentNotFoundException;
@@ -20,6 +22,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
@@ -28,6 +31,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -39,6 +43,7 @@ public class PaymentController {
 
     private final PaymentRepository paymentRepository;
     private final CreatePaymentUseCase createPaymentUseCase;
+    private final UpdatePaymentUseCase updatePaymentUseCase;
     private final PaymentMapper paymentMapper;
     private final ReceiptRepository receiptRepository;
     private final ReceiptMapper receiptMapper;
@@ -93,7 +98,7 @@ public class PaymentController {
                             schema = @Schema(implementation = ErrorResponse.class)))
     })
     @PostMapping
-    public ResponseEntity<ResponseDto<PaymentDto>> createPayment(@RequestBody CreatePaymentRequestDTO requestDTO) {
+    public ResponseEntity<ResponseDto<PaymentDto>> createPayment(@Valid @RequestBody CreatePaymentRequestDTO requestDTO) {
         Payment payment = createPaymentUseCase.createPayment(requestDTO);
         return ResponseEntity.created(URI.create("/v1/payments/" + payment.id())).body(new ResponseDto<>(paymentMapper.toPaymentDto(payment)));
     }
@@ -110,5 +115,23 @@ public class PaymentController {
         paymentRepository.deleteById(paymentId);
         return ResponseEntity.ok(new ResponseDto<>("Payment with id " + paymentId + " has been" +
                 " deleted."));
+    }
+
+    @Operation(summary = "Update payment data")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Payment updated", useReturnTypeSchema = true),
+            @ApiResponse(responseCode = "404", description = "Payment not found", content = @Content(mediaType =
+                    "application/json", schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "400", description = "New payment status cannot be set to EXPIRED or a " +
+                    "payment cannot be activated outside its billing period", content = @Content(mediaType =
+                    "application/json",
+                    schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    @PutMapping("/{paymentId}")
+    public ResponseEntity<ResponseDto<PaymentDto>> updatePayment(@PathVariable UUID paymentId,
+                                                                 @Valid @RequestBody UpdatePaymentRequestDTO requestDTO) {
+        LocalDate currentDate = LocalDate.now();
+        Payment updatedPayment = updatePaymentUseCase.updatePayment(paymentId, requestDTO, currentDate);
+        return ResponseEntity.ok(new ResponseDto<>(paymentMapper.toPaymentDto(updatedPayment)));
     }
 }

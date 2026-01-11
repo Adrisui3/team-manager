@@ -48,6 +48,11 @@ public class PlayerRepositoryAdapter implements PlayerRepository {
     }
 
     @Override
+    public Optional<Player> findByEmail(String email) {
+        return playerJpaRepository.findByEmail(email).map(playerMapper::toPlayer);
+    }
+
+    @Override
     public boolean existsById(UUID id) {
         return playerJpaRepository.existsById(id);
     }
@@ -70,7 +75,7 @@ public class PlayerRepositoryAdapter implements PlayerRepository {
     @Override
     public void deleteById(UUID id) {
         if (!playerJpaRepository.existsById(id)) {
-            throw new PlayerNotFoundException(id);
+            throw PlayerNotFoundException.byId(id);
         }
 
         playerJpaRepository.deleteById(id);
@@ -79,7 +84,7 @@ public class PlayerRepositoryAdapter implements PlayerRepository {
     @Override
     public List<Payment> findAllAssignedPayments(UUID playerId) {
         List<PaymentJpaEntity> assignedPayments =
-                playerJpaRepository.findById(playerId).map(player -> player.getAssignments().stream().map(PlayerPaymentAssignmentJpaEntity::getPayment).toList()).orElseThrow(() -> new PlayerNotFoundException(playerId));
+                playerJpaRepository.findById(playerId).map(player -> player.getAssignments().stream().map(PlayerPaymentAssignmentJpaEntity::getPayment).toList()).orElseThrow(() -> PlayerNotFoundException.byId(playerId));
         return assignedPayments.stream().map(paymentMapper::toPayment).toList();
     }
 }

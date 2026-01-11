@@ -5,12 +5,14 @@ import com.manager.payments.adapter.in.rest.dto.models.PlayerDto;
 import com.manager.payments.adapter.in.rest.dto.models.PlayerPaymentAssignmentDto;
 import com.manager.payments.adapter.in.rest.dto.models.ReceiptDto;
 import com.manager.payments.adapter.in.rest.dto.request.CreatePlayerRequestDTO;
+import com.manager.payments.adapter.in.rest.dto.request.UpdatePlayerRequestDTO;
 import com.manager.payments.adapter.out.persistence.assignments.PlayerPaymentAssignmentMapper;
 import com.manager.payments.adapter.out.persistence.payments.PaymentMapper;
 import com.manager.payments.adapter.out.persistence.players.PlayerMapper;
 import com.manager.payments.adapter.out.persistence.receipts.ReceiptMapper;
 import com.manager.payments.application.port.in.AssignPaymentToPlayerUseCase;
 import com.manager.payments.application.port.in.CreatePlayerUseCase;
+import com.manager.payments.application.port.in.UpdatePlayerUseCase;
 import com.manager.payments.application.port.out.PlayerPaymentAssignmentRepository;
 import com.manager.payments.application.port.out.PlayerRepository;
 import com.manager.payments.application.port.out.ReceiptRepository;
@@ -55,6 +57,7 @@ public class PlayerController {
     private final ReceiptRepository receiptRepository;
     private final ReceiptMapper receiptMapper;
     private final PaymentMapper paymentMapper;
+    private final UpdatePlayerUseCase updatePlayerUseCase;
 
     @Operation(summary = "Get all players", description = "Supports pagination")
     @ApiResponses(value = {
@@ -75,7 +78,7 @@ public class PlayerController {
     })
     @GetMapping("/{playerId}")
     public ResponseEntity<ResponseDto<PlayerDto>> getPlayer(@PathVariable UUID playerId) {
-        Player player = playerRepository.findById(playerId).orElseThrow(() -> new PlayerNotFoundException(playerId));
+        Player player = playerRepository.findById(playerId).orElseThrow(() -> PlayerNotFoundException.byId(playerId));
         return ResponseEntity.ok(new ResponseDto<>(playerMapper.toPlayerDto(player)));
     }
 
@@ -91,7 +94,7 @@ public class PlayerController {
                                                                       @PathVariable UUID playerId,
                                                                       @RequestParam(required = false) ReceiptStatus status) {
         if (!playerRepository.existsById(playerId)) {
-            throw new PlayerNotFoundException(playerId);
+            throw PlayerNotFoundException.byId(playerId);
         }
 
         Page<Receipt> receipts = status == null ? receiptRepository.findAllByPlayerId(playerId, pageable) :
@@ -143,7 +146,7 @@ public class PlayerController {
     public ResponseEntity<PageResponse<PaymentDto>> getPlayerPayments(@PathVariable UUID playerId,
                                                                       @ParameterObject Pageable pageable) {
         if (!playerRepository.existsById(playerId)) {
-            throw new PlayerNotFoundException(playerId);
+            throw PlayerNotFoundException.byId(playerId);
         }
 
         Page<Payment> payments = playerPaymentAssignmentRepository.findAllPaymentsByPlayerId(playerId, pageable);
@@ -179,5 +182,23 @@ public class PlayerController {
         playerRepository.deleteById(playerId);
         return ResponseEntity.ok(new ResponseDto<>("Player with id " + playerId + " was " +
                 "deleted"));
+    }
+
+
+    @Operation(summary = "Update player data")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Player updated", useReturnTypeSchema = true),
+            @ApiResponse(responseCode = "404", description = "Player not found", content = @Content(mediaType =
+                    "application/json", schema = @Schema(implementation =
+                    ErrorResponse.class))),
+            @ApiResponse(responseCode = "409", description = "Player already exists with that email",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation =
+                            ErrorResponse.class)))
+    })
+    @PutMapping("/{playerId}")
+    public ResponseEntity<ResponseDto<PlayerDto>> updatePlayer(@PathVariable UUID playerId,
+                                                               @Valid @RequestBody UpdatePlayerRequestDTO requestDTO) {
+        Player updatedPlayer = updatePlayerUseCase.updatePlayer(playerId, requestDTO);
+        return ResponseEntity.ok(new ResponseDto<>(playerMapper.toPlayerDto(updatedPlayer)));
     }
 }
