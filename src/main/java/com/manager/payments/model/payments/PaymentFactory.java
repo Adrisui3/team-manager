@@ -15,13 +15,7 @@ public class PaymentFactory {
     public static Payment build(String code, BigDecimal amount, String name, String description, LocalDate startDate,
                                 LocalDate endDate, Periodicity periodicity) {
         LocalDate now = LocalDate.now();
-        if (startDate.isAfter(endDate)) {
-            throw new PaymentInvalidDateInterval();
-        }
-
-        if (endDate.isBefore(now)) {
-            throw new PaymentAlreadyExpired();
-        }
+        validateInterval(startDate, endDate, now);
 
         PaymentStatus status = startDate.isAfter(now) ? PaymentStatus.INACTIVE : PaymentStatus.ACTIVE;
         return Payment.builder()
@@ -34,5 +28,15 @@ public class PaymentFactory {
                 .periodicity(periodicity)
                 .status(status)
                 .build();
+    }
+
+    public static void validateInterval(LocalDate startDate, LocalDate endDate, LocalDate currentDate) {
+        if (startDate.isAfter(endDate)) {
+            throw new PaymentInvalidDateInterval();
+        }
+
+        if (endDate.isBefore(currentDate)) {
+            throw new PaymentAlreadyExpired();
+        }
     }
 }

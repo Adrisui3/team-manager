@@ -39,6 +39,7 @@ public class PaymentService implements CreatePaymentUseCase, ProcessExpiredPayme
                 BigDecimal.valueOf(requestDTO.amount()).setScale(2, RoundingMode.HALF_UP),
                 requestDTO.name(), requestDTO.description(), requestDTO.startDate(), requestDTO.endDate(),
                 requestDTO.periodicity());
+
         return paymentRepository.save(newPayment);
     }
 
@@ -57,15 +58,9 @@ public class PaymentService implements CreatePaymentUseCase, ProcessExpiredPayme
         Payment payment =
                 paymentRepository.findById(paymentId).orElseThrow(() -> new PaymentNotFoundException(paymentId));
 
-        Payment updatedPayment = payment.toBuilder()
-                .amount(BigDecimal.valueOf(request.amount()).setScale(2, RoundingMode.HALF_UP))
-                .name(request.name())
-                .description(request.description())
-                .startDate(request.startDate())
-                .endDate(request.endDate())
-                .periodicity(request.periodicity())
-                .status(request.status())
-                .build();
+        LocalDate currentDate = LocalDate.now();
+        Payment updatedPayment = payment.update(request.amount(), request.name(), request.description(),
+                request.startDate(), request.endDate(), request.periodicity(), request.status(), currentDate);
 
         return paymentRepository.save(updatedPayment);
     }
