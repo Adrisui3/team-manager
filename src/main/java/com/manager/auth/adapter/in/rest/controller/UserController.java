@@ -85,7 +85,7 @@ public class UserController {
                     ErrorResponse.class)))
     })
     @PutMapping("/{userId}")
-    @PreAuthorize("@authz.canUpdateUser(#userId)")
+    @PreAuthorize("@authz.canUpdateUserBasicData(#userId)")
     public ResponseEntity<ResponseDto<UserDto>> updateUser(@PathVariable UUID userId,
                                                            @Valid @RequestBody UpdateUserRequestDto request) {
         User user = updateUserUseCase.updateUser(userId, request);

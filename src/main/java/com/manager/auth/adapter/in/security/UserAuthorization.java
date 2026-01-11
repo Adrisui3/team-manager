@@ -13,17 +13,21 @@ public class UserAuthorization {
 
     private final AuthenticatedUserProvider authenticatedUserProvider;
 
-    public boolean canUpdateUser(UUID targetUserId) {
+    public boolean canUpdateUserBasicData(UUID targetUserId) {
         User authenticatedUser = authenticatedUserProvider.getAuthenticatedUser();
 
         if (authenticatedUser.role() == Role.ADMIN)
             return true;
 
-        return authenticatedUser.id().equals(targetUserId);
+        return isCurrentUser(targetUserId, authenticatedUser);
     }
 
     public boolean isCurrentUser(UUID targetUserId) {
         User authenticatedUser = authenticatedUserProvider.getAuthenticatedUser();
+        return isCurrentUser(targetUserId, authenticatedUser);
+    }
+
+    private boolean isCurrentUser(UUID targetUserId, User authenticatedUser) {
         return authenticatedUser.id().equals(targetUserId);
     }
 }
