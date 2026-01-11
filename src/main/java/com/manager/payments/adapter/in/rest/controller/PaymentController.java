@@ -22,6 +22,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
@@ -96,7 +97,7 @@ public class PaymentController {
                             schema = @Schema(implementation = ErrorResponse.class)))
     })
     @PostMapping
-    public ResponseEntity<ResponseDto<PaymentDto>> createPayment(@RequestBody CreatePaymentRequestDTO requestDTO) {
+    public ResponseEntity<ResponseDto<PaymentDto>> createPayment(@Valid @RequestBody CreatePaymentRequestDTO requestDTO) {
         Payment payment = createPaymentUseCase.createPayment(requestDTO);
         return ResponseEntity.created(URI.create("/v1/payments/" + payment.id())).body(new ResponseDto<>(paymentMapper.toPaymentDto(payment)));
     }
@@ -124,7 +125,7 @@ public class PaymentController {
     })
     @PutMapping("/{paymentId}")
     public ResponseEntity<ResponseDto<PaymentDto>> updatePayment(@PathVariable UUID paymentId,
-                                                                 @RequestBody UpdatePaymentRequestDTO requestDTO) {
+                                                                 @Valid @RequestBody UpdatePaymentRequestDTO requestDTO) {
         Payment updatedPayment = updatePaymentUseCase.updatePayment(paymentId, requestDTO);
         return ResponseEntity.ok(new ResponseDto<>(paymentMapper.toPaymentDto(updatedPayment)));
     }
