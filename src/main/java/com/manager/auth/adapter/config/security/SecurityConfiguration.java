@@ -43,7 +43,7 @@ public class SecurityConfiguration {
 
     private static final String[] PUBLIC_ROUTES = {
             "/v1/auth/login",
-            "/v1/auth/set-password",
+            "/v1/users/set-password",
             "/actuator/health",
             "/actuator/health/**",
     };
