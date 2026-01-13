@@ -42,6 +42,7 @@ public class UserService implements UpdateUserUseCase, DeleteUserUseCase {
     }
 
     @Override
+    @Transactional
     public User updateUserStatus(UUID userId, UpdateUserStatusDto request) {
         User user = repository.findById(userId).orElseThrow(() -> UserNotFound.byId(userId));
 
@@ -86,6 +87,7 @@ public class UserService implements UpdateUserUseCase, DeleteUserUseCase {
     }
 
     @Override
+    @Transactional
     public void deleteUser(UUID userId) {
         if (!repository.existsById(userId)) {
             throw UserNotFound.byId(userId);
