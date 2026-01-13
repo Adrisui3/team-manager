@@ -90,10 +90,15 @@ public class PaymentController {
                 receipts.stream().map(receiptMapper::toReceiptDto).toList()));
     }
 
-    @Operation(summary = "Create a new payment")
+    @Operation(summary = "Create a new payment", description = "Unique payments must not have a billing interval, " +
+            "whereas periodic ones must have it.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Payment created", useReturnTypeSchema = true),
             @ApiResponse(responseCode = "409", description = "Payment already exists",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Either unique payment has a billing interval defined or" +
+                    " a periodic payment doesn't have it",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorResponse.class)))
     })

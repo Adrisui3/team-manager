@@ -14,8 +14,8 @@ public record CreatePaymentRequestDTO(
         @NotBlank @Size(min = 1, max = 10) @Schema(description = "Unique identifier") String code,
         @NotBlank @Size(min = 1, max = 60) @Schema(description = "Name") String name,
         @Size(max = 255) @Schema(description = "Description") String description,
-        @NotNull @Schema(description = "Payment start date") LocalDate startDate,
-        @NotNull @Schema(description = "Payment end date") LocalDate endDate,
+        @Schema(description = "Payment start date") LocalDate startDate,
+        @Schema(description = "Payment end date") LocalDate endDate,
         @NotNull @Schema(description = "Payment periodicity", example = "MONTHLY",
                 implementation = Periodicity.class) Periodicity periodicity) {
 }

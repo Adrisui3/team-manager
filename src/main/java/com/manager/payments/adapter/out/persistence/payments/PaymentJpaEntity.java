@@ -27,10 +27,7 @@ public class PaymentJpaEntity {
     private String name;
     private String description;
 
-    @Column(nullable = false)
     private LocalDate startDate;
-
-    @Column(nullable = false)
     private LocalDate endDate;
 
     @Column(nullable = false)

@@ -47,9 +47,9 @@ public class PlayerPaymentAssignmentRepositoryAdapter implements PlayerPaymentAs
     }
 
     @Override
-    public List<PlayerPaymentAssignment> findAllActiveAndStartDateBeforeOrEqual(LocalDate date) {
+    public List<PlayerPaymentAssignment> findAllForBilling(LocalDate date) {
         List<PlayerPaymentAssignmentJpaEntity> playerPaymentAssignmentJpaEntities =
-                repository.findAllByPlayer_StatusAndPayment_StatusAndPayment_StartDateLessThanEqual(PlayerStatus.ENABLED, PaymentStatus.ACTIVE, date);
+                repository.findAllForBilling(PlayerStatus.ENABLED, PaymentStatus.ACTIVE, date);
         return playerPaymentAssignmentJpaEntities.stream().map(mapper::toPlayerPaymentAssignment).toList();
     }
 

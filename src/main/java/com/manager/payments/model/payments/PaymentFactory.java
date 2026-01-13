@@ -2,6 +2,9 @@ package com.manager.payments.model.payments;
 
 import com.manager.payments.model.exceptions.PaymentAlreadyExpired;
 import com.manager.payments.model.exceptions.PaymentInvalidDateInterval;
+import com.manager.payments.model.exceptions.PeriodicPaymentWithoutIntervalException;
+import com.manager.payments.model.exceptions.UniquePaymentWithIntervalException;
+import jakarta.annotation.Nullable;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -12,22 +15,43 @@ public class PaymentFactory {
     private PaymentFactory() {
     }
 
-    public static Payment build(String code, BigDecimal amount, String name, String description, LocalDate startDate,
-                                LocalDate endDate, Periodicity periodicity) {
-        LocalDate now = LocalDate.now();
-        validateInterval(startDate, endDate, now);
+    public static Payment build(String code, BigDecimal amount, String name, String description,
+                                @Nullable LocalDate startDate, @Nullable LocalDate endDate, Periodicity periodicity) {
+        return switch (periodicity) {
+            case ONCE -> {
+                if (startDate != null || endDate != null) {
+                    throw new UniquePaymentWithIntervalException();
+                }
 
-        PaymentStatus status = startDate.isAfter(now) ? PaymentStatus.INACTIVE : PaymentStatus.ACTIVE;
-        return Payment.builder()
-                .amount(amount.setScale(2, RoundingMode.HALF_UP))
-                .code(code)
-                .name(name)
-                .description(description)
-                .startDate(startDate)
-                .endDate(endDate)
-                .periodicity(periodicity)
-                .status(status)
-                .build();
+                yield Payment.builder()
+                        .amount(amount.setScale(2, RoundingMode.HALF_UP))
+                        .code(code)
+                        .name(name)
+                        .description(description)
+                        .periodicity(periodicity)
+                        .status(PaymentStatus.ACTIVE)
+                        .build();
+            }
+            case MONTHLY, QUARTERLY -> {
+                if (startDate == null || endDate == null) {
+                    throw new PeriodicPaymentWithoutIntervalException();
+                }
+
+                LocalDate now = LocalDate.now();
+                validateInterval(startDate, endDate, now);
+                PaymentStatus status = startDate.isAfter(now) ? PaymentStatus.INACTIVE : PaymentStatus.ACTIVE;
+                yield Payment.builder()
+                        .amount(amount.setScale(2, RoundingMode.HALF_UP))
+                        .code(code)
+                        .name(name)
+                        .description(description)
+                        .startDate(startDate)
+                        .endDate(endDate)
+                        .periodicity(periodicity)
+                        .status(status)
+                        .build();
+            }
+        };
     }
 
     public static void validateInterval(LocalDate startDate, LocalDate endDate, LocalDate currentDate) {

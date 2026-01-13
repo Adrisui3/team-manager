@@ -5,6 +5,7 @@ import com.manager.payments.model.players.PlayerStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -16,7 +17,15 @@ public interface PlayerPaymentAssignmentJpaRepository extends JpaRepository<Play
 
     void deleteByPlayer_IdAndPayment_Id(UUID playerId, UUID paymentId);
 
-    List<PlayerPaymentAssignmentJpaEntity> findAllByPlayer_StatusAndPayment_StatusAndPayment_StartDateLessThanEqual(PlayerStatus playerStatus, PaymentStatus paymentStatus, LocalDate date);
+    @Query("""
+                select a
+                from PlayerPaymentAssignmentJpaEntity a
+                where a.player.status = :playerStatus
+                  and a.payment.status = :paymentStatus
+                  and (a.payment.startDate <= :date or a.payment.startDate is null)
+            """)
+    List<PlayerPaymentAssignmentJpaEntity> findAllForBilling(PlayerStatus playerStatus, PaymentStatus paymentStatus,
+                                                             LocalDate date);
 
     Page<PlayerPaymentAssignmentJpaEntity> findAllByPlayer_Id(UUID playerId, Pageable pageable);
 }
