@@ -30,7 +30,7 @@ public class BillingService implements IssueNewReceiptsUseCase {
         log.info("Starting BillingJob for {}", date);
         long tIni = System.currentTimeMillis();
         List<PlayerPaymentAssignment> assignments =
-                playerPaymentAssignmentRepository.findAllActiveAndStartDateBeforeOrEqual(date);
+                playerPaymentAssignmentRepository.findAllForBilling(date);
         log.info("Processing {} player-payment assignments", assignments.size());
         for (PlayerPaymentAssignment assignment : assignments) {
             Predicate<Receipt> playerExists = switch (assignment.payment().periodicity()) {

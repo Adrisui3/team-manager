@@ -17,7 +17,7 @@ public class BillingProcessor {
     public static Optional<Receipt> process(PlayerPaymentAssignment playerPaymentAssignment, LocalDate date,
                                             Predicate<Receipt> receiptExists) {
         Payment payment = playerPaymentAssignment.payment();
-        if (date.isAfter(payment.endDate()))
+        if (payment.endDate() != null && date.isAfter(payment.endDate()))
             return Optional.empty();
 
         Receipt receipt = switch (payment.periodicity()) {

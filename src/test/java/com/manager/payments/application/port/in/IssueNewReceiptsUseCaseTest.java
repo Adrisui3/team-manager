@@ -48,7 +48,7 @@ public class IssueNewReceiptsUseCaseTest {
                 .build();
         PlayerPaymentAssignmentRepository playerPaymentAssignmentRepository =
                 Mockito.mock(PlayerPaymentAssignmentRepository.class);
-        Mockito.when(playerPaymentAssignmentRepository.findAllActiveAndStartDateBeforeOrEqual(any())).thenReturn(List.of(playerPaymentAssignment));
+        Mockito.when(playerPaymentAssignmentRepository.findAllForBilling(any())).thenReturn(List.of(playerPaymentAssignment));
 
         ReceiptRepository receiptRepository = Mockito.mock(ReceiptRepository.class);
         Mockito.when(receiptRepository.existsByPlayerPaymentAndPeriod(any())).thenReturn(false);
@@ -94,7 +94,7 @@ public class IssueNewReceiptsUseCaseTest {
                 .build();
         PlayerPaymentAssignmentRepository playerPaymentAssignmentRepository =
                 Mockito.mock(PlayerPaymentAssignmentRepository.class);
-        Mockito.when(playerPaymentAssignmentRepository.findAllActiveAndStartDateBeforeOrEqual(any())).thenReturn(List.of(playerPaymentAssignment));
+        Mockito.when(playerPaymentAssignmentRepository.findAllForBilling(any())).thenReturn(List.of(playerPaymentAssignment));
 
         ReceiptRepository receiptRepository = Mockito.mock(ReceiptRepository.class);
         Mockito.when(receiptRepository.existsByPlayerPaymentAndPeriod(any())).thenReturn(false);
@@ -140,7 +140,7 @@ public class IssueNewReceiptsUseCaseTest {
                 .build();
         PlayerPaymentAssignmentRepository playerPaymentAssignmentRepository =
                 Mockito.mock(PlayerPaymentAssignmentRepository.class);
-        Mockito.when(playerPaymentAssignmentRepository.findAllActiveAndStartDateBeforeOrEqual(any())).thenReturn(List.of(playerPaymentAssignment));
+        Mockito.when(playerPaymentAssignmentRepository.findAllForBilling(any())).thenReturn(List.of(playerPaymentAssignment));
 
         ReceiptRepository receiptRepository = Mockito.mock(ReceiptRepository.class);
         Mockito.when(receiptRepository.existsByPlayerPaymentAndPeriod(any())).thenReturn(true);

@@ -18,7 +18,7 @@ public interface PlayerPaymentAssignmentRepository {
 
     boolean existsByPlayerIdAndPaymentId(UUID playerId, UUID paymentId);
 
-    List<PlayerPaymentAssignment> findAllActiveAndStartDateBeforeOrEqual(LocalDate date);
+    List<PlayerPaymentAssignment> findAllForBilling(LocalDate date);
 
     void deleteByPlayerIdAndPaymentId(UUID playerId, UUID paymentId);
 

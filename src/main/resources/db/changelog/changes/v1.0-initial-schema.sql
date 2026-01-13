@@ -45,8 +45,8 @@ CREATE TABLE payment
     amount      DECIMAL(19, 2) NOT NULL,
     name        VARCHAR(255),
     description VARCHAR(1024),
-    start_date  DATE           NOT NULL,
-    end_date    DATE           NOT NULL,
+    start_date DATE,
+    end_date   DATE,
     periodicity VARCHAR(50)    NOT NULL,
     status      VARCHAR(50)    NOT NULL,
     CONSTRAINT uq_player_code UNIQUE (code)
