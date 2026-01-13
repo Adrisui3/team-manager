@@ -2,6 +2,7 @@ package com.manager.payments.adapter.in.rest.controller;
 
 import com.manager.payments.adapter.in.rest.dto.models.ReceiptDto;
 import com.manager.payments.adapter.out.persistence.receipts.ReceiptMapper;
+import com.manager.payments.application.port.in.DeleteReceiptUseCase;
 import com.manager.payments.application.port.in.UpdateReceiptStatusUseCase;
 import com.manager.payments.application.port.out.ReceiptRepository;
 import com.manager.payments.model.exceptions.ReceiptNotFoundException;
@@ -34,6 +35,7 @@ public class ReceiptController {
     private final ReceiptRepository repository;
     private final ReceiptMapper mapper;
     private final UpdateReceiptStatusUseCase updateReceiptStatusUseCase;
+    private final DeleteReceiptUseCase deleteReceiptUseCase;
 
     @Operation(summary = "Get all receipts", description = "Supports pagination via Spring Data's pageable")
     @ApiResponses(value = {
@@ -72,5 +74,17 @@ public class ReceiptController {
                                                                        @RequestParam ReceiptStatus newStatus) {
         Receipt updatedReceipt = updateReceiptStatusUseCase.updateStatus(receiptId, newStatus);
         return ResponseEntity.ok(new ResponseDto<>(mapper.toReceiptDto(updatedReceipt)));
+    }
+
+    @Operation(summary = "Delete a receipt")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Receipt deleted", useReturnTypeSchema = true),
+            @ApiResponse(responseCode = "404", description = "Receipt not found", content = @Content(mediaType =
+                    "application/json", schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    @DeleteMapping("/{receiptId}")
+    public ResponseEntity<ResponseDto<String>> deleteReceipt(@PathVariable UUID receiptId) {
+        deleteReceiptUseCase.deleteReceipt(receiptId);
+        return ResponseEntity.ok(new ResponseDto<>("Receipt with id " + receiptId + " has been deleted"));
     }
 }
