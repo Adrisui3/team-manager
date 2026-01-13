@@ -1,5 +1,6 @@
 package com.manager.payments.application.service;
 
+import com.manager.payments.application.port.in.DeleteReceiptUseCase;
 import com.manager.payments.application.port.in.ProcessOverdueReceiptsUseCase;
 import com.manager.payments.application.port.in.UpdateReceiptStatusUseCase;
 import com.manager.payments.application.port.out.ReceiptRepository;
@@ -20,7 +21,7 @@ import java.util.UUID;
 @Transactional
 @RequiredArgsConstructor
 @Slf4j
-public class ReceiptService implements ProcessOverdueReceiptsUseCase, UpdateReceiptStatusUseCase {
+public class ReceiptService implements ProcessOverdueReceiptsUseCase, UpdateReceiptStatusUseCase, DeleteReceiptUseCase {
 
     private final ReceiptRepository repository;
 
@@ -50,5 +51,14 @@ public class ReceiptService implements ProcessOverdueReceiptsUseCase, UpdateRece
                 .build();
 
         return repository.save(updatedReceipt);
+    }
+
+    @Override
+    public void deleteReceipt(UUID receiptId) {
+        if (!repository.existsById(receiptId)) {
+            throw new ReceiptNotFoundException(receiptId);
+        }
+
+        repository.deleteById(receiptId);
     }
 }

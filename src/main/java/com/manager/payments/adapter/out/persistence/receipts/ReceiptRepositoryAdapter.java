@@ -75,6 +75,11 @@ public class ReceiptRepositoryAdapter implements ReceiptRepository {
     }
 
     @Override
+    public boolean existsById(UUID id) {
+        return repository.existsById(id);
+    }
+
+    @Override
     public Page<Receipt> findAllByPlayerId(UUID playerId, Pageable pageable) {
         Page<ReceiptJpaEntity> receipts = repository.findAllByPlayer_Id(playerId, pageable);
         return receipts.map(mapper::toReceipt);
@@ -90,5 +95,10 @@ public class ReceiptRepositoryAdapter implements ReceiptRepository {
     public List<Receipt> findAllByPaymentId(UUID paymentId) {
         List<ReceiptJpaEntity> receipt = repository.findAllByPayment_Id(paymentId);
         return receipt.stream().map(mapper::toReceipt).toList();
+    }
+
+    @Override
+    public void deleteById(UUID id) {
+        repository.deleteById(id);
     }
 }
