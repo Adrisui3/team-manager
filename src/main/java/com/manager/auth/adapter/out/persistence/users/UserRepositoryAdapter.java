@@ -40,8 +40,18 @@ public class UserRepositoryAdapter implements UserRepository {
     }
 
     @Override
+    public boolean existsById(UUID id) {
+        return repository.existsById(id);
+    }
+
+    @Override
     public Page<User> findAll(Pageable pageable) {
         Page<UserJpaEntity> users = repository.findAll(pageable);
         return users.map(mapper::toUser);
+    }
+
+    @Override
+    public void deleteById(UUID id) {
+        repository.deleteById(id);
     }
 }

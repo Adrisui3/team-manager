@@ -7,6 +7,7 @@ import com.manager.auth.adapter.in.rest.dto.requests.UpdateUserRequestDto;
 import com.manager.auth.adapter.in.rest.dto.requests.UpdateUserStatusDto;
 import com.manager.auth.adapter.in.security.AuthenticatedUserProvider;
 import com.manager.auth.adapter.out.persistence.mapper.UserMapper;
+import com.manager.auth.application.port.in.DeleteUserUseCase;
 import com.manager.auth.application.port.in.UpdateUserUseCase;
 import com.manager.auth.application.port.out.UserRepository;
 import com.manager.auth.model.exceptions.UserNotFound;
@@ -41,6 +42,7 @@ public class UserController {
     private final UserMapper mapper;
     private final UserRepository repository;
     private final UpdateUserUseCase updateUserUseCase;
+    private final DeleteUserUseCase deleteUserUseCase;
 
     @Operation(summary = "Get authenticated user")
     @ApiResponses(value = {
@@ -161,5 +163,20 @@ public class UserController {
                                                                  @Valid @RequestBody UpdateUserStatusDto request) {
         User updatedUser = updateUserUseCase.updateUserStatus(userId, request);
         return ResponseEntity.ok(new ResponseDto<>(mapper.toUserDto(updatedUser)));
+    }
+
+    @Operation(summary = "Delete a user", description = "Only users with ADMIN role can perform this action.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User deleted",
+                    useReturnTypeSchema = true),
+            @ApiResponse(responseCode = "404", description = "User not found",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation =
+                            ErrorResponse.class)))
+    })
+    @DeleteMapping("/{userId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ResponseDto<String>> deleteUser(@PathVariable UUID userId) {
+        deleteUserUseCase.deleteUser(userId);
+        return ResponseEntity.ok(new ResponseDto<>("User with id " + userId + " deleted successfully"));
     }
 }
