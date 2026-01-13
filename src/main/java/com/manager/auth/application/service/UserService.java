@@ -4,6 +4,7 @@ import com.manager.auth.adapter.in.rest.dto.requests.ChangeUserPasswordRequestDt
 import com.manager.auth.adapter.in.rest.dto.requests.SetUserPasswordRequestDto;
 import com.manager.auth.adapter.in.rest.dto.requests.UpdateUserRequestDto;
 import com.manager.auth.adapter.in.rest.dto.requests.UpdateUserStatusDto;
+import com.manager.auth.application.port.in.DeleteUserUseCase;
 import com.manager.auth.application.port.in.UpdateUserUseCase;
 import com.manager.auth.application.port.out.UserRepository;
 import com.manager.auth.model.exceptions.DisabledUserException;
@@ -21,7 +22,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class UserService implements UpdateUserUseCase {
+public class UserService implements UpdateUserUseCase, DeleteUserUseCase {
 
     private final UserRepository repository;
     private final PasswordEncoder passwordEncoder;
@@ -82,5 +83,14 @@ public class UserService implements UpdateUserUseCase {
         User user = repository.findById(userId).orElseThrow(() -> UserNotFound.byId(userId));
         User updatedUser = user.changePassword(request.oldPassword(), request.newPassword(), passwordEncoder);
         repository.save(updatedUser);
+    }
+
+    @Override
+    public void deleteUser(UUID userId) {
+        if (!repository.existsById(userId)) {
+            throw UserNotFound.byId(userId);
+        }
+
+        repository.deleteById(userId);
     }
 }

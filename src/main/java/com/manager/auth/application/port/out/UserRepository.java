@@ -17,5 +17,9 @@ public interface UserRepository {
 
     boolean existsByEmail(String email);
 
+    boolean existsById(UUID id);
+
     Page<User> findAll(Pageable pageable);
+
+    void deleteById(UUID id);
 }
