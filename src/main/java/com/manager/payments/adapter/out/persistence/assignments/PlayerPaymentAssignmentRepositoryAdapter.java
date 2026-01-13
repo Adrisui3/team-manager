@@ -3,8 +3,6 @@ package com.manager.payments.adapter.out.persistence.assignments;
 import com.manager.payments.application.port.out.PlayerPaymentAssignmentRepository;
 import com.manager.payments.model.assignments.PlayerPaymentAssignment;
 import com.manager.payments.model.payments.Payment;
-import com.manager.payments.model.payments.PaymentStatus;
-import com.manager.payments.model.players.PlayerStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
@@ -48,8 +46,7 @@ public class PlayerPaymentAssignmentRepositoryAdapter implements PlayerPaymentAs
 
     @Override
     public List<PlayerPaymentAssignment> findAllForBilling(LocalDate date) {
-        List<PlayerPaymentAssignmentJpaEntity> playerPaymentAssignmentJpaEntities =
-                repository.findAllForBilling(PlayerStatus.ENABLED, PaymentStatus.ACTIVE, date);
+        List<PlayerPaymentAssignmentJpaEntity> playerPaymentAssignmentJpaEntities = repository.findAllForBilling(date);
         return playerPaymentAssignmentJpaEntities.stream().map(mapper::toPlayerPaymentAssignment).toList();
     }
 

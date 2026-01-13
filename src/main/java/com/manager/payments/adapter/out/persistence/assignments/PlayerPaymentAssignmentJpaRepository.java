@@ -1,7 +1,5 @@
 package com.manager.payments.adapter.out.persistence.assignments;
 
-import com.manager.payments.model.payments.PaymentStatus;
-import com.manager.payments.model.players.PlayerStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -20,12 +18,14 @@ public interface PlayerPaymentAssignmentJpaRepository extends JpaRepository<Play
     @Query("""
                 select a
                 from PlayerPaymentAssignmentJpaEntity a
-                where a.player.status = :playerStatus
-                  and a.payment.status = :paymentStatus
-                  and (a.payment.startDate <= :date or a.payment.startDate is null)
+                where a.player.status = 'ENABLED'
+                  and a.payment.status = 'ACTIVE'
+                  and (
+                        :currentDate between a.payment.startDate and a.payment.endDate
+                        or a.payment.periodicity = 'ONCE'
+                      )
             """)
-    List<PlayerPaymentAssignmentJpaEntity> findAllForBilling(PlayerStatus playerStatus, PaymentStatus paymentStatus,
-                                                             LocalDate date);
+    List<PlayerPaymentAssignmentJpaEntity> findAllForBilling(LocalDate currentDate);
 
     Page<PlayerPaymentAssignmentJpaEntity> findAllByPlayer_Id(UUID playerId, Pageable pageable);
 }
