@@ -32,7 +32,7 @@ security:
 
 scheduled-jobs:
   billing:
-    cron: "0 0 1 * * *"
+    cron: "0 */30 * * * *"
 
   payments:
     cron: "0 0 0 * * *"
