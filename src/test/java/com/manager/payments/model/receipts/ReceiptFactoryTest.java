@@ -78,11 +78,11 @@ class ReceiptFactoryTest {
     }
 
     @Test
-    void shouldCreateCompleteReceiptIfBillingPeriodIfBillingIsInThePast() {
+    void shouldLimitReceiptBillingToPaymentLimits() {
         // given
         LocalDate startDate = LocalDate.of(2025, 9, 1);
-        LocalDate endDate = LocalDate.of(2025, 9, 30);
-        LocalDate currentDate = LocalDate.of(2025, 10, 16);
+        LocalDate endDate = LocalDate.of(2025, 9, 15);
+        LocalDate currentDate = LocalDate.of(2025, 9, 1);
         Player player = Player.builder()
                 .personalId("123456789A")
                 .build();
@@ -104,14 +104,12 @@ class ReceiptFactoryTest {
         Receipt receipt = ReceiptFactory.buildForBillingPeriod(playerPaymentAssignment, billingPeriod, currentDate);
 
         //then
-        assertThat(receipt.amount()).isEqualTo(payment.amount());
+        assertThat(receipt.amount()).isEqualTo(payment.amount().divide(BigDecimal.valueOf(2), RoundingMode.HALF_UP));
     }
 
     @Test
     void shouldCreateReceiptForUniquePayment() {
         // given
-        LocalDate startDate = LocalDate.of(2025, 9, 1);
-        LocalDate endDate = LocalDate.of(2025, 9, 30);
         LocalDate currentDate = LocalDate.of(2025, 10, 16);
         Player player = Player.builder()
                 .personalId("123456789A")
@@ -119,19 +117,16 @@ class ReceiptFactoryTest {
         Payment payment = Payment.builder()
                 .code("PAYMENT")
                 .amount(new BigDecimal("50.00"))
-                .startDate(startDate)
-                .endDate(endDate)
                 .periodicity(Periodicity.ONCE)
                 .status(PaymentStatus.ACTIVE)
                 .build();
-        BillingPeriod billingPeriod = BillingPeriodFactory.build(payment, startDate);
         PlayerPaymentAssignment playerPaymentAssignment = PlayerPaymentAssignment.builder()
                 .player(player)
                 .payment(payment)
                 .build();
 
         //then
-        Receipt receipt = ReceiptFactory.buildForBillingPeriod(playerPaymentAssignment, billingPeriod, currentDate);
+        Receipt receipt = ReceiptFactory.buildForUniquePayment(playerPaymentAssignment, currentDate);
 
         //then
         assertThat(receipt.amount()).isEqualTo(payment.amount());

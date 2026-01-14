@@ -13,7 +13,7 @@ public class BillingPeriodFactory {
     public static BillingPeriod build(Payment payment, LocalDate currentDate) {
         LocalDate start = getPeriodStart(payment, currentDate);
         LocalDate end = getPeriodEnd(payment, currentDate, start);
-        return new BillingPeriod(start, end.isAfter(payment.endDate()) ? payment.endDate() : end);
+        return new BillingPeriod(start, end);
     }
 
     private static LocalDate getPeriodStart(Payment payment, LocalDate date) {
