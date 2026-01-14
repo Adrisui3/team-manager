@@ -3,7 +3,6 @@ package com.manager.payments.adapter.out.persistence.payments;
 import com.manager.payments.application.port.out.PaymentRepository;
 import com.manager.payments.model.exceptions.PaymentNotFoundException;
 import com.manager.payments.model.payments.Payment;
-import com.manager.payments.model.payments.PaymentStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
@@ -71,9 +70,8 @@ public class PaymentRepositoryAdapter implements PaymentRepository {
     }
 
     @Override
-    public List<Payment> findAllActiveAndEndDateBefore(LocalDate date) {
-        List<PaymentJpaEntity> payments = paymentJpaRepository.findAllByEndDateBeforeAndStatus(date,
-                PaymentStatus.ACTIVE);
+    public List<Payment> findAllExpired(LocalDate date) {
+        List<PaymentJpaEntity> payments = paymentJpaRepository.findAllExpired(date);
         return payments.stream().map(paymentMapper::toPayment).toList();
     }
 }

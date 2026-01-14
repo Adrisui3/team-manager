@@ -42,9 +42,9 @@ public class ReceiptRepositoryAdapter implements ReceiptRepository {
     }
 
     @Override
-    public List<Receipt> findAllPendingWithExpirationDateBefore(LocalDate date) {
+    public List<Receipt> findAllExpired(LocalDate date) {
         List<ReceiptJpaEntity> receipts =
-                repository.findAllByStatusAndExpiryDateBefore(ReceiptStatus.PENDING, date);
+                repository.findAllExpired(date);
         return receipts.stream().map(mapper::toReceipt).toList();
     }
 

@@ -18,7 +18,7 @@ public interface ReceiptRepository {
 
     Page<Receipt> findAllByStatus(Pageable pageable, ReceiptStatus status);
 
-    List<Receipt> findAllPendingWithExpirationDateBefore(LocalDate date);
+    List<Receipt> findAllExpired(LocalDate date);
 
     Receipt save(Receipt receipt);
 

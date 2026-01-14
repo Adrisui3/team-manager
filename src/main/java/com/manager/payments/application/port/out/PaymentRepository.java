@@ -25,5 +25,5 @@ public interface PaymentRepository {
 
     void deleteById(UUID id);
 
-    List<Payment> findAllActiveAndEndDateBefore(LocalDate date);
+    List<Payment> findAllExpired(LocalDate date);
 }

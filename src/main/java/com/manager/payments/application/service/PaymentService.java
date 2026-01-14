@@ -46,7 +46,7 @@ public class PaymentService implements CreatePaymentUseCase, ProcessExpiredPayme
     @Override
     public void processExpiredPayments(LocalDate date) {
         log.info("Updating expired payments at {}", date);
-        List<Payment> expiredPayments = paymentRepository.findAllActiveAndEndDateBefore(date);
+        List<Payment> expiredPayments = paymentRepository.findAllExpired(date);
         log.info("Found {} expired payments", expiredPayments.size());
         List<Payment> processedPaymens = ExpiredPaymentProcessor.processExpiredPayments(expiredPayments);
         log.info("Processed {} expired payments", processedPaymens.size());
