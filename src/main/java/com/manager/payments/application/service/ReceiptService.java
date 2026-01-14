@@ -28,7 +28,7 @@ public class ReceiptService implements ProcessOverdueReceiptsUseCase, UpdateRece
     @Override
     public void processOverdueReceipts(LocalDate date) {
         log.info("Updating overdue receipts at {}", date);
-        List<Receipt> overdueReceipts = repository.findAllPendingWithExpirationDateBefore(date);
+        List<Receipt> overdueReceipts = repository.findAllExpired(date);
         log.info("Found {} overdue receipts", overdueReceipts.size());
         List<Receipt> processedReceipts = OverdueReceiptProcessor.process(overdueReceipts);
         log.info("Processed {} overdue receipts", overdueReceipts.size());
