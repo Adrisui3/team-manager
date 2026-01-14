@@ -2,6 +2,7 @@ package com.manager.payments.model.receipts;
 
 import com.manager.payments.model.assignments.PlayerPaymentAssignment;
 import com.manager.payments.model.billing.BillingPeriod;
+import com.manager.payments.model.payments.Payment;
 import jakarta.annotation.Nullable;
 
 import java.math.BigDecimal;
@@ -32,16 +33,7 @@ public class ReceiptFactory {
 
     public static Receipt buildForBillingPeriod(PlayerPaymentAssignment playerPaymentAssignment,
                                                 BillingPeriod billingPeriod, LocalDate date) {
-        long daysUntilNext = ChronoUnit.DAYS.between(date, billingPeriod.end()) + 1;
-        long daysInPeriod = ChronoUnit.DAYS.between(billingPeriod.start(), billingPeriod.end()) + 1;
-
-        double remainderPercentage = (double) daysUntilNext / daysInPeriod;
-        if (remainderPercentage <= 0d || remainderPercentage > 1d) {
-            remainderPercentage = 1d;
-        }
-
-        BigDecimal amount =
-                playerPaymentAssignment.payment().amount().multiply(BigDecimal.valueOf(remainderPercentage));
+        BigDecimal amount = computeReceiptAmount(playerPaymentAssignment.payment(), billingPeriod, date);
         String code = buildReceiptCode(playerPaymentAssignment, billingPeriod);
         return Receipt.builder()
                 .code(code)
@@ -54,6 +46,16 @@ public class ReceiptFactory {
                 .player(playerPaymentAssignment.player())
                 .payment(playerPaymentAssignment.payment())
                 .build();
+    }
+
+    private static BigDecimal computeReceiptAmount(Payment payment, BillingPeriod billingPeriod, LocalDate date) {
+        LocalDate billingEnd = payment.endDate().isBefore(billingPeriod.end()) ? payment.endDate() :
+                billingPeriod.end();
+
+        long daysUntilNext = ChronoUnit.DAYS.between(date, billingEnd) + 1;
+        long daysInPeriod = ChronoUnit.DAYS.between(billingPeriod.start(), billingPeriod.end()) + 1;
+        double remainderPercentage = (double) daysUntilNext / daysInPeriod;
+        return payment.amount().multiply(BigDecimal.valueOf(remainderPercentage));
     }
 
     private static String buildReceiptCode(PlayerPaymentAssignment playerPaymentAssignment,
