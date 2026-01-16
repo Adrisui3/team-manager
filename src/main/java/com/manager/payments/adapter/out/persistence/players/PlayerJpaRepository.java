@@ -21,5 +21,5 @@ public interface PlayerJpaRepository extends JpaRepository<PlayerJpaEntity, UUID
                  or lower(p.surname) like concat(concat('%', :q), '%')
                  or lower(p.email) like concat(concat('%', :q), '%')
             """)
-    Page<PlayerJpaEntity> searchByPersonalIdNameOrSurname(String q, Pageable pageable);
+    Page<PlayerJpaEntity> findAllByQuery(String q, Pageable pageable);
 }

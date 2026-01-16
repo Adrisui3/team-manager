@@ -7,6 +7,7 @@ import com.manager.payments.adapter.in.rest.dto.request.UpdatePaymentRequestDTO;
 import com.manager.payments.adapter.out.persistence.payments.PaymentMapper;
 import com.manager.payments.adapter.out.persistence.receipts.ReceiptMapper;
 import com.manager.payments.application.port.in.CreatePaymentUseCase;
+import com.manager.payments.application.port.in.FindPaymentUseCase;
 import com.manager.payments.application.port.in.UpdatePaymentUseCase;
 import com.manager.payments.application.port.out.PaymentRepository;
 import com.manager.payments.application.port.out.ReceiptRepository;
@@ -47,14 +48,17 @@ public class PaymentController {
     private final PaymentMapper paymentMapper;
     private final ReceiptRepository receiptRepository;
     private final ReceiptMapper receiptMapper;
+    private final FindPaymentUseCase findPaymentUseCase;
 
     @Operation(summary = "Get all payments", description = "Support pagination via Spring Data's pagination")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "List of payments", useReturnTypeSchema = true)
     })
     @GetMapping
-    public ResponseEntity<PageResponse<PaymentDto>> findAll(@ParameterObject Pageable pageable) {
-        Page<Payment> payments = paymentRepository.findAll(pageable);
+    public ResponseEntity<PageResponse<PaymentDto>> findAll(@RequestParam(name = "query", required = false,
+                                                                        defaultValue = "") String query,
+                                                            @ParameterObject Pageable pageable) {
+        Page<Payment> payments = findPaymentUseCase.findAll(query, pageable);
         return ResponseEntity.ok(PageResponse.of(payments.map(paymentMapper::toPaymentDto)));
     }
 
@@ -67,8 +71,7 @@ public class PaymentController {
     })
     @GetMapping("/{paymentId}")
     public ResponseEntity<ResponseDto<PaymentDto>> getPayment(@PathVariable UUID paymentId) {
-        Payment payment =
-                paymentRepository.findById(paymentId).orElseThrow(() -> new PaymentNotFoundException(paymentId));
+        Payment payment = findPaymentUseCase.findById(paymentId);
         return ResponseEntity.ok(new ResponseDto<>(paymentMapper.toPaymentDto(payment)));
     }
 

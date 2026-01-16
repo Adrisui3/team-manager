@@ -74,4 +74,10 @@ public class PaymentRepositoryAdapter implements PaymentRepository {
         List<PaymentJpaEntity> payments = paymentJpaRepository.findAllExpired(date);
         return payments.stream().map(paymentMapper::toPayment).toList();
     }
+
+    @Override
+    public Page<Payment> findAllByQuery(String query, Pageable pageable) {
+        Page<PaymentJpaEntity> payments = paymentJpaRepository.findAllByQuery(query, pageable);
+        return payments.map(paymentMapper::toPayment);
+    }
 }

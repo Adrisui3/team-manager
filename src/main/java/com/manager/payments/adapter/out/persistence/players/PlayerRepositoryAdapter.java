@@ -62,7 +62,7 @@ public class PlayerRepositoryAdapter implements PlayerRepository {
 
     @Override
     public Page<Player> findAllByQuery(String query, Pageable pageable) {
-        Page<PlayerJpaEntity> players = repository.searchByPersonalIdNameOrSurname(query, pageable);
+        Page<PlayerJpaEntity> players = repository.findAllByQuery(query, pageable);
         return players.map(mapper::toPlayer);
     }
 }
