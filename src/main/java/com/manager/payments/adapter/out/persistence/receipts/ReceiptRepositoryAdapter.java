@@ -101,4 +101,10 @@ public class ReceiptRepositoryAdapter implements ReceiptRepository {
     public void deleteById(UUID id) {
         repository.deleteById(id);
     }
+
+    @Override
+    public Page<Receipt> findByQuery(String query, Pageable pageable) {
+        Page<ReceiptJpaEntity> receipts = repository.findAllByQuery(query, pageable);
+        return receipts.map(mapper::toReceipt);
+    }
 }

@@ -3,9 +3,9 @@ package com.manager.payments.adapter.in.rest.controller;
 import com.manager.payments.adapter.in.rest.dto.models.ReceiptDto;
 import com.manager.payments.adapter.out.persistence.receipts.ReceiptMapper;
 import com.manager.payments.application.port.in.DeleteReceiptUseCase;
+import com.manager.payments.application.port.in.FindReceiptUseCase;
 import com.manager.payments.application.port.in.UpdateReceiptStatusUseCase;
 import com.manager.payments.application.port.out.ReceiptRepository;
-import com.manager.payments.model.exceptions.ReceiptNotFoundException;
 import com.manager.payments.model.receipts.Receipt;
 import com.manager.payments.model.receipts.ReceiptStatus;
 import com.manager.shared.response.ErrorResponse;
@@ -36,6 +36,7 @@ public class ReceiptController {
     private final ReceiptMapper mapper;
     private final UpdateReceiptStatusUseCase updateReceiptStatusUseCase;
     private final DeleteReceiptUseCase deleteReceiptUseCase;
+    private final FindReceiptUseCase findReceiptUseCase;
 
     @Operation(summary = "Get all receipts", description = "Supports pagination via Spring Data's pageable")
     @ApiResponses(value = {
@@ -58,8 +59,7 @@ public class ReceiptController {
     })
     @GetMapping("/{receiptId}")
     public ResponseEntity<ResponseDto<ReceiptDto>> getReceipt(@PathVariable("receiptId") UUID receiptId) {
-        Receipt receipt =
-                repository.findById(receiptId).orElseThrow(() -> new ReceiptNotFoundException(receiptId));
+        Receipt receipt = findReceiptUseCase.findById(receiptId);
         return ResponseEntity.ok(new ResponseDto<>(mapper.toReceiptDto(receipt)));
     }
 

@@ -37,4 +37,6 @@ public interface ReceiptRepository {
     List<Receipt> findAllByPaymentId(UUID paymentId);
 
     void deleteById(UUID id);
+
+    Page<Receipt> findByQuery(String query, Pageable pageable);
 }

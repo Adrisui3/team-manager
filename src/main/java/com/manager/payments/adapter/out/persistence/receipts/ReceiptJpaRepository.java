@@ -31,4 +31,11 @@ public interface ReceiptJpaRepository extends JpaRepository<ReceiptJpaEntity, UU
     Page<ReceiptJpaEntity> findAllByPlayer_Id(UUID playerId, Pageable pageable);
 
     Page<ReceiptJpaEntity> findAllByPlayer_IdAndStatus(UUID playerId, ReceiptStatus status, Pageable pageable);
+
+    @Query("""
+                select r
+                from ReceiptJpaEntity r
+                where lower(r.code) like concat(concat('%', :query), '%')
+            """)
+    Page<ReceiptJpaEntity> findAllByQuery(String query, Pageable pageable);
 }

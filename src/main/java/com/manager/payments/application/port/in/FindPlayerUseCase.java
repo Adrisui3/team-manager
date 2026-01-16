@@ -11,5 +11,4 @@ public interface FindPlayerUseCase {
     Player findById(UUID id);
 
     Page<Player> findAll(String query, Pageable pageable);
-
 }
