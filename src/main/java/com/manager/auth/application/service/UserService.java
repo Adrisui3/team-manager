@@ -5,6 +5,7 @@ import com.manager.auth.adapter.in.rest.dto.requests.SetUserPasswordRequestDto;
 import com.manager.auth.adapter.in.rest.dto.requests.UpdateUserRequestDto;
 import com.manager.auth.adapter.in.rest.dto.requests.UpdateUserStatusDto;
 import com.manager.auth.application.port.in.DeleteUserUseCase;
+import com.manager.auth.application.port.in.FindUserUseCase;
 import com.manager.auth.application.port.in.UpdateUserUseCase;
 import com.manager.auth.application.port.out.UserRepository;
 import com.manager.auth.model.exceptions.DisabledUserException;
@@ -12,17 +13,20 @@ import com.manager.auth.model.exceptions.UserNotFound;
 import com.manager.auth.model.users.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Locale;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class UserService implements UpdateUserUseCase, DeleteUserUseCase {
+public class UserService implements UpdateUserUseCase, DeleteUserUseCase, FindUserUseCase {
 
     private final UserRepository repository;
     private final PasswordEncoder passwordEncoder;
@@ -94,5 +98,15 @@ public class UserService implements UpdateUserUseCase, DeleteUserUseCase {
         }
 
         repository.deleteById(userId);
+    }
+
+    @Override
+    public Page<User> findAll(String query, Pageable pageable) {
+        return repository.findAll(query.trim().toLowerCase(Locale.ROOT), pageable);
+    }
+
+    @Override
+    public User findById(UUID id) {
+        return repository.findById(id).orElseThrow(() -> UserNotFound.byId(id));
     }
 }

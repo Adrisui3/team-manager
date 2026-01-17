@@ -1,6 +1,9 @@
 package com.manager.auth.adapter.out.persistence.users;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -11,4 +14,12 @@ public interface UserJpaRepository extends JpaRepository<UserJpaEntity, UUID> {
 
     boolean existsByEmail(String email);
 
+    @Query("""
+                select u
+                from UserJpaEntity u
+                where lower(u.email) like concat(concat('%', :query), '%')
+                   or lower(u.name) like concat(concat('%', :query), '%')
+                   or lower(u.surname) like concat(concat('%', :query), '%')
+            """)
+    Page<UserJpaEntity> findAll(String query, Pageable pageable);
 }

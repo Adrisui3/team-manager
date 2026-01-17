@@ -8,9 +8,8 @@ import com.manager.auth.adapter.in.rest.dto.requests.UpdateUserStatusDto;
 import com.manager.auth.adapter.in.security.AuthenticatedUserProvider;
 import com.manager.auth.adapter.out.persistence.mapper.UserMapper;
 import com.manager.auth.application.port.in.DeleteUserUseCase;
+import com.manager.auth.application.port.in.FindUserUseCase;
 import com.manager.auth.application.port.in.UpdateUserUseCase;
-import com.manager.auth.application.port.out.UserRepository;
-import com.manager.auth.model.exceptions.UserNotFound;
 import com.manager.auth.model.users.User;
 import com.manager.shared.response.ErrorResponse;
 import com.manager.shared.response.PageResponse;
@@ -40,9 +39,9 @@ public class UserController {
 
     private final AuthenticatedUserProvider authenticatedUserProvider;
     private final UserMapper mapper;
-    private final UserRepository repository;
     private final UpdateUserUseCase updateUserUseCase;
     private final DeleteUserUseCase deleteUserUseCase;
+    private final FindUserUseCase findUserUseCase;
 
     @Operation(summary = "Get authenticated user")
     @ApiResponses(value = {
@@ -61,8 +60,10 @@ public class UserController {
     })
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<PageResponse<UserDto>> findAll(@ParameterObject Pageable pageable) {
-        Page<User> users = repository.findAll(pageable);
+    public ResponseEntity<PageResponse<UserDto>> findAll(@RequestParam(name = "query", required = false,
+                                                                     defaultValue = "") String query,
+                                                         @ParameterObject Pageable pageable) {
+        Page<User> users = findUserUseCase.findAll(query, pageable);
         return ResponseEntity.ok(PageResponse.of(users.map(mapper::toUserDto)));
     }
 
@@ -76,7 +77,7 @@ public class UserController {
     @GetMapping("/{userId}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ResponseDto<UserDto>> getUserById(@PathVariable UUID userId) {
-        User user = repository.findById(userId).orElseThrow(() -> UserNotFound.byId(userId));
+        User user = findUserUseCase.findById(userId);
         return ResponseEntity.ok(new ResponseDto<>(mapper.toUserDto(user)));
     }
 

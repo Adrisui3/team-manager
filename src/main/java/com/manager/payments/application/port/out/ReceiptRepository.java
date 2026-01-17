@@ -12,8 +12,6 @@ import java.util.UUID;
 
 public interface ReceiptRepository {
 
-    Page<Receipt> findAll(Pageable pageable);
-
     Optional<Receipt> findById(UUID id);
 
     List<Receipt> findAllExpired(LocalDate date);

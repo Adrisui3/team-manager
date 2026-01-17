@@ -26,8 +26,6 @@ public interface ReceiptJpaRepository extends JpaRepository<ReceiptJpaEntity, UU
 
     boolean existsByPlayer_IdAndPayment_Id(UUID playerId, UUID paymentId);
 
-    Page<ReceiptJpaEntity> findAllByStatus(ReceiptStatus status, Pageable pageable);
-
     Page<ReceiptJpaEntity> findAllByPlayer_Id(UUID playerId, Pageable pageable);
 
     Page<ReceiptJpaEntity> findAllByPlayer_IdAndStatus(UUID playerId, ReceiptStatus status, Pageable pageable);
