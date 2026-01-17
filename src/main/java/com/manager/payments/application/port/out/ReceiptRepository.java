@@ -16,8 +16,6 @@ public interface ReceiptRepository {
 
     Optional<Receipt> findById(UUID id);
 
-    Page<Receipt> findAllByStatus(Pageable pageable, ReceiptStatus status);
-
     List<Receipt> findAllExpired(LocalDate date);
 
     Receipt save(Receipt receipt);
