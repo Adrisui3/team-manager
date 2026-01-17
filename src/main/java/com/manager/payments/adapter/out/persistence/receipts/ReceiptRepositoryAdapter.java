@@ -24,12 +24,6 @@ public class ReceiptRepositoryAdapter implements ReceiptRepository {
     }
 
     @Override
-    public Page<Receipt> findAll(Pageable pageable) {
-        Page<ReceiptJpaEntity> receipts = repository.findAll(pageable);
-        return receipts.map(mapper::toReceipt);
-    }
-
-    @Override
     public Optional<Receipt> findById(UUID id) {
         Optional<ReceiptJpaEntity> receiptJpaEntity = repository.findById(id);
         return receiptJpaEntity.map(mapper::toReceipt);

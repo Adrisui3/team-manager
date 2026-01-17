@@ -19,7 +19,7 @@ public interface UserRepository {
 
     boolean existsById(UUID id);
 
-    Page<User> findAll(Pageable pageable);
+    Page<User> findAll(String query, Pageable pageable);
 
     void deleteById(UUID id);
 }
