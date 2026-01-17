@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.manager</groupId>
     <artifactId>team-manager</artifactId>
-        <version>1.11.4</version>
+        <version>1.12.0</version>
     <name>team-manager</name>
     <description>Team Manager</description>
 	<url/>
