@@ -1,6 +1,7 @@
 package com.manager.payments.application.port.in;
 
 import com.manager.payments.model.receipts.Receipt;
+import com.manager.payments.model.receipts.ReceiptStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -10,5 +11,5 @@ public interface FindReceiptUseCase {
 
     Receipt findById(UUID id);
 
-    Page<Receipt> findAllByQuery(String query, Pageable pageable);
+    Page<Receipt> findAllByQuery(String query, ReceiptStatus status, Pageable pageable);
 }

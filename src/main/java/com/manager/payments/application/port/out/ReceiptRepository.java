@@ -38,5 +38,5 @@ public interface ReceiptRepository {
 
     void deleteById(UUID id);
 
-    Page<Receipt> findByQuery(String query, Pageable pageable);
+    Page<Receipt> findByQuery(String query, ReceiptStatus status, Pageable pageable);
 }

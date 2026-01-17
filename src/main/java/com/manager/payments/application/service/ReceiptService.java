@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 
 @Service
@@ -72,7 +73,7 @@ public class ReceiptService implements ProcessOverdueReceiptsUseCase, UpdateRece
     }
 
     @Override
-    public Page<Receipt> findAllByQuery(String query, Pageable pageable) {
-        return repository.findByQuery(query, pageable);
+    public Page<Receipt> findAllByQuery(String query, ReceiptStatus status, Pageable pageable) {
+        return repository.findByQuery(query.trim().toLowerCase(Locale.ROOT), status, pageable);
     }
 }

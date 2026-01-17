@@ -36,6 +36,7 @@ public interface ReceiptJpaRepository extends JpaRepository<ReceiptJpaEntity, UU
                 select r
                 from ReceiptJpaEntity r
                 where lower(r.code) like concat(concat('%', :query), '%')
+                      and (:status is null or r.status = :status)
             """)
-    Page<ReceiptJpaEntity> findAllByQuery(String query, Pageable pageable);
+    Page<ReceiptJpaEntity> findAllByQuery(String query, ReceiptStatus status, Pageable pageable);
 }
