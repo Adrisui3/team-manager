@@ -15,63 +15,69 @@ import java.util.UUID;
 @Repository
 public class PaymentRepositoryAdapter implements PaymentRepository {
 
-    private final PaymentMapper paymentMapper;
-    private final PaymentJpaRepository paymentJpaRepository;
+    private final PaymentMapper mapper;
+    private final PaymentJpaRepository repository;
 
-    public PaymentRepositoryAdapter(PaymentMapper paymentMapper,
-                                    PaymentJpaRepository paymentJpaRepository) {
-        this.paymentMapper = paymentMapper;
-        this.paymentJpaRepository = paymentJpaRepository;
+    public PaymentRepositoryAdapter(PaymentMapper mapper,
+                                    PaymentJpaRepository repository) {
+        this.mapper = mapper;
+        this.repository = repository;
     }
 
     @Override
     public Page<Payment> findAll(Pageable pageable) {
-        Page<PaymentJpaEntity> paymentJpaEntities = paymentJpaRepository.findAll(pageable);
-        return paymentJpaEntities.map(paymentMapper::toPayment);
+        Page<PaymentJpaEntity> paymentJpaEntities = repository.findAll(pageable);
+        return paymentJpaEntities.map(mapper::toPayment);
     }
 
     @Override
     public Payment save(Payment payment) {
-        PaymentJpaEntity paymentJpaEntity = paymentMapper.toPaymentJpaEntity(payment);
-        PaymentJpaEntity savedPaymentJpaEntity = paymentJpaRepository.save(paymentJpaEntity);
-        return paymentMapper.toPayment(savedPaymentJpaEntity);
+        PaymentJpaEntity paymentJpaEntity = mapper.toPaymentJpaEntity(payment);
+        PaymentJpaEntity savedPaymentJpaEntity = repository.save(paymentJpaEntity);
+        return mapper.toPayment(savedPaymentJpaEntity);
     }
 
     @Override
     public List<Payment> saveAll(List<Payment> payments) {
         List<PaymentJpaEntity> paymentJpaEntities =
-                payments.stream().map(paymentMapper::toPaymentJpaEntity).toList();
-        List<PaymentJpaEntity> savedPayments = paymentJpaRepository.saveAll(paymentJpaEntities);
-        return savedPayments.stream().map(paymentMapper::toPayment).toList();
+                payments.stream().map(mapper::toPaymentJpaEntity).toList();
+        List<PaymentJpaEntity> savedPayments = repository.saveAll(paymentJpaEntities);
+        return savedPayments.stream().map(mapper::toPayment).toList();
     }
 
     @Override
     public Optional<Payment> findById(UUID id) {
-        Optional<PaymentJpaEntity> paymentJpaEntity = paymentJpaRepository.findById(id);
-        return paymentJpaEntity.map(paymentMapper::toPayment);
+        Optional<PaymentJpaEntity> paymentJpaEntity = repository.findById(id);
+        return paymentJpaEntity.map(mapper::toPayment);
     }
 
     @Override
     public boolean existsById(UUID id) {
-        return paymentJpaRepository.existsById(id);
+        return repository.existsById(id);
     }
 
     @Override
     public boolean existsByCode(String code) {
-        return paymentJpaRepository.existsByCode(code);
+        return repository.existsByCode(code);
     }
 
     @Override
     public void deleteById(UUID id) {
-        if (!paymentJpaRepository.existsById(id))
+        if (!repository.existsById(id))
             throw new PaymentNotFoundException(id);
 
-        paymentJpaRepository.deleteById(id);
+        repository.deleteById(id);
     }
 
     @Override
     public List<Payment> findAllExpired(LocalDate date) {
-        List<PaymentJpaEntity> payments = paymentJpaRepository.findAllExpired(date);
-        return payments.stream().map(paymentMapper::toPayment).toList();
+        List<PaymentJpaEntity> payments = repository.findAllExpired(date);
+        return payments.stream().map(mapper::toPayment).toList();
+    }
+
+    @Override
+    public Page<Payment> findAllByQuery(String query, Pageable pageable) {
+        Page<PaymentJpaEntity> payments = repository.findAllByQuery(query, pageable);
+        return payments.map(mapper::toPayment);
     }
 }

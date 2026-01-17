@@ -13,7 +13,6 @@ import java.util.UUID;
 @Getter
 @Setter
 public class UserJpaEntity {
-
     @Id
     @GeneratedValue
     private UUID id;

@@ -16,8 +16,6 @@ public interface ReceiptRepository {
 
     Optional<Receipt> findById(UUID id);
 
-    Page<Receipt> findAllByStatus(Pageable pageable, ReceiptStatus status);
-
     List<Receipt> findAllExpired(LocalDate date);
 
     Receipt save(Receipt receipt);
@@ -37,4 +35,6 @@ public interface ReceiptRepository {
     List<Receipt> findAllByPaymentId(UUID paymentId);
 
     void deleteById(UUID id);
+
+    Page<Receipt> findByQuery(String query, ReceiptStatus status, Pageable pageable);
 }

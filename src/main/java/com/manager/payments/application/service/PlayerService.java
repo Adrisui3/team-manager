@@ -4,6 +4,7 @@ import com.manager.payments.adapter.in.rest.dto.request.CreatePlayerRequestDTO;
 import com.manager.payments.adapter.in.rest.dto.request.UpdatePlayerRequestDTO;
 import com.manager.payments.application.port.in.AssignPaymentToPlayerUseCase;
 import com.manager.payments.application.port.in.CreatePlayerUseCase;
+import com.manager.payments.application.port.in.FindPlayerUseCase;
 import com.manager.payments.application.port.in.UpdatePlayerUseCase;
 import com.manager.payments.application.port.out.PaymentRepository;
 import com.manager.payments.application.port.out.PlayerPaymentAssignmentRepository;
@@ -16,16 +17,20 @@ import com.manager.payments.model.players.Player;
 import com.manager.payments.model.players.PlayerStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Locale;
 import java.util.UUID;
 
 @Service
 @Transactional
 @RequiredArgsConstructor
 @Slf4j
-public class PlayerService implements CreatePlayerUseCase, AssignPaymentToPlayerUseCase, UpdatePlayerUseCase {
+public class PlayerService implements CreatePlayerUseCase, AssignPaymentToPlayerUseCase, UpdatePlayerUseCase,
+        FindPlayerUseCase {
 
     private final PlayerPaymentAssignmentRepository playerPaymentAssignmentRepository;
     private final PaymentRepository paymentRepository;
@@ -102,5 +107,15 @@ public class PlayerService implements CreatePlayerUseCase, AssignPaymentToPlayer
                 .build();
 
         return playerRepository.save(updatedPlayer);
+    }
+
+    @Override
+    public Player findById(UUID playerId) {
+        return playerRepository.findById(playerId).orElseThrow(() -> PlayerNotFoundException.byId(playerId));
+    }
+
+    @Override
+    public Page<Player> findAll(String query, Pageable pageable) {
+        return playerRepository.findAllByQuery(query.trim().toLowerCase(Locale.ROOT), pageable);
     }
 }

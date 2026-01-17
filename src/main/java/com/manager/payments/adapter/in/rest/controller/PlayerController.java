@@ -12,6 +12,7 @@ import com.manager.payments.adapter.out.persistence.players.PlayerMapper;
 import com.manager.payments.adapter.out.persistence.receipts.ReceiptMapper;
 import com.manager.payments.application.port.in.AssignPaymentToPlayerUseCase;
 import com.manager.payments.application.port.in.CreatePlayerUseCase;
+import com.manager.payments.application.port.in.FindPlayerUseCase;
 import com.manager.payments.application.port.in.UpdatePlayerUseCase;
 import com.manager.payments.application.port.out.PlayerPaymentAssignmentRepository;
 import com.manager.payments.application.port.out.PlayerRepository;
@@ -58,14 +59,18 @@ public class PlayerController {
     private final ReceiptMapper receiptMapper;
     private final PaymentMapper paymentMapper;
     private final UpdatePlayerUseCase updatePlayerUseCase;
+    private final FindPlayerUseCase findPlayerUseCase;
 
-    @Operation(summary = "Get all players", description = "Supports pagination")
+    @Operation(summary = "Get all players", description = "Supports pagination and query searching for personal ID, " +
+            "name and surname")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "List of players", useReturnTypeSchema = true)
     })
     @GetMapping
-    public ResponseEntity<PageResponse<PlayerDto>> findAll(@ParameterObject Pageable pageable) {
-        Page<Player> players = playerRepository.findAllPlayers(pageable);
+    public ResponseEntity<PageResponse<PlayerDto>> findAll(@RequestParam(name = "query", required = false,
+                                                                       defaultValue = "") String query,
+                                                           @ParameterObject Pageable pageable) {
+        Page<Player> players = findPlayerUseCase.findAll(query, pageable);
         return ResponseEntity.ok(PageResponse.of(players.map(playerMapper::toPlayerDto)));
     }
 
@@ -78,7 +83,7 @@ public class PlayerController {
     })
     @GetMapping("/{playerId}")
     public ResponseEntity<ResponseDto<PlayerDto>> getPlayer(@PathVariable UUID playerId) {
-        Player player = playerRepository.findById(playerId).orElseThrow(() -> PlayerNotFoundException.byId(playerId));
+        Player player = findPlayerUseCase.findById(playerId);
         return ResponseEntity.ok(new ResponseDto<>(playerMapper.toPlayerDto(player)));
     }
 

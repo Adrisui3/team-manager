@@ -1,5 +1,7 @@
 package com.manager.payments.adapter.out.persistence.payments;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -17,4 +19,13 @@ public interface PaymentJpaRepository extends JpaRepository<PaymentJpaEntity, UU
     List<PaymentJpaEntity> findAllExpired(LocalDate date);
 
     boolean existsByCode(String code);
+
+    @Query("""
+              select p
+              from PaymentJpaEntity p
+              where lower(p.code) like concat(:query, '%')
+                 or lower(p.name) like concat(concat('%', :query), '%')
+                 or lower(p.description) like concat(concat('%', :query), '%')
+            """)
+    Page<PaymentJpaEntity> findAllByQuery(String query, Pageable pageable);
 }

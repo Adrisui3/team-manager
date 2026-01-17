@@ -3,6 +3,7 @@ package com.manager.payments.application.service;
 import com.manager.payments.adapter.in.rest.dto.request.CreatePaymentRequestDTO;
 import com.manager.payments.adapter.in.rest.dto.request.UpdatePaymentRequestDTO;
 import com.manager.payments.application.port.in.CreatePaymentUseCase;
+import com.manager.payments.application.port.in.FindPaymentUseCase;
 import com.manager.payments.application.port.in.ProcessExpiredPaymentsUseCase;
 import com.manager.payments.application.port.in.UpdatePaymentUseCase;
 import com.manager.payments.application.port.out.PaymentRepository;
@@ -13,6 +14,8 @@ import com.manager.payments.model.payments.Payment;
 import com.manager.payments.model.payments.PaymentFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,13 +23,15 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 
 @Service
 @Transactional
 @RequiredArgsConstructor
 @Slf4j
-public class PaymentService implements CreatePaymentUseCase, ProcessExpiredPaymentsUseCase, UpdatePaymentUseCase {
+public class PaymentService implements CreatePaymentUseCase, ProcessExpiredPaymentsUseCase, UpdatePaymentUseCase,
+        FindPaymentUseCase {
 
     private final PaymentRepository paymentRepository;
 
@@ -59,5 +64,15 @@ public class PaymentService implements CreatePaymentUseCase, ProcessExpiredPayme
                 paymentRepository.findById(paymentId).orElseThrow(() -> new PaymentNotFoundException(paymentId));
         Payment updatedPayment = payment.update(request.name(), request.description(), request.status(), currentDate);
         return paymentRepository.save(updatedPayment);
+    }
+
+    @Override
+    public Payment findById(UUID id) {
+        return paymentRepository.findById(id).orElseThrow(() -> new PaymentNotFoundException(id));
+    }
+
+    @Override
+    public Page<Payment> findAll(String query, Pageable pageable) {
+        return paymentRepository.findAllByQuery(query.trim().toLowerCase(Locale.ROOT), pageable);
     }
 }

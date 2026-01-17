@@ -26,4 +26,6 @@ public interface PaymentRepository {
     void deleteById(UUID id);
 
     List<Payment> findAllExpired(LocalDate date);
+
+    Page<Payment> findAllByQuery(String query, Pageable pageable);
 }

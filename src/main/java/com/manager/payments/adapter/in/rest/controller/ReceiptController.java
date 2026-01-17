@@ -3,9 +3,8 @@ package com.manager.payments.adapter.in.rest.controller;
 import com.manager.payments.adapter.in.rest.dto.models.ReceiptDto;
 import com.manager.payments.adapter.out.persistence.receipts.ReceiptMapper;
 import com.manager.payments.application.port.in.DeleteReceiptUseCase;
+import com.manager.payments.application.port.in.FindReceiptUseCase;
 import com.manager.payments.application.port.in.UpdateReceiptStatusUseCase;
-import com.manager.payments.application.port.out.ReceiptRepository;
-import com.manager.payments.model.exceptions.ReceiptNotFoundException;
 import com.manager.payments.model.receipts.Receipt;
 import com.manager.payments.model.receipts.ReceiptStatus;
 import com.manager.shared.response.ErrorResponse;
@@ -32,10 +31,10 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ReceiptController {
 
-    private final ReceiptRepository repository;
     private final ReceiptMapper mapper;
     private final UpdateReceiptStatusUseCase updateReceiptStatusUseCase;
     private final DeleteReceiptUseCase deleteReceiptUseCase;
+    private final FindReceiptUseCase findReceiptUseCase;
 
     @Operation(summary = "Get all receipts", description = "Supports pagination via Spring Data's pageable")
     @ApiResponses(value = {
@@ -43,10 +42,11 @@ public class ReceiptController {
                     useReturnTypeSchema = true)
     })
     @GetMapping
-    public ResponseEntity<PageResponse<ReceiptDto>> getAllReceipts(@ParameterObject Pageable pageable,
-                                                                   @RequestParam(required = false) ReceiptStatus status) {
-        Page<Receipt> receipts = status == null ? repository.findAll(pageable) : repository.findAllByStatus(pageable,
-                status);
+    public ResponseEntity<PageResponse<ReceiptDto>> getAllReceipts(@RequestParam(name = "query", required = false,
+                                                                               defaultValue = "") String query,
+                                                                   @RequestParam(required = false) ReceiptStatus status,
+                                                                   @ParameterObject Pageable pageable) {
+        Page<Receipt> receipts = findReceiptUseCase.findAllByQuery(query, status, pageable);
         return ResponseEntity.ok(PageResponse.of(receipts.map(mapper::toReceiptDto)));
     }
 
@@ -58,8 +58,7 @@ public class ReceiptController {
     })
     @GetMapping("/{receiptId}")
     public ResponseEntity<ResponseDto<ReceiptDto>> getReceipt(@PathVariable("receiptId") UUID receiptId) {
-        Receipt receipt =
-                repository.findById(receiptId).orElseThrow(() -> new ReceiptNotFoundException(receiptId));
+        Receipt receipt = findReceiptUseCase.findById(receiptId);
         return ResponseEntity.ok(new ResponseDto<>(mapper.toReceiptDto(receipt)));
     }
 
