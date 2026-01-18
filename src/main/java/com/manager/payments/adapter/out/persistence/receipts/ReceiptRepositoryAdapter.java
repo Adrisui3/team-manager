@@ -80,12 +80,6 @@ public class ReceiptRepositoryAdapter implements ReceiptRepository {
     }
 
     @Override
-    public List<Receipt> findAllByPaymentId(UUID paymentId) {
-        List<ReceiptJpaEntity> receipt = repository.findAllByPayment_Id(paymentId);
-        return receipt.stream().map(mapper::toReceipt).toList();
-    }
-
-    @Override
     public void deleteById(UUID id) {
         repository.deleteById(id);
     }
