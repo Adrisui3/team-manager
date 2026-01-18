@@ -5,9 +5,9 @@ import com.manager.payments.adapter.in.rest.dto.request.CreatePaymentRequestDTO;
 import com.manager.payments.adapter.in.rest.dto.request.UpdatePaymentRequestDTO;
 import com.manager.payments.adapter.out.persistence.payments.PaymentMapper;
 import com.manager.payments.application.port.in.CreatePaymentUseCase;
+import com.manager.payments.application.port.in.DeletePaymentUseCase;
 import com.manager.payments.application.port.in.FindPaymentUseCase;
 import com.manager.payments.application.port.in.UpdatePaymentUseCase;
-import com.manager.payments.application.port.out.PaymentRepository;
 import com.manager.payments.model.payments.Payment;
 import com.manager.shared.response.ErrorResponse;
 import com.manager.shared.response.PageResponse;
@@ -36,11 +36,11 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class PaymentController {
 
-    private final PaymentRepository paymentRepository;
     private final CreatePaymentUseCase createPaymentUseCase;
     private final UpdatePaymentUseCase updatePaymentUseCase;
     private final PaymentMapper paymentMapper;
     private final FindPaymentUseCase findPaymentUseCase;
+    private final DeletePaymentUseCase deletePaymentUseCase;
 
     @Operation(summary = "Get all payments", description = "Support pagination via Spring Data's pagination")
     @ApiResponses(value = {
@@ -94,7 +94,7 @@ public class PaymentController {
     })
     @DeleteMapping("/{paymentId}")
     public ResponseEntity<ResponseDto<String>> deletePayment(@PathVariable UUID paymentId) {
-        paymentRepository.deleteById(paymentId);
+        deletePaymentUseCase.deleteById(paymentId);
         return ResponseEntity.ok(new ResponseDto<>("Payment with id " + paymentId + " has been" +
                 " deleted."));
     }

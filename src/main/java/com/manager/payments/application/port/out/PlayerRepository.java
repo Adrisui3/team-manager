@@ -9,8 +9,6 @@ import java.util.UUID;
 
 public interface PlayerRepository {
 
-    Page<Player> findAllPlayers(Pageable pageable);
-
     Player save(Player player);
 
     Optional<Player> findById(UUID id);

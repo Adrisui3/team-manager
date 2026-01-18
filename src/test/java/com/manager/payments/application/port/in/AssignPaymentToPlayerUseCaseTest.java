@@ -3,6 +3,7 @@ package com.manager.payments.application.port.in;
 import com.manager.payments.application.port.out.PaymentRepository;
 import com.manager.payments.application.port.out.PlayerPaymentAssignmentRepository;
 import com.manager.payments.application.port.out.PlayerRepository;
+import com.manager.payments.application.port.out.ReceiptRepository;
 import com.manager.payments.application.service.PlayerService;
 import com.manager.payments.model.assignments.PlayerPaymentAssignment;
 import com.manager.payments.model.exceptions.AssignmentAlreadyExistsException;
@@ -50,8 +51,11 @@ public class AssignPaymentToPlayerUseCaseTest {
         Mockito.when(playerPaymentAssignmentRepository.existsByPlayerIdAndPaymentId(playerId, paymentId)).thenReturn(false);
         Mockito.when(playerPaymentAssignmentRepository.save(any())).then(returnsFirstArg());
 
+        ReceiptRepository receiptRepository = Mockito.mock(ReceiptRepository.class);
+
         AssignPaymentToPlayerUseCase assignPaymentToPlayerUseCase =
-                new PlayerService(playerPaymentAssignmentRepository, paymentRepository, playerRepository);
+                new PlayerService(playerPaymentAssignmentRepository, paymentRepository, playerRepository,
+                        receiptRepository);
 
         // when
         PlayerPaymentAssignment savedAssignment = assignPaymentToPlayerUseCase.assignPaymentToPlayer(playerId,
@@ -79,8 +83,11 @@ public class AssignPaymentToPlayerUseCaseTest {
         Mockito.when(playerPaymentAssignmentRepository.existsByPlayerIdAndPaymentId(playerId, paymentId)).thenReturn(true);
         Mockito.when(playerPaymentAssignmentRepository.save(any())).then(returnsFirstArg());
 
+        ReceiptRepository receiptRepository = Mockito.mock(ReceiptRepository.class);
+
         AssignPaymentToPlayerUseCase assignPaymentToPlayerUseCase =
-                new PlayerService(playerPaymentAssignmentRepository, paymentRepository, playerRepository);
+                new PlayerService(playerPaymentAssignmentRepository, paymentRepository, playerRepository,
+                        receiptRepository);
 
         // when
         assertThatThrownBy(() -> assignPaymentToPlayerUseCase.assignPaymentToPlayer(playerId, paymentId)).isInstanceOf(AssignmentAlreadyExistsException.class);

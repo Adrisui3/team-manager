@@ -2,19 +2,19 @@ package com.manager.payments.application.service;
 
 import com.manager.payments.adapter.in.rest.dto.request.CreatePlayerRequestDTO;
 import com.manager.payments.adapter.in.rest.dto.request.UpdatePlayerRequestDTO;
-import com.manager.payments.application.port.in.AssignPaymentToPlayerUseCase;
-import com.manager.payments.application.port.in.CreatePlayerUseCase;
-import com.manager.payments.application.port.in.FindPlayerUseCase;
-import com.manager.payments.application.port.in.UpdatePlayerUseCase;
+import com.manager.payments.application.port.in.*;
 import com.manager.payments.application.port.out.PaymentRepository;
 import com.manager.payments.application.port.out.PlayerPaymentAssignmentRepository;
 import com.manager.payments.application.port.out.PlayerRepository;
+import com.manager.payments.application.port.out.ReceiptRepository;
 import com.manager.payments.model.assignments.PlayerPaymentAssignment;
 import com.manager.payments.model.assignments.PlayerPaymentAssignmentFactory;
 import com.manager.payments.model.exceptions.*;
 import com.manager.payments.model.payments.Payment;
 import com.manager.payments.model.players.Player;
 import com.manager.payments.model.players.PlayerStatus;
+import com.manager.payments.model.receipts.Receipt;
+import com.manager.payments.model.receipts.ReceiptStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -30,11 +30,12 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Slf4j
 public class PlayerService implements CreatePlayerUseCase, AssignPaymentToPlayerUseCase, UpdatePlayerUseCase,
-        FindPlayerUseCase {
+        FindPlayerUseCase, GetPlayerReceiptsUseCase, DeletePlayerUseCase, GetPlayerPaymentsUseCase {
 
     private final PlayerPaymentAssignmentRepository playerPaymentAssignmentRepository;
     private final PaymentRepository paymentRepository;
     private final PlayerRepository playerRepository;
+    private final ReceiptRepository receiptRepository;
 
     @Override
     public Player createPlayer(CreatePlayerRequestDTO requestDTO) {
@@ -117,5 +118,33 @@ public class PlayerService implements CreatePlayerUseCase, AssignPaymentToPlayer
     @Override
     public Page<Player> findAll(String query, Pageable pageable) {
         return playerRepository.findAllByQuery(query.trim().toLowerCase(Locale.ROOT), pageable);
+    }
+
+    @Override
+    public Page<Receipt> getPlayerReceipts(UUID playerId, ReceiptStatus status, Pageable pageable) {
+        if (!playerRepository.existsById(playerId)) {
+            throw PlayerNotFoundException.byId(playerId);
+        }
+
+        return status == null ? receiptRepository.findAllByPlayerId(playerId, pageable) :
+                receiptRepository.findAllByPlayerIdAndStatus(playerId, pageable, status);
+    }
+
+    @Override
+    public void deleteById(UUID id) {
+        if (!playerRepository.existsById(id)) {
+            throw PlayerNotFoundException.byId(id);
+        }
+
+        playerRepository.deleteById(id);
+    }
+
+    @Override
+    public Page<Payment> getPlayerPayments(UUID playerId, Pageable pageable) {
+        if (!playerRepository.existsById(playerId)) {
+            throw PlayerNotFoundException.byId(playerId);
+        }
+
+        return playerPaymentAssignmentRepository.findAllPaymentsByPlayerId(playerId, pageable);
     }
 }

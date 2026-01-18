@@ -19,12 +19,6 @@ public class PlayerRepositoryAdapter implements PlayerRepository {
     private final PlayerMapper mapper;
 
     @Override
-    public Page<Player> findAllPlayers(Pageable pageable) {
-        Page<PlayerJpaEntity> players = repository.findAll(pageable);
-        return players.map(mapper::toPlayer);
-    }
-
-    @Override
     public Player save(Player player) {
         PlayerJpaEntity playerJpaEntity = mapper.toPlayerJpaEntity(player);
         PlayerJpaEntity savedPlayerJpaEntity = repository.save(playerJpaEntity);
