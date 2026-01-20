@@ -26,15 +26,16 @@ CREATE TABLE user_verification
 
 CREATE TABLE player
 (
-    id          UUID PRIMARY KEY,
-    personal_id VARCHAR(255) NOT NULL,
-    name       VARCHAR(255) NOT NULL,
-    surname    VARCHAR(255) NOT NULL,
-    email       VARCHAR(255) NOT NULL,
-    birth_date DATE         NOT NULL,
-    category   VARCHAR(50)  NOT NULL,
-    gender     VARCHAR(50)  NOT NULL,
-    status     VARCHAR(50)  NOT NULL,
+    id           UUID PRIMARY KEY,
+    personal_id  VARCHAR(255) NOT NULL,
+    name         VARCHAR(255) NOT NULL,
+    surname      VARCHAR(255) NOT NULL,
+    email        VARCHAR(255) NOT NULL,
+    phone_number VARCHAR(255) NOT NULL,
+    birth_date   DATE         NOT NULL,
+    category     VARCHAR(50)  NOT NULL,
+    gender       VARCHAR(50)  NOT NULL,
+    status       VARCHAR(50)  NOT NULL,
     CONSTRAINT uq_player_personal_id UNIQUE (personal_id),
     CONSTRAINT uq_player_email UNIQUE (email)
 );
@@ -44,7 +45,7 @@ CREATE TABLE payment
     id          UUID PRIMARY KEY,
     code        VARCHAR(10)    NOT NULL,
     amount      DECIMAL(19, 2) NOT NULL,
-    name VARCHAR(255) NOT NULL,
+    name       VARCHAR(255) NOT NULL,
     description VARCHAR(1024),
     start_date DATE,
     end_date   DATE,

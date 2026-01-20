@@ -8,5 +8,5 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 public record PlayerDto(UUID id, String personalId, String name, String surname, String email, LocalDate birthDate,
-                        Category category, PlayerStatus status, PlayerGender gender) {
+                        Category category, PlayerStatus status, PlayerGender gender, String phoneNumber) {
 }

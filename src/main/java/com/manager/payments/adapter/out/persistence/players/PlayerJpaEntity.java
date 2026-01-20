@@ -37,6 +37,9 @@ public class PlayerJpaEntity {
     @Column(nullable = false)
     private LocalDate birthDate;
 
+    @Column(nullable = false)
+    private String phoneNumber;
+
     @Enumerated(EnumType.STRING)
     private Category category;
 

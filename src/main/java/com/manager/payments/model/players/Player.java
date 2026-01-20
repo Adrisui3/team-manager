@@ -7,5 +7,5 @@ import java.util.UUID;
 
 @Builder(toBuilder = true)
 public record Player(UUID id, String personalId, String name, String surname, String email, LocalDate birthDate,
-                     Category category, PlayerStatus status, PlayerGender gender) {
+                     Category category, PlayerStatus status, PlayerGender gender, String phoneNumber) {
 }
