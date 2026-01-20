@@ -1,6 +1,5 @@
-package com.manager.payments.application.port.in;
+package com.manager.payments.application.port.in.receipts;
 
-import com.manager.payments.application.port.in.receipts.IssueNewReceiptsUseCase;
 import com.manager.payments.application.port.out.PlayerPaymentAssignmentRepository;
 import com.manager.payments.application.port.out.ReceiptRepository;
 import com.manager.payments.application.service.BillingService;

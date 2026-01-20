@@ -1,12 +1,10 @@
-package com.manager.payments.application.port.in;
+package com.manager.payments.application.port.in.players;
 
-import com.manager.payments.application.port.in.players.AssignPaymentToPlayerUseCase;
 import com.manager.payments.application.port.out.PaymentRepository;
 import com.manager.payments.application.port.out.PlayerPaymentAssignmentRepository;
 import com.manager.payments.application.port.out.PlayerRepository;
 import com.manager.payments.application.port.out.ReceiptRepository;
 import com.manager.payments.application.service.PlayerService;
-import com.manager.payments.model.assignments.PlayerPaymentAssignment;
 import com.manager.payments.model.exceptions.AssignmentAlreadyExistsException;
 import com.manager.payments.model.payments.Payment;
 import com.manager.payments.model.payments.PaymentStatus;
@@ -59,7 +57,7 @@ public class AssignPaymentToPlayerUseCaseTest {
                         receiptRepository);
 
         // when
-        PlayerPaymentAssignment savedAssignment = assignPaymentToPlayerUseCase.assignPaymentToPlayer(playerId,
+        assignPaymentToPlayerUseCase.assignPaymentToPlayer(playerId,
                 paymentId);
 
         // then
