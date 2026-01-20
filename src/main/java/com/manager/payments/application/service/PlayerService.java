@@ -52,7 +52,9 @@ public class PlayerService implements CreatePlayerUseCase, AssignPaymentToPlayer
                 .surname(requestDTO.surname())
                 .email(requestDTO.email())
                 .birthDate(requestDTO.birthDate())
+                .phoneNumber(requestDTO.phoneNumber())
                 .category(requestDTO.category())
+                .gender(requestDTO.gender())
                 .status(PlayerStatus.ENABLED)
                 .build();
 
@@ -103,8 +105,10 @@ public class PlayerService implements CreatePlayerUseCase, AssignPaymentToPlayer
                 .surname(request.surname())
                 .email(request.email())
                 .birthDate(request.birthDate())
+                .phoneNumber(request.phoneNumber())
                 .category(request.category())
                 .status(request.status())
+                .gender(request.gender())
                 .build();
 
         return playerRepository.save(updatedPlayer);

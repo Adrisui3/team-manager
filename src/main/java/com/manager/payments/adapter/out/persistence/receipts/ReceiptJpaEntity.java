@@ -30,6 +30,8 @@ public class ReceiptJpaEntity {
     private LocalDate issuedDate;
 
     private LocalDate paymentDate;
+
+    @Column(nullable = false)
     private LocalDate expiryDate;
 
     private LocalDate periodStartDate;

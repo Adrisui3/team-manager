@@ -11,6 +11,7 @@ import com.manager.payments.model.payments.PaymentStatus;
 import com.manager.payments.model.payments.Periodicity;
 import com.manager.payments.model.players.Category;
 import com.manager.payments.model.players.Player;
+import com.manager.payments.model.players.PlayerGender;
 import com.manager.payments.model.players.PlayerStatus;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -32,7 +33,8 @@ public class AssignPaymentToPlayerUseCaseTest {
     public void shouldAssignPaymentToPlayer() {
         //given
         UUID playerId = UUID.randomUUID();
-        Player player = new Player(playerId, "", "", "", "", LocalDate.now(), Category.SENIOR, PlayerStatus.ENABLED);
+        Player player = new Player(playerId, "", "", "", "", LocalDate.now(), Category.SENIOR, PlayerStatus.ENABLED,
+                PlayerGender.MASCULINO, "999999999");
         PlayerRepository playerRepository = Mockito.mock(PlayerRepository.class);
         Mockito.when(playerRepository.findById(playerId)).thenReturn(Optional.of(player));
 

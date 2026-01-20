@@ -2,6 +2,7 @@ package com.manager.payments.adapter.out.persistence.players;
 
 import com.manager.payments.adapter.out.persistence.assignments.PlayerPaymentAssignmentJpaEntity;
 import com.manager.payments.model.players.Category;
+import com.manager.payments.model.players.PlayerGender;
 import com.manager.payments.model.players.PlayerStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -24,17 +25,29 @@ public class PlayerJpaEntity {
     @Column(unique = true, nullable = false)
     private String personalId;
 
+    @Column(nullable = false)
     private String name;
+
+    @Column(nullable = false)
     private String surname;
 
     @Column(unique = true, nullable = false)
     private String email;
 
+    @Column(nullable = false)
     private LocalDate birthDate;
+
+    @Column(nullable = false)
+    private String phoneNumber;
 
     @Enumerated(EnumType.STRING)
     private Category category;
 
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private PlayerGender gender;
+
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private PlayerStatus status;
 
