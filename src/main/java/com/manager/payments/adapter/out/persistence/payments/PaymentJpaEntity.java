@@ -28,7 +28,10 @@ public class PaymentJpaEntity {
     @Column(nullable = false)
     private BigDecimal amount;
 
+    @Column(nullable = false)
     private String name;
+
+    @Column(nullable = false)
     private String description;
 
     private LocalDate startDate;

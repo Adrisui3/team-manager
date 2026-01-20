@@ -1,6 +1,7 @@
 package com.manager.payments.adapter.in.rest.dto.request;
 
 import com.manager.payments.model.players.Category;
+import com.manager.payments.model.players.PlayerGender;
 import com.manager.payments.model.players.PlayerStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
@@ -17,6 +18,7 @@ public record UpdatePlayerRequestDTO(
         @NotBlank @Email @Schema(description = "Email") String email,
         @NotNull @Schema(description = "Birth date") LocalDate birthDate,
         @NotNull @Schema(description = "Player category", example = "CADETE", implementation = Category.class) Category category,
-        @NotNull @Schema(description = "Player status", example = "DISABLED", implementation = PlayerStatus.class) PlayerStatus status
+        @NotNull @Schema(description = "Player status", example = "DISABLED", implementation = PlayerStatus.class) PlayerStatus status,
+        @NotNull @Schema(description = "Player gender", example = "MASCULINO", implementation = PlayerGender.class) PlayerGender gender
 ) {
 }
