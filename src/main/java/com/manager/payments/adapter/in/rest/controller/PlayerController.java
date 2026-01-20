@@ -10,7 +10,7 @@ import com.manager.payments.adapter.out.persistence.assignments.PlayerPaymentAss
 import com.manager.payments.adapter.out.persistence.payments.PaymentMapper;
 import com.manager.payments.adapter.out.persistence.players.PlayerMapper;
 import com.manager.payments.adapter.out.persistence.receipts.ReceiptMapper;
-import com.manager.payments.application.port.in.*;
+import com.manager.payments.application.port.in.players.*;
 import com.manager.payments.model.assignments.PlayerPaymentAssignment;
 import com.manager.payments.model.payments.Payment;
 import com.manager.payments.model.players.Player;

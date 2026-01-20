@@ -1,4 +1,4 @@
-package com.manager.payments.application.port.in;
+package com.manager.payments.application.port.in.payments;
 
 import com.manager.payments.model.payments.Payment;
 import org.springframework.data.domain.Page;

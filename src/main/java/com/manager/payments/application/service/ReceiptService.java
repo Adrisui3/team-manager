@@ -1,9 +1,9 @@
 package com.manager.payments.application.service;
 
-import com.manager.payments.application.port.in.DeleteReceiptUseCase;
-import com.manager.payments.application.port.in.FindReceiptUseCase;
-import com.manager.payments.application.port.in.ProcessOverdueReceiptsUseCase;
-import com.manager.payments.application.port.in.UpdateReceiptStatusUseCase;
+import com.manager.payments.application.port.in.receipts.DeleteReceiptUseCase;
+import com.manager.payments.application.port.in.receipts.FindReceiptUseCase;
+import com.manager.payments.application.port.in.receipts.ProcessOverdueReceiptsUseCase;
+import com.manager.payments.application.port.in.receipts.UpdateReceiptStatusUseCase;
 import com.manager.payments.application.port.out.ReceiptRepository;
 import com.manager.payments.model.exceptions.ReceiptNotFoundException;
 import com.manager.payments.model.receipts.OverdueReceiptProcessor;

@@ -1,5 +1,6 @@
 package com.manager.payments.application.port.in;
 
+import com.manager.payments.application.port.in.players.AssignPaymentToPlayerUseCase;
 import com.manager.payments.application.port.out.PaymentRepository;
 import com.manager.payments.application.port.out.PlayerPaymentAssignmentRepository;
 import com.manager.payments.application.port.out.PlayerRepository;

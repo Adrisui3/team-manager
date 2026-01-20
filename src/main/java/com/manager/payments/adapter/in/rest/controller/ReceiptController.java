@@ -2,9 +2,9 @@ package com.manager.payments.adapter.in.rest.controller;
 
 import com.manager.payments.adapter.in.rest.dto.models.ReceiptDto;
 import com.manager.payments.adapter.out.persistence.receipts.ReceiptMapper;
-import com.manager.payments.application.port.in.DeleteReceiptUseCase;
-import com.manager.payments.application.port.in.FindReceiptUseCase;
-import com.manager.payments.application.port.in.UpdateReceiptStatusUseCase;
+import com.manager.payments.application.port.in.receipts.DeleteReceiptUseCase;
+import com.manager.payments.application.port.in.receipts.FindReceiptUseCase;
+import com.manager.payments.application.port.in.receipts.UpdateReceiptStatusUseCase;
 import com.manager.payments.model.receipts.Receipt;
 import com.manager.payments.model.receipts.ReceiptStatus;
 import com.manager.shared.response.ErrorResponse;

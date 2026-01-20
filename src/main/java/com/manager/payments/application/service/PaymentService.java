@@ -2,7 +2,7 @@ package com.manager.payments.application.service;
 
 import com.manager.payments.adapter.in.rest.dto.request.CreatePaymentRequestDTO;
 import com.manager.payments.adapter.in.rest.dto.request.UpdatePaymentRequestDTO;
-import com.manager.payments.application.port.in.*;
+import com.manager.payments.application.port.in.payments.*;
 import com.manager.payments.application.port.out.PaymentRepository;
 import com.manager.payments.model.exceptions.PaymentAlreadyExistsException;
 import com.manager.payments.model.exceptions.PaymentNotFoundException;

@@ -2,7 +2,7 @@ package com.manager.payments.application.service;
 
 import com.manager.payments.adapter.in.rest.dto.request.CreatePlayerRequestDTO;
 import com.manager.payments.adapter.in.rest.dto.request.UpdatePlayerRequestDTO;
-import com.manager.payments.application.port.in.*;
+import com.manager.payments.application.port.in.players.*;
 import com.manager.payments.application.port.out.PaymentRepository;
 import com.manager.payments.application.port.out.PlayerPaymentAssignmentRepository;
 import com.manager.payments.application.port.out.PlayerRepository;
