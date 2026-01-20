@@ -1,4 +1,4 @@
-package com.manager.payments.application.port.in;
+package com.manager.payments.application.port.in.players;
 
 import com.manager.payments.model.receipts.Receipt;
 import com.manager.payments.model.receipts.ReceiptStatus;
@@ -7,9 +7,7 @@ import org.springframework.data.domain.Pageable;
 
 import java.util.UUID;
 
-public interface FindReceiptUseCase {
+public interface GetPlayerReceiptsUseCase {
 
-    Receipt findById(UUID id);
-
-    Page<Receipt> findAllByQuery(String query, ReceiptStatus status, Pageable pageable);
+    Page<Receipt> getPlayerReceipts(UUID playerId, ReceiptStatus status, Pageable pageable);
 }

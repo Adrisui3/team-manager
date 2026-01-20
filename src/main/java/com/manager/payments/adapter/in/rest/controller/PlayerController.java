@@ -10,15 +10,8 @@ import com.manager.payments.adapter.out.persistence.assignments.PlayerPaymentAss
 import com.manager.payments.adapter.out.persistence.payments.PaymentMapper;
 import com.manager.payments.adapter.out.persistence.players.PlayerMapper;
 import com.manager.payments.adapter.out.persistence.receipts.ReceiptMapper;
-import com.manager.payments.application.port.in.AssignPaymentToPlayerUseCase;
-import com.manager.payments.application.port.in.CreatePlayerUseCase;
-import com.manager.payments.application.port.in.FindPlayerUseCase;
-import com.manager.payments.application.port.in.UpdatePlayerUseCase;
-import com.manager.payments.application.port.out.PlayerPaymentAssignmentRepository;
-import com.manager.payments.application.port.out.PlayerRepository;
-import com.manager.payments.application.port.out.ReceiptRepository;
+import com.manager.payments.application.port.in.players.*;
 import com.manager.payments.model.assignments.PlayerPaymentAssignment;
-import com.manager.payments.model.exceptions.PlayerNotFoundException;
 import com.manager.payments.model.payments.Payment;
 import com.manager.payments.model.players.Player;
 import com.manager.payments.model.receipts.Receipt;
@@ -50,16 +43,16 @@ import java.util.UUID;
 public class PlayerController {
 
     private final PlayerPaymentAssignmentMapper playerPaymentAssignmentMapper;
-    private final PlayerPaymentAssignmentRepository playerPaymentAssignmentRepository;
     private final CreatePlayerUseCase createPlayerUseCase;
-    private final PlayerRepository playerRepository;
     private final AssignPaymentToPlayerUseCase assignPaymentToPlayerUseCase;
     private final PlayerMapper playerMapper;
-    private final ReceiptRepository receiptRepository;
     private final ReceiptMapper receiptMapper;
     private final PaymentMapper paymentMapper;
     private final UpdatePlayerUseCase updatePlayerUseCase;
     private final FindPlayerUseCase findPlayerUseCase;
+    private final GetPlayerReceiptsUseCase getPlayerReceiptsUseCase;
+    private final DeletePlayerUseCase deletePlayerUseCase;
+    private final GetPlayerPaymentsUseCase getPlayerPaymentsUseCase;
 
     @Operation(summary = "Get all players", description = "Supports pagination and query searching for personal ID, " +
             "name and surname")
@@ -95,15 +88,9 @@ public class PlayerController {
                             ErrorResponse.class)))
     })
     @GetMapping("/{playerId}/receipts")
-    public ResponseEntity<PageResponse<ReceiptDto>> getPlayerReceipts(@ParameterObject Pageable pageable,
-                                                                      @PathVariable UUID playerId,
-                                                                      @RequestParam(required = false) ReceiptStatus status) {
-        if (!playerRepository.existsById(playerId)) {
-            throw PlayerNotFoundException.byId(playerId);
-        }
-
-        Page<Receipt> receipts = status == null ? receiptRepository.findAllByPlayerId(playerId, pageable) :
-                receiptRepository.findAllByPlayerIdAndStatus(playerId, pageable, status);
+    public ResponseEntity<PageResponse<ReceiptDto>> getPlayerReceipts(@PathVariable UUID playerId,
+                                                                      @RequestParam(required = false) ReceiptStatus status, @ParameterObject Pageable pageable) {
+        Page<Receipt> receipts = getPlayerReceiptsUseCase.getPlayerReceipts(playerId, status, pageable);
         return ResponseEntity.ok(PageResponse.of(receipts.map(receiptMapper::toReceiptDto)));
     }
 
@@ -150,11 +137,7 @@ public class PlayerController {
     @GetMapping("/{playerId}/payments")
     public ResponseEntity<PageResponse<PaymentDto>> getPlayerPayments(@PathVariable UUID playerId,
                                                                       @ParameterObject Pageable pageable) {
-        if (!playerRepository.existsById(playerId)) {
-            throw PlayerNotFoundException.byId(playerId);
-        }
-
-        Page<Payment> payments = playerPaymentAssignmentRepository.findAllPaymentsByPlayerId(playerId, pageable);
+        Page<Payment> payments = getPlayerPaymentsUseCase.getPlayerPayments(playerId, pageable);
         return ResponseEntity.ok(PageResponse.of(payments.map(paymentMapper::toPaymentDto)));
     }
 
@@ -184,11 +167,10 @@ public class PlayerController {
     })
     @DeleteMapping("/{playerId}")
     public ResponseEntity<ResponseDto<String>> deletePlayer(@PathVariable UUID playerId) {
-        playerRepository.deleteById(playerId);
+        deletePlayerUseCase.deleteById(playerId);
         return ResponseEntity.ok(new ResponseDto<>("Player with id " + playerId + " was " +
                 "deleted"));
     }
-
 
     @Operation(summary = "Update player data")
     @ApiResponses(value = {

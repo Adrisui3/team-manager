@@ -1,6 +1,6 @@
 package com.manager.payments.adapter.in.jobs;
 
-import com.manager.payments.application.port.in.ProcessOverdueReceiptsUseCase;
+import com.manager.payments.application.port.in.receipts.ProcessOverdueReceiptsUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;

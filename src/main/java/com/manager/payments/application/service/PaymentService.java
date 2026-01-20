@@ -2,10 +2,7 @@ package com.manager.payments.application.service;
 
 import com.manager.payments.adapter.in.rest.dto.request.CreatePaymentRequestDTO;
 import com.manager.payments.adapter.in.rest.dto.request.UpdatePaymentRequestDTO;
-import com.manager.payments.application.port.in.CreatePaymentUseCase;
-import com.manager.payments.application.port.in.FindPaymentUseCase;
-import com.manager.payments.application.port.in.ProcessExpiredPaymentsUseCase;
-import com.manager.payments.application.port.in.UpdatePaymentUseCase;
+import com.manager.payments.application.port.in.payments.*;
 import com.manager.payments.application.port.out.PaymentRepository;
 import com.manager.payments.model.exceptions.PaymentAlreadyExistsException;
 import com.manager.payments.model.exceptions.PaymentNotFoundException;
@@ -31,13 +28,13 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Slf4j
 public class PaymentService implements CreatePaymentUseCase, ProcessExpiredPaymentsUseCase, UpdatePaymentUseCase,
-        FindPaymentUseCase {
+        FindPaymentUseCase, DeletePaymentUseCase {
 
-    private final PaymentRepository paymentRepository;
+    private final PaymentRepository repository;
 
     @Override
     public Payment createPayment(CreatePaymentRequestDTO requestDTO) {
-        if (paymentRepository.existsByCode(requestDTO.code()))
+        if (repository.existsByCode(requestDTO.code()))
             throw new PaymentAlreadyExistsException(requestDTO.code());
 
         Payment newPayment = PaymentFactory.build(requestDTO.code(),
@@ -45,34 +42,43 @@ public class PaymentService implements CreatePaymentUseCase, ProcessExpiredPayme
                 requestDTO.name(), requestDTO.description(), requestDTO.startDate(), requestDTO.endDate(),
                 requestDTO.periodicity());
 
-        return paymentRepository.save(newPayment);
+        return repository.save(newPayment);
     }
 
     @Override
     public void processExpiredPayments(LocalDate date) {
         log.info("Updating expired payments at {}", date);
-        List<Payment> expiredPayments = paymentRepository.findAllExpired(date);
+        List<Payment> expiredPayments = repository.findAllExpired(date);
         log.info("Found {} expired payments", expiredPayments.size());
         List<Payment> processedPaymens = ExpiredPaymentProcessor.processExpiredPayments(expiredPayments);
         log.info("Processed {} expired payments", processedPaymens.size());
-        paymentRepository.saveAll(processedPaymens);
+        repository.saveAll(processedPaymens);
     }
 
     @Override
     public Payment updatePayment(UUID paymentId, UpdatePaymentRequestDTO request, LocalDate currentDate) {
         Payment payment =
-                paymentRepository.findById(paymentId).orElseThrow(() -> new PaymentNotFoundException(paymentId));
+                repository.findById(paymentId).orElseThrow(() -> new PaymentNotFoundException(paymentId));
         Payment updatedPayment = payment.update(request.name(), request.description(), request.status(), currentDate);
-        return paymentRepository.save(updatedPayment);
+        return repository.save(updatedPayment);
     }
 
     @Override
     public Payment findById(UUID id) {
-        return paymentRepository.findById(id).orElseThrow(() -> new PaymentNotFoundException(id));
+        return repository.findById(id).orElseThrow(() -> new PaymentNotFoundException(id));
     }
 
     @Override
     public Page<Payment> findAll(String query, Pageable pageable) {
-        return paymentRepository.findAllByQuery(query.trim().toLowerCase(Locale.ROOT), pageable);
+        return repository.findAllByQuery(query.trim().toLowerCase(Locale.ROOT), pageable);
+    }
+
+    @Override
+    public void deleteById(UUID id) {
+        if (!repository.existsById(id)) {
+            throw new PaymentNotFoundException(id);
+        }
+
+        repository.deleteById(id);
     }
 }

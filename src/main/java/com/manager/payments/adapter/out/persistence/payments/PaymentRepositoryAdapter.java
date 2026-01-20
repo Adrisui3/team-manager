@@ -1,7 +1,6 @@
 package com.manager.payments.adapter.out.persistence.payments;
 
 import com.manager.payments.application.port.out.PaymentRepository;
-import com.manager.payments.model.exceptions.PaymentNotFoundException;
 import com.manager.payments.model.payments.Payment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -63,9 +62,6 @@ public class PaymentRepositoryAdapter implements PaymentRepository {
 
     @Override
     public void deleteById(UUID id) {
-        if (!repository.existsById(id))
-            throw new PaymentNotFoundException(id);
-
         repository.deleteById(id);
     }
 

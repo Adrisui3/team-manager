@@ -30,8 +30,6 @@ public interface ReceiptRepository {
 
     Page<Receipt> findAllByPlayerIdAndStatus(UUID playerId, Pageable pageable, ReceiptStatus status);
 
-    List<Receipt> findAllByPaymentId(UUID paymentId);
-
     void deleteById(UUID id);
 
     Page<Receipt> findByQuery(String query, ReceiptStatus status, Pageable pageable);

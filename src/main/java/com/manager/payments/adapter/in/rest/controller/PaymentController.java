@@ -1,19 +1,14 @@
 package com.manager.payments.adapter.in.rest.controller;
 
 import com.manager.payments.adapter.in.rest.dto.models.PaymentDto;
-import com.manager.payments.adapter.in.rest.dto.models.ReceiptDto;
 import com.manager.payments.adapter.in.rest.dto.request.CreatePaymentRequestDTO;
 import com.manager.payments.adapter.in.rest.dto.request.UpdatePaymentRequestDTO;
 import com.manager.payments.adapter.out.persistence.payments.PaymentMapper;
-import com.manager.payments.adapter.out.persistence.receipts.ReceiptMapper;
-import com.manager.payments.application.port.in.CreatePaymentUseCase;
-import com.manager.payments.application.port.in.FindPaymentUseCase;
-import com.manager.payments.application.port.in.UpdatePaymentUseCase;
-import com.manager.payments.application.port.out.PaymentRepository;
-import com.manager.payments.application.port.out.ReceiptRepository;
-import com.manager.payments.model.exceptions.PaymentNotFoundException;
+import com.manager.payments.application.port.in.payments.CreatePaymentUseCase;
+import com.manager.payments.application.port.in.payments.DeletePaymentUseCase;
+import com.manager.payments.application.port.in.payments.FindPaymentUseCase;
+import com.manager.payments.application.port.in.payments.UpdatePaymentUseCase;
 import com.manager.payments.model.payments.Payment;
-import com.manager.payments.model.receipts.Receipt;
 import com.manager.shared.response.ErrorResponse;
 import com.manager.shared.response.PageResponse;
 import com.manager.shared.response.ResponseDto;
@@ -33,7 +28,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.time.LocalDate;
-import java.util.List;
 import java.util.UUID;
 
 @Tag(name = "Payments", description = "Payments management endpoints")
@@ -42,13 +36,11 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class PaymentController {
 
-    private final PaymentRepository paymentRepository;
     private final CreatePaymentUseCase createPaymentUseCase;
     private final UpdatePaymentUseCase updatePaymentUseCase;
     private final PaymentMapper paymentMapper;
-    private final ReceiptRepository receiptRepository;
-    private final ReceiptMapper receiptMapper;
     private final FindPaymentUseCase findPaymentUseCase;
+    private final DeletePaymentUseCase deletePaymentUseCase;
 
     @Operation(summary = "Get all payments", description = "Support pagination via Spring Data's pagination")
     @ApiResponses(value = {
@@ -73,24 +65,6 @@ public class PaymentController {
     public ResponseEntity<ResponseDto<PaymentDto>> getPayment(@PathVariable UUID paymentId) {
         Payment payment = findPaymentUseCase.findById(paymentId);
         return ResponseEntity.ok(new ResponseDto<>(paymentMapper.toPaymentDto(payment)));
-    }
-
-    @Operation(summary = "Get a payment's receipts")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Payment's receipts", useReturnTypeSchema = true),
-            @ApiResponse(responseCode = "404", description = "Payment not found",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation =
-                            ErrorResponse.class)))
-    })
-    @GetMapping("/{paymentId}/receipts")
-    public ResponseEntity<ResponseDto<List<ReceiptDto>>> getPaymentReceipts(@PathVariable UUID paymentId) {
-        if (!paymentRepository.existsById(paymentId)) {
-            throw new PaymentNotFoundException(paymentId);
-        }
-
-        List<Receipt> receipts = receiptRepository.findAllByPaymentId(paymentId);
-        return ResponseEntity.ok(new ResponseDto<>(
-                receipts.stream().map(receiptMapper::toReceiptDto).toList()));
     }
 
     @Operation(summary = "Create a new payment", description = "Unique payments must not have a billing interval, " +
@@ -120,7 +94,7 @@ public class PaymentController {
     })
     @DeleteMapping("/{paymentId}")
     public ResponseEntity<ResponseDto<String>> deletePayment(@PathVariable UUID paymentId) {
-        paymentRepository.deleteById(paymentId);
+        deletePaymentUseCase.deleteById(paymentId);
         return ResponseEntity.ok(new ResponseDto<>("Payment with id " + paymentId + " has been" +
                 " deleted."));
     }

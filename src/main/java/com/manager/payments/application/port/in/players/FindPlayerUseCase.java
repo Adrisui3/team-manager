@@ -1,4 +1,4 @@
-package com.manager.payments.application.port.in;
+package com.manager.payments.application.port.in.players;
 
 import com.manager.payments.model.players.Player;
 import org.springframework.data.domain.Page;

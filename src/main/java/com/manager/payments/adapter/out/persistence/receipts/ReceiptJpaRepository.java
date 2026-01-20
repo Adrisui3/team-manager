@@ -22,8 +22,6 @@ public interface ReceiptJpaRepository extends JpaRepository<ReceiptJpaEntity, UU
     boolean existsByPlayer_IdAndPayment_IdAndPeriodStartDateAndPeriodEndDate(UUID playerId, UUID paymentId,
                                                                              LocalDate startDate, LocalDate endDate);
 
-    List<ReceiptJpaEntity> findAllByPayment_Id(UUID paymentId);
-
     boolean existsByPlayer_IdAndPayment_Id(UUID playerId, UUID paymentId);
 
     Page<ReceiptJpaEntity> findAllByPlayer_Id(UUID playerId, Pageable pageable);
