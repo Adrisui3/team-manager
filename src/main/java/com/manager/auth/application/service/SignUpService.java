@@ -3,6 +3,7 @@ package com.manager.auth.application.service;
 import com.manager.auth.adapter.in.rest.dto.requests.RegisterUserRequestDto;
 import com.manager.auth.application.port.in.SignUpUserUseCase;
 import com.manager.auth.application.port.out.UserRepository;
+import com.manager.auth.application.service.email.EmailService;
 import com.manager.auth.model.exceptions.UserAlreadyExists;
 import com.manager.auth.model.users.User;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +30,7 @@ public class SignUpService implements SignUpUserUseCase {
                 .build()
                 .initializeVerification();
 
-        emailService.sendInvitationEmail(user.email(), user.verification().verificationCode());
+        emailService.sendVerificationEmail(user.email(), user.verification().verificationCode());
         return repository.save(user);
     }
 }

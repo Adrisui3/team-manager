@@ -8,6 +8,7 @@ import com.manager.auth.application.port.in.DeleteUserUseCase;
 import com.manager.auth.application.port.in.FindUserUseCase;
 import com.manager.auth.application.port.in.UpdateUserUseCase;
 import com.manager.auth.application.port.out.UserRepository;
+import com.manager.auth.application.service.email.EmailService;
 import com.manager.auth.model.exceptions.DisabledUserException;
 import com.manager.auth.model.exceptions.UserNotFound;
 import com.manager.auth.model.users.User;
@@ -78,7 +79,7 @@ public class UserService implements UpdateUserUseCase, DeleteUserUseCase, FindUs
 
         User updatedUser = user.initializeVerification();
 
-        emailService.sendInvitationEmail(updatedUser.email(), updatedUser.verification().verificationCode());
+        emailService.sendVerificationEmail(updatedUser.email(), updatedUser.verification().verificationCode());
         repository.save(updatedUser);
     }
 

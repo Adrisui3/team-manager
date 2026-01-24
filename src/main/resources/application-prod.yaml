@@ -1,0 +1,4 @@
+email:
+  ses:
+    region: "${AWS_REGION}"
+    from-email: "${SES_FROM_EMAIL}"
