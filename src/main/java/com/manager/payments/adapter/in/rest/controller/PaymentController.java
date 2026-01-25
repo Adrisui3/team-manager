@@ -62,7 +62,7 @@ public class PaymentController {
                             ErrorResponse.class)))
     })
     @GetMapping("/{paymentId}")
-    public ResponseEntity<ResponseDto<PaymentDto>> getPayment(@PathVariable UUID paymentId) {
+    public ResponseEntity<ResponseDto<PaymentDto>> getPayment(@PathVariable("paymentId") UUID paymentId) {
         Payment payment = findPaymentUseCase.findById(paymentId);
         return ResponseEntity.ok(new ResponseDto<>(paymentMapper.toPaymentDto(payment)));
     }
@@ -93,7 +93,7 @@ public class PaymentController {
                             ErrorResponse.class))),
     })
     @DeleteMapping("/{paymentId}")
-    public ResponseEntity<ResponseDto<String>> deletePayment(@PathVariable UUID paymentId) {
+    public ResponseEntity<ResponseDto<String>> deletePayment(@PathVariable("paymentId") UUID paymentId) {
         deletePaymentUseCase.deleteById(paymentId);
         return ResponseEntity.ok(new ResponseDto<>("Payment with id " + paymentId + " has been" +
                 " deleted."));
@@ -110,7 +110,7 @@ public class PaymentController {
                     schema = @Schema(implementation = ErrorResponse.class)))
     })
     @PutMapping("/{paymentId}")
-    public ResponseEntity<ResponseDto<PaymentDto>> updatePayment(@PathVariable UUID paymentId,
+    public ResponseEntity<ResponseDto<PaymentDto>> updatePayment(@PathVariable("paymentId") UUID paymentId,
                                                                  @Valid @RequestBody UpdatePaymentRequestDTO requestDTO) {
         LocalDate currentDate = LocalDate.now();
         Payment updatedPayment = updatePaymentUseCase.updatePayment(paymentId, requestDTO, currentDate);

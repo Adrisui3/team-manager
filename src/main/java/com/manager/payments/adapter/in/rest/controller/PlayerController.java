@@ -75,7 +75,7 @@ public class PlayerController {
                             ErrorResponse.class)))
     })
     @GetMapping("/{playerId}")
-    public ResponseEntity<ResponseDto<PlayerDto>> getPlayer(@PathVariable UUID playerId) {
+    public ResponseEntity<ResponseDto<PlayerDto>> getPlayer(@PathVariable("playerId") UUID playerId) {
         Player player = findPlayerUseCase.findById(playerId);
         return ResponseEntity.ok(new ResponseDto<>(playerMapper.toPlayerDto(player)));
     }
@@ -88,7 +88,7 @@ public class PlayerController {
                             ErrorResponse.class)))
     })
     @GetMapping("/{playerId}/receipts")
-    public ResponseEntity<PageResponse<ReceiptDto>> getPlayerReceipts(@PathVariable UUID playerId,
+    public ResponseEntity<PageResponse<ReceiptDto>> getPlayerReceipts(@PathVariable("playerId") UUID playerId,
                                                                       @RequestParam(name = "status",
                                                                               required = false) ReceiptStatus status,
                                                                       @ParameterObject Pageable pageable) {
@@ -121,8 +121,8 @@ public class PlayerController {
                             ErrorResponse.class)))
     })
     @PostMapping("/{playerId}/assign/{paymentId}")
-    public ResponseEntity<ResponseDto<PlayerPaymentAssignmentDto>> assignPaymentToPlayer(@PathVariable UUID playerId,
-                                                                                         @PathVariable UUID paymentId) {
+    public ResponseEntity<ResponseDto<PlayerPaymentAssignmentDto>> assignPaymentToPlayer(@PathVariable("playerId") UUID playerId,
+                                                                                         @PathVariable("paymentId") UUID paymentId) {
         PlayerPaymentAssignment assignment = assignPaymentToPlayerUseCase.assignPaymentToPlayer(playerId, paymentId);
         return ResponseEntity.created(URI.create("/v1/players/" + playerId + "/payments")).body(new ResponseDto<>(
                 playerPaymentAssignmentMapper.toPlayerPaymentAssignmentDto(assignment)));
@@ -137,7 +137,7 @@ public class PlayerController {
                             ErrorResponse.class))),
     })
     @GetMapping("/{playerId}/payments")
-    public ResponseEntity<PageResponse<PaymentDto>> getPlayerPayments(@PathVariable UUID playerId,
+    public ResponseEntity<PageResponse<PaymentDto>> getPlayerPayments(@PathVariable("playerId") UUID playerId,
                                                                       @ParameterObject Pageable pageable) {
         Page<Payment> payments = getPlayerPaymentsUseCase.getPlayerPayments(playerId, pageable);
         return ResponseEntity.ok(PageResponse.of(payments.map(paymentMapper::toPaymentDto)));
@@ -152,8 +152,8 @@ public class PlayerController {
                             ErrorResponse.class))),
     })
     @DeleteMapping("/{playerId}/unassign/{paymentId}")
-    public ResponseEntity<ResponseDto<String>> unassignPaymentFromPlayer(@PathVariable UUID playerId,
-                                                                         @PathVariable UUID paymentId) {
+    public ResponseEntity<ResponseDto<String>> unassignPaymentFromPlayer(@PathVariable("playerId") UUID playerId,
+                                                                         @PathVariable("paymentId") UUID paymentId) {
         assignPaymentToPlayerUseCase.unassignPaymentToPlayer(playerId, paymentId);
         return ResponseEntity.ok(new ResponseDto<>("Payment with id " + playerId + " was " +
                 "unassigned from player with id " + playerId));
@@ -168,7 +168,7 @@ public class PlayerController {
                             ErrorResponse.class))),
     })
     @DeleteMapping("/{playerId}")
-    public ResponseEntity<ResponseDto<String>> deletePlayer(@PathVariable UUID playerId) {
+    public ResponseEntity<ResponseDto<String>> deletePlayer(@PathVariable("playerId") UUID playerId) {
         deletePlayerUseCase.deleteById(playerId);
         return ResponseEntity.ok(new ResponseDto<>("Player with id " + playerId + " was " +
                 "deleted"));
@@ -185,7 +185,7 @@ public class PlayerController {
                             ErrorResponse.class)))
     })
     @PutMapping("/{playerId}")
-    public ResponseEntity<ResponseDto<PlayerDto>> updatePlayer(@PathVariable UUID playerId,
+    public ResponseEntity<ResponseDto<PlayerDto>> updatePlayer(@PathVariable("playerId") UUID playerId,
                                                                @Valid @RequestBody UpdatePlayerRequestDTO requestDTO) {
         Player updatedPlayer = updatePlayerUseCase.updatePlayer(playerId, requestDTO);
         return ResponseEntity.ok(new ResponseDto<>(playerMapper.toPlayerDto(updatedPlayer)));
