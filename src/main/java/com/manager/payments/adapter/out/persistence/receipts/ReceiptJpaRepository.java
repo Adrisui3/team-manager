@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -17,7 +18,7 @@ public interface ReceiptJpaRepository extends JpaRepository<ReceiptJpaEntity, UU
             from ReceiptJpaEntity r
             where r.status = 'PENDING' and r.expiryDate < :date
             """)
-    List<ReceiptJpaEntity> findAllExpired(LocalDate date);
+    List<ReceiptJpaEntity> findAllExpired(@Param("date") LocalDate date);
 
     boolean existsByPlayer_IdAndPayment_IdAndPeriodStartDateAndPeriodEndDate(UUID playerId, UUID paymentId,
                                                                              LocalDate startDate, LocalDate endDate);
@@ -34,5 +35,6 @@ public interface ReceiptJpaRepository extends JpaRepository<ReceiptJpaEntity, UU
                 where lower(r.code) like concat(concat('%', :query), '%')
                       and (:status is null or r.status = :status)
             """)
-    Page<ReceiptJpaEntity> findAllByQuery(String query, ReceiptStatus status, Pageable pageable);
+    Page<ReceiptJpaEntity> findAllByQuery(@Param("query") String query, @Param("status") ReceiptStatus status,
+                                          Pageable pageable);
 }
