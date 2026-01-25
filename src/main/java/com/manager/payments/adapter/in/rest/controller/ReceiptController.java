@@ -44,7 +44,7 @@ public class ReceiptController {
     @GetMapping
     public ResponseEntity<PageResponse<ReceiptDto>> getAllReceipts(@RequestParam(name = "query", required = false,
                                                                                defaultValue = "") String query,
-                                                                   @RequestParam(required = false) ReceiptStatus status,
+                                                                   @RequestParam(name = "status", required = false) ReceiptStatus status,
                                                                    @ParameterObject Pageable pageable) {
         Page<Receipt> receipts = findReceiptUseCase.findAllByQuery(query, status, pageable);
         return ResponseEntity.ok(PageResponse.of(receipts.map(mapper::toReceiptDto)));
@@ -70,7 +70,7 @@ public class ReceiptController {
     })
     @PutMapping("/{receiptId}/update-status")
     public ResponseEntity<ResponseDto<ReceiptDto>> updateReceiptStatus(@PathVariable UUID receiptId,
-                                                                       @RequestParam ReceiptStatus newStatus) {
+                                                                       @RequestParam(name = "newStatus") ReceiptStatus newStatus) {
         Receipt updatedReceipt = updateReceiptStatusUseCase.updateStatus(receiptId, newStatus);
         return ResponseEntity.ok(new ResponseDto<>(mapper.toReceiptDto(updatedReceipt)));
     }
