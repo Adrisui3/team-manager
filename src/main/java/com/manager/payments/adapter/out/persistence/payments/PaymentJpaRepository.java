@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -16,7 +17,7 @@ public interface PaymentJpaRepository extends JpaRepository<PaymentJpaEntity, UU
             from PaymentJpaEntity p
             where p.periodicity != 'ONCE' and p.status != 'EXPIRED' and p.endDate < :date
             """)
-    List<PaymentJpaEntity> findAllExpired(LocalDate date);
+    List<PaymentJpaEntity> findAllExpired(@Param("date") LocalDate date);
 
     boolean existsByCode(String code);
 
@@ -27,5 +28,5 @@ public interface PaymentJpaRepository extends JpaRepository<PaymentJpaEntity, UU
                  or lower(p.name) like concat(concat('%', :query), '%')
                  or lower(p.description) like concat(concat('%', :query), '%')
             """)
-    Page<PaymentJpaEntity> findAllByQuery(String query, Pageable pageable);
+    Page<PaymentJpaEntity> findAllByQuery(@Param("query") String query, Pageable pageable);
 }
