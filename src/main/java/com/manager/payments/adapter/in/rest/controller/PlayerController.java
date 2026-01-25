@@ -89,7 +89,9 @@ public class PlayerController {
     })
     @GetMapping("/{playerId}/receipts")
     public ResponseEntity<PageResponse<ReceiptDto>> getPlayerReceipts(@PathVariable UUID playerId,
-                                                                      @RequestParam(required = false) ReceiptStatus status, @ParameterObject Pageable pageable) {
+                                                                      @RequestParam(name = "status",
+                                                                              required = false) ReceiptStatus status,
+                                                                      @ParameterObject Pageable pageable) {
         Page<Receipt> receipts = getPlayerReceiptsUseCase.getPlayerReceipts(playerId, status, pageable);
         return ResponseEntity.ok(PageResponse.of(receipts.map(receiptMapper::toReceiptDto)));
     }
