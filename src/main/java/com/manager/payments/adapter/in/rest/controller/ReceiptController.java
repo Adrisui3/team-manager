@@ -69,8 +69,8 @@ public class ReceiptController {
                     "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     })
     @PutMapping("/{receiptId}/update-status")
-    public ResponseEntity<ResponseDto<ReceiptDto>> updateReceiptStatus(@PathVariable UUID receiptId,
-                                                                       @RequestParam(name = "newStatus") ReceiptStatus newStatus) {
+    public ResponseEntity<ResponseDto<ReceiptDto>> updateReceiptStatus(@PathVariable("receiptId") UUID receiptId,
+                                                                       @RequestParam("newStatus") ReceiptStatus newStatus) {
         Receipt updatedReceipt = updateReceiptStatusUseCase.updateStatus(receiptId, newStatus);
         return ResponseEntity.ok(new ResponseDto<>(mapper.toReceiptDto(updatedReceipt)));
     }
@@ -82,7 +82,7 @@ public class ReceiptController {
                     "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     })
     @DeleteMapping("/{receiptId}")
-    public ResponseEntity<ResponseDto<String>> deleteReceipt(@PathVariable UUID receiptId) {
+    public ResponseEntity<ResponseDto<String>> deleteReceipt(@PathVariable("receiptId") UUID receiptId) {
         deleteReceiptUseCase.deleteReceipt(receiptId);
         return ResponseEntity.ok(new ResponseDto<>("Receipt with id " + receiptId + " has been deleted"));
     }

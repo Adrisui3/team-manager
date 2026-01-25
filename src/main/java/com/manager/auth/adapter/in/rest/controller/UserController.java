@@ -76,7 +76,7 @@ public class UserController {
     })
     @GetMapping("/{userId}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ResponseDto<UserDto>> getUserById(@PathVariable UUID userId) {
+    public ResponseEntity<ResponseDto<UserDto>> getUserById(@PathVariable("userId") UUID userId) {
         User user = findUserUseCase.findById(userId);
         return ResponseEntity.ok(new ResponseDto<>(mapper.toUserDto(user)));
     }
@@ -90,7 +90,7 @@ public class UserController {
     })
     @PutMapping("/{userId}")
     @PreAuthorize("@authz.canUpdateUserBasicData(#userId)")
-    public ResponseEntity<ResponseDto<UserDto>> updateUser(@PathVariable UUID userId,
+    public ResponseEntity<ResponseDto<UserDto>> updateUser(@PathVariable("userId") UUID userId,
                                                            @Valid @RequestBody UpdateUserRequestDto request) {
         User user = updateUserUseCase.updateUser(userId, request);
         return ResponseEntity.ok(new ResponseDto<>(mapper.toUserDto(user)));
@@ -126,7 +126,7 @@ public class UserController {
     })
     @PutMapping("/change-password/{userId}")
     @PreAuthorize("@authz.isCurrentUser(#userId)")
-    public ResponseEntity<ResponseDto<String>> changePassword(@PathVariable UUID userId,
+    public ResponseEntity<ResponseDto<String>> changePassword(@PathVariable("userId") UUID userId,
                                                               @Valid @RequestBody ChangeUserPasswordRequestDto changeUserPasswordRequestDto) {
         updateUserUseCase.changePassword(userId, changeUserPasswordRequestDto);
         return ResponseEntity.ok(new ResponseDto<>("Password changed successfully,"));
@@ -145,7 +145,7 @@ public class UserController {
     })
     @PutMapping("/reset-password/{userId}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ResponseDto<String>> resetPassword(@PathVariable UUID userId) {
+    public ResponseEntity<ResponseDto<String>> resetPassword(@PathVariable("userId") UUID userId) {
         updateUserUseCase.resetPassword(userId);
         return ResponseEntity.ok(new ResponseDto<>("Verification code resent."));
     }
@@ -160,7 +160,7 @@ public class UserController {
     })
     @PutMapping("/update-status/{userId}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ResponseDto<UserDto>> updateUserStatus(@PathVariable UUID userId,
+    public ResponseEntity<ResponseDto<UserDto>> updateUserStatus(@PathVariable("userId") UUID userId,
                                                                  @Valid @RequestBody UpdateUserStatusDto request) {
         User updatedUser = updateUserUseCase.updateUserStatus(userId, request);
         return ResponseEntity.ok(new ResponseDto<>(mapper.toUserDto(updatedUser)));
@@ -176,7 +176,7 @@ public class UserController {
     })
     @DeleteMapping("/{userId}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ResponseDto<String>> deleteUser(@PathVariable UUID userId) {
+    public ResponseEntity<ResponseDto<String>> deleteUser(@PathVariable("userId") UUID userId) {
         deleteUserUseCase.deleteUser(userId);
         return ResponseEntity.ok(new ResponseDto<>("User with id " + userId + " deleted successfully"));
     }
