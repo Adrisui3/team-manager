@@ -13,7 +13,10 @@ import com.manager.payments.adapter.out.persistence.receipts.ReceiptMapper;
 import com.manager.payments.application.port.in.players.*;
 import com.manager.payments.model.assignments.PlayerPaymentAssignment;
 import com.manager.payments.model.payments.Payment;
+import com.manager.payments.model.players.Category;
 import com.manager.payments.model.players.Player;
+import com.manager.payments.model.players.PlayerGender;
+import com.manager.payments.model.players.PlayerStatus;
 import com.manager.payments.model.receipts.Receipt;
 import com.manager.payments.model.receipts.ReceiptStatus;
 import com.manager.shared.response.ErrorResponse;
@@ -62,8 +65,11 @@ public class PlayerController {
     @GetMapping
     public ResponseEntity<PageResponse<PlayerDto>> findAll(@RequestParam(name = "query", required = false,
                                                                        defaultValue = "") String query,
+                                                           @RequestParam(name = "category", required = false) Category category,
+                                                           @RequestParam(name = "gender", required = false) PlayerGender gender,
+                                                           @RequestParam(name = "status", required = false) PlayerStatus status,
                                                            @ParameterObject Pageable pageable) {
-        Page<Player> players = findPlayerUseCase.findAll(query, pageable);
+        Page<Player> players = findPlayerUseCase.findAll(query, category, gender, status, pageable);
         return ResponseEntity.ok(PageResponse.of(players.map(playerMapper::toPlayerDto)));
     }
 
