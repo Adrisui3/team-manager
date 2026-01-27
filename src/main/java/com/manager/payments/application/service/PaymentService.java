@@ -6,9 +6,7 @@ import com.manager.payments.application.port.in.payments.*;
 import com.manager.payments.application.port.out.PaymentRepository;
 import com.manager.payments.model.exceptions.PaymentAlreadyExistsException;
 import com.manager.payments.model.exceptions.PaymentNotFoundException;
-import com.manager.payments.model.payments.ExpiredPaymentProcessor;
-import com.manager.payments.model.payments.Payment;
-import com.manager.payments.model.payments.PaymentFactory;
+import com.manager.payments.model.payments.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -69,8 +67,8 @@ public class PaymentService implements CreatePaymentUseCase, ProcessExpiredPayme
     }
 
     @Override
-    public Page<Payment> findAll(String query, Pageable pageable) {
-        return repository.findAllByQuery(query.trim().toLowerCase(Locale.ROOT), pageable);
+    public Page<Payment> findAll(String query, PaymentStatus status, Periodicity periodicity, Pageable pageable) {
+        return repository.findAll(query.trim().toLowerCase(Locale.ROOT), status, periodicity, pageable);
     }
 
     @Override

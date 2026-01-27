@@ -9,6 +9,8 @@ import com.manager.payments.application.port.in.payments.DeletePaymentUseCase;
 import com.manager.payments.application.port.in.payments.FindPaymentUseCase;
 import com.manager.payments.application.port.in.payments.UpdatePaymentUseCase;
 import com.manager.payments.model.payments.Payment;
+import com.manager.payments.model.payments.PaymentStatus;
+import com.manager.payments.model.payments.Periodicity;
 import com.manager.shared.response.ErrorResponse;
 import com.manager.shared.response.PageResponse;
 import com.manager.shared.response.ResponseDto;
@@ -49,8 +51,10 @@ public class PaymentController {
     @GetMapping
     public ResponseEntity<PageResponse<PaymentDto>> findAll(@RequestParam(name = "query", required = false,
                                                                         defaultValue = "") String query,
+                                                            @RequestParam(name = "status", required = false) PaymentStatus status,
+                                                            @RequestParam(name = "periodicity", required = false) Periodicity periodicity,
                                                             @ParameterObject Pageable pageable) {
-        Page<Payment> payments = findPaymentUseCase.findAll(query, pageable);
+        Page<Payment> payments = findPaymentUseCase.findAll(query, status, periodicity, pageable);
         return ResponseEntity.ok(PageResponse.of(payments.map(paymentMapper::toPaymentDto)));
     }
 

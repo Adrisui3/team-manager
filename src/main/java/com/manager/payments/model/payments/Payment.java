@@ -20,9 +20,7 @@ public record Payment(UUID id, String code, BigDecimal amount, String name, Stri
         if (newStatus == PaymentStatus.EXPIRED && status() != PaymentStatus.EXPIRED)
             throw new ManuallyExpirePaymentException();
 
-        if (status() == PaymentStatus.INACTIVE &&
-                newStatus == PaymentStatus.ACTIVE &&
-                (currentDate.isBefore(startDate) || currentDate.isAfter(endDate)))
+        if (status() == PaymentStatus.INACTIVE && newStatus == PaymentStatus.ACTIVE && (periodicity() != Periodicity.ONCE) && (currentDate.isBefore(startDate) || currentDate.isAfter(endDate)))
             throw new CannotActivatePaymentException();
 
         return toBuilder()
