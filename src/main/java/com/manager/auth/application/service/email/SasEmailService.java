@@ -19,6 +19,11 @@ public class SasEmailService implements EmailService {
     private final SesConfigurationProperties configuration;
 
     @Override
+    public String getSupportEmail() {
+        return configuration.supportEmail();
+    }
+
+    @Override
     public void sendEmail(String to, String subject, String body) {
         try {
             SendEmailRequest request = SendEmailRequest.builder()

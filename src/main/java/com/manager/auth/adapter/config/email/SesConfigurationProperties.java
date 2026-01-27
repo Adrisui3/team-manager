@@ -8,5 +8,6 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 @Profile("prod")
 @ConfigurationProperties(prefix = "email.ses")
-public record SesConfigurationProperties(@NotBlank String region, @NotBlank String fromEmail) {
+public record SesConfigurationProperties(@NotBlank String region, @NotBlank String fromEmail,
+                                         @NotBlank String supportEmail) {
 }
