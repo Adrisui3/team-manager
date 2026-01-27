@@ -3,6 +3,7 @@ package com.manager.auth.application.service.email;
 public interface EmailService {
 
     default void sendVerificationEmail(String to, String verificationCode) {
+        String supportEmail = getSupportEmail();
         String htmlMessage = "<html>"
                 + "<body style=\"font-family: Arial, sans-serif;\">"
                 + "<div style=\"background-color: #f5f5f5; padding: 20px;\">"
@@ -14,6 +15,17 @@ public interface EmailService {
                 + "<h3 style=\"color: #333;\">Invitation Code:</h3>"
                 + "<p style=\"font-size: 18px; font-weight: bold; color: #007bff;\">" + verificationCode + "</p>"
                 + "</div>"
+                + "<div style=\"background-color: #fff; padding: 15px; border-radius: 5px; margin-top: 20px; " +
+                "border-left: 4px solid #007bff;\">"
+                + "<p style=\"font-size: 14px; color: #666; margin: 0;\">"
+                + "<strong>Privacy & Account Management:</strong> This is a transactional email sent to activate your" +
+                " account. "
+                + "If you did not request this invitation, or if you wish to have your account and data deleted, "
+                + "or if you want to stop receiving emails from us, please contact the administrator who invited you "
+                + "or reach out to your organization's system administrator. You can also contact our support team at "
+                + "<a href=\"mailto:" + supportEmail + "\" style=\"color: #007bff;\">" + supportEmail + "</a>."
+                + "</p>"
+                + "</div>"
                 + "</div>"
                 + "</body>"
                 + "</html>";
@@ -22,4 +34,6 @@ public interface EmailService {
     }
 
     void sendEmail(String to, String subject, String body);
+
+    String getSupportEmail();
 }

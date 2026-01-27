@@ -12,6 +12,11 @@ import org.springframework.stereotype.Service;
 public class LocalEmailService implements EmailService {
 
     @Override
+    public String getSupportEmail() {
+        return "support@test.com";
+    }
+
+    @Override
     public void sendEmail(String to, String subject, String text) {
         log.info("Sending email to {} with subject {} and content {}", to, subject, text);
     }

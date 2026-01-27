@@ -2,3 +2,4 @@ email:
   ses:
     region: "${AWS_REGION}"
     from-email: "${SES_FROM_EMAIL}"
+    support-email: "${SES_SUPPORT_EMAIL}"
