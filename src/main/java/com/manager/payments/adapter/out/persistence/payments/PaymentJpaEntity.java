@@ -1,6 +1,5 @@
 package com.manager.payments.adapter.out.persistence.payments;
 
-import com.manager.payments.adapter.out.persistence.assignments.PlayerPaymentAssignmentJpaEntity;
 import com.manager.payments.model.payments.PaymentStatus;
 import com.manager.payments.model.payments.Periodicity;
 import jakarta.persistence.*;
@@ -9,8 +8,6 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 @Setter
@@ -43,7 +40,4 @@ public class PaymentJpaEntity {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private PaymentStatus status;
-
-    @OneToMany(mappedBy = "payment", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<PlayerPaymentAssignmentJpaEntity> assignments = new ArrayList<>();
 }
