@@ -5,6 +5,8 @@ import com.manager.payments.application.port.in.receipts.FindReceiptUseCase;
 import com.manager.payments.application.port.in.receipts.ProcessOverdueReceiptsUseCase;
 import com.manager.payments.application.port.in.receipts.UpdateReceiptStatusUseCase;
 import com.manager.payments.application.port.out.ReceiptRepository;
+import com.manager.payments.model.exceptions.InvalidFilterIntervalException;
+import com.manager.payments.model.exceptions.InvalidFilterLimitsException;
 import com.manager.payments.model.exceptions.ReceiptNotFoundException;
 import com.manager.payments.model.receipts.OverdueReceiptProcessor;
 import com.manager.payments.model.receipts.Receipt;
@@ -73,7 +75,16 @@ public class ReceiptService implements ProcessOverdueReceiptsUseCase, UpdateRece
     }
 
     @Override
-    public Page<Receipt> findAllByQuery(String query, ReceiptStatus status, Pageable pageable) {
-        return repository.findByQuery(query.trim().toLowerCase(Locale.ROOT), status, pageable);
+    public Page<Receipt> findAll(String query, ReceiptStatus status, LocalDate startDate, LocalDate endDate,
+                                 Pageable pageable) {
+        if ((startDate == null) ^ (endDate == null)) {
+            throw new InvalidFilterIntervalException();
+        }
+
+        if (startDate != null && startDate.isAfter(endDate)) {
+            throw new InvalidFilterLimitsException();
+        }
+
+        return repository.findAll(query.trim().toLowerCase(Locale.ROOT), status, startDate, endDate, pageable);
     }
 }

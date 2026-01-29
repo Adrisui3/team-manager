@@ -20,9 +20,11 @@ import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Tag(name = "Receipts", description = "Receipts management endpoints")
@@ -45,8 +47,12 @@ public class ReceiptController {
     public ResponseEntity<PageResponse<ReceiptDto>> getAllReceipts(@RequestParam(name = "query", required = false,
                                                                                defaultValue = "") String query,
                                                                    @RequestParam(name = "status", required = false) ReceiptStatus status,
+                                                                   @RequestParam(name = "startDate", required = false)
+                                                                       @DateTimeFormat(pattern = "dd/MM/yyyy") LocalDate startDate,
+                                                                   @RequestParam(name = "endDate", required = false)
+                                                                       @DateTimeFormat(pattern = "dd/MM/yyyy") LocalDate endDate,
                                                                    @ParameterObject Pageable pageable) {
-        Page<Receipt> receipts = findReceiptUseCase.findAllByQuery(query, status, pageable);
+        Page<Receipt> receipts = findReceiptUseCase.findAll(query, status, startDate, endDate, pageable);
         return ResponseEntity.ok(PageResponse.of(receipts.map(mapper::toReceiptDto)));
     }
 
