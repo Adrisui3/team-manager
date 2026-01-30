@@ -1,5 +1,6 @@
-package com.manager.auth.application.service.email;
+package com.manager.auth.adapter.out.email;
 
+import com.manager.auth.application.port.out.EmailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
