@@ -1,6 +1,8 @@
 package com.manager.payments.application.port.in.payments;
 
 import com.manager.payments.model.payments.Payment;
+import com.manager.payments.model.payments.PaymentStatus;
+import com.manager.payments.model.payments.Periodicity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -10,5 +12,5 @@ public interface FindPaymentUseCase {
 
     Payment findById(UUID id);
 
-    Page<Payment> findAll(String query, Pageable pageable);
+    Page<Payment> findAll(String query, PaymentStatus status, Periodicity periodicity, Pageable pageable);
 }

@@ -85,8 +85,9 @@ public class ReceiptRepositoryAdapter implements ReceiptRepository {
     }
 
     @Override
-    public Page<Receipt> findByQuery(String query, ReceiptStatus status, Pageable pageable) {
-        Page<ReceiptJpaEntity> receipts = repository.findAllByQuery(query, status, pageable);
+    public Page<Receipt> findAll(String query, ReceiptStatus status, LocalDate startDate, LocalDate endDate,
+                                 Pageable pageable) {
+        Page<ReceiptJpaEntity> receipts = repository.findAll(query, status, startDate, endDate, pageable);
         return receipts.map(mapper::toReceipt);
     }
 }

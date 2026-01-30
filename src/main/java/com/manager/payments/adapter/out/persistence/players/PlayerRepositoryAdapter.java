@@ -2,7 +2,10 @@ package com.manager.payments.adapter.out.persistence.players;
 
 import com.manager.payments.application.port.out.PlayerRepository;
 import com.manager.payments.model.exceptions.PlayerNotFoundException;
+import com.manager.payments.model.players.Category;
 import com.manager.payments.model.players.Player;
+import com.manager.payments.model.players.PlayerGender;
+import com.manager.payments.model.players.PlayerStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -55,8 +58,9 @@ public class PlayerRepositoryAdapter implements PlayerRepository {
     }
 
     @Override
-    public Page<Player> findAllByQuery(String query, Pageable pageable) {
-        Page<PlayerJpaEntity> players = repository.findAllByQuery(query, pageable);
+    public Page<Player> findAll(String query, Category category, PlayerGender gender, PlayerStatus status,
+                                Pageable pageable) {
+        Page<PlayerJpaEntity> players = repository.findAll(query, status, gender, category, pageable);
         return players.map(mapper::toPlayer);
     }
 }

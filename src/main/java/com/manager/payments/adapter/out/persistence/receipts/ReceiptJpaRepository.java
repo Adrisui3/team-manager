@@ -34,7 +34,11 @@ public interface ReceiptJpaRepository extends JpaRepository<ReceiptJpaEntity, UU
                 from ReceiptJpaEntity r
                 where lower(r.code) like concat(concat('%', :query), '%')
                       and (:status is null or r.status = :status)
+                      and (cast(:startDate as date) is null or (r.issuedDate between :startDate and :endDate))
             """)
-    Page<ReceiptJpaEntity> findAllByQuery(@Param("query") String query, @Param("status") ReceiptStatus status,
-                                          Pageable pageable);
+    Page<ReceiptJpaEntity> findAll(@Param("query") String query,
+                                   @Param("status") ReceiptStatus status,
+                                   @Param("startDate") LocalDate startDate,
+                                   @Param("endDate") LocalDate endDate,
+                                   Pageable pageable);
 }

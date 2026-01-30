@@ -32,5 +32,6 @@ public interface ReceiptRepository {
 
     void deleteById(UUID id);
 
-    Page<Receipt> findByQuery(String query, ReceiptStatus status, Pageable pageable);
+    Page<Receipt> findAll(String query, ReceiptStatus status, LocalDate startDate, LocalDate endDate,
+                          Pageable pageable);
 }

@@ -5,11 +5,13 @@ import com.manager.payments.model.receipts.ReceiptStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 public interface FindReceiptUseCase {
 
     Receipt findById(UUID id);
 
-    Page<Receipt> findAllByQuery(String query, ReceiptStatus status, Pageable pageable);
+    Page<Receipt> findAll(String query, ReceiptStatus status, LocalDate startDate, LocalDate endDate,
+                          Pageable pageable);
 }

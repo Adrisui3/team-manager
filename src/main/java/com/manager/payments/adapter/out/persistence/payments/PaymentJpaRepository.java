@@ -1,5 +1,7 @@
 package com.manager.payments.adapter.out.persistence.payments;
 
+import com.manager.payments.model.payments.PaymentStatus;
+import com.manager.payments.model.payments.Periodicity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -24,9 +26,14 @@ public interface PaymentJpaRepository extends JpaRepository<PaymentJpaEntity, UU
     @Query("""
               select p
               from PaymentJpaEntity p
-              where lower(p.code) like concat(:query, '%')
+              where (lower(p.code) like concat(:query, '%')
                  or lower(p.name) like concat(concat('%', :query), '%')
-                 or lower(p.description) like concat(concat('%', :query), '%')
+                 or lower(p.description) like concat(concat('%', :query), '%'))
+                 and (:status is null or p.status = :status)
+                 and (:periodicity is null or p.periodicity = :periodicity)
             """)
-    Page<PaymentJpaEntity> findAllByQuery(@Param("query") String query, Pageable pageable);
+    Page<PaymentJpaEntity> findAll(@Param("query") String query,
+                                   @Param("status") PaymentStatus status,
+                                   @Param("periodicity") Periodicity periodicity,
+                                   Pageable pageable);
 }

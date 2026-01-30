@@ -11,7 +11,9 @@ import com.manager.payments.model.assignments.PlayerPaymentAssignment;
 import com.manager.payments.model.assignments.PlayerPaymentAssignmentFactory;
 import com.manager.payments.model.exceptions.*;
 import com.manager.payments.model.payments.Payment;
+import com.manager.payments.model.players.Category;
 import com.manager.payments.model.players.Player;
+import com.manager.payments.model.players.PlayerGender;
 import com.manager.payments.model.players.PlayerStatus;
 import com.manager.payments.model.receipts.Receipt;
 import com.manager.payments.model.receipts.ReceiptStatus;
@@ -120,8 +122,9 @@ public class PlayerService implements CreatePlayerUseCase, AssignPaymentToPlayer
     }
 
     @Override
-    public Page<Player> findAll(String query, Pageable pageable) {
-        return playerRepository.findAllByQuery(query.trim().toLowerCase(Locale.ROOT), pageable);
+    public Page<Player> findAll(String query, Category category, PlayerGender gender, PlayerStatus status,
+                                Pageable pageable) {
+        return playerRepository.findAll(query.trim().toLowerCase(Locale.ROOT), category, gender, status, pageable);
     }
 
     @Override

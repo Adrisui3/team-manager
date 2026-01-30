@@ -2,6 +2,8 @@ package com.manager.payments.adapter.out.persistence.payments;
 
 import com.manager.payments.application.port.out.PaymentRepository;
 import com.manager.payments.model.payments.Payment;
+import com.manager.payments.model.payments.PaymentStatus;
+import com.manager.payments.model.payments.Periodicity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
@@ -72,8 +74,8 @@ public class PaymentRepositoryAdapter implements PaymentRepository {
     }
 
     @Override
-    public Page<Payment> findAllByQuery(String query, Pageable pageable) {
-        Page<PaymentJpaEntity> payments = repository.findAllByQuery(query, pageable);
+    public Page<Payment> findAll(String query, PaymentStatus status, Periodicity periodicity, Pageable pageable) {
+        Page<PaymentJpaEntity> payments = repository.findAll(query, status, periodicity, pageable);
         return payments.map(mapper::toPayment);
     }
 }

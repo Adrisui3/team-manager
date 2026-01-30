@@ -1,6 +1,8 @@
 package com.manager.payments.application.port.out;
 
 import com.manager.payments.model.payments.Payment;
+import com.manager.payments.model.payments.PaymentStatus;
+import com.manager.payments.model.payments.Periodicity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -27,5 +29,5 @@ public interface PaymentRepository {
 
     List<Payment> findAllExpired(LocalDate date);
 
-    Page<Payment> findAllByQuery(String query, Pageable pageable);
+    Page<Payment> findAll(String query, PaymentStatus status, Periodicity periodicity, Pageable pageable);
 }
