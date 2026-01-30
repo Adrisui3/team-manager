@@ -40,8 +40,11 @@ public class ReceiptController {
 
     @Operation(summary = "Get all receipts", description = "Supports pagination via Spring Data's pageable")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "List of receipts",
-                    useReturnTypeSchema = true)
+            @ApiResponse(responseCode = "200", description = "List of receipts matching the filters",
+                    useReturnTypeSchema = true),
+            @ApiResponse(responseCode = "400", description = "Date interval wrongly defined.",
+                    content = @Content(mediaType =
+                            "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     })
     @GetMapping
     public ResponseEntity<PageResponse<ReceiptDto>> getAllReceipts(@RequestParam(name = "query", required = false,
