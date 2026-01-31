@@ -18,6 +18,7 @@ import org.mockito.Mockito;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -34,7 +35,7 @@ public class AssignPaymentToPlayerUseCaseTest {
         //given
         UUID playerId = UUID.randomUUID();
         Player player = new Player(playerId, "", "", "", "", LocalDate.now(), Category.SENIOR, PlayerStatus.ENABLED,
-                PlayerGender.MASCULINO, "999999999");
+                PlayerGender.MASCULINO, "999999999", LocalDateTime.now().minusDays(1), LocalDateTime.now());
         PlayerRepository playerRepository = Mockito.mock(PlayerRepository.class);
         Mockito.when(playerRepository.findById(playerId)).thenReturn(Optional.of(player));
 
@@ -42,8 +43,7 @@ public class AssignPaymentToPlayerUseCaseTest {
         LocalDate startDate = LocalDate.of(2025, 9, 1);
         LocalDate endDate = LocalDate.of(2025, 9, 30);
         Payment payment = new Payment(paymentId, "", BigDecimal.valueOf(50), "", "", startDate, endDate,
-                Periodicity.MONTHLY,
-                PaymentStatus.ACTIVE);
+                Periodicity.MONTHLY, PaymentStatus.ACTIVE, LocalDateTime.now().minusDays(1), LocalDateTime.now());
         PaymentRepository paymentRepository = Mockito.mock(PaymentRepository.class);
         Mockito.when(paymentRepository.findById(paymentId)).thenReturn(Optional.of(payment));
 
