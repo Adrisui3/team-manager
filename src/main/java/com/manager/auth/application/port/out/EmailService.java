@@ -1,4 +1,4 @@
-package com.manager.auth.application.service.email;
+package com.manager.auth.application.port.out;
 
 public interface EmailService {
 

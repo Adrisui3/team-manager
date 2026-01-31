@@ -1,5 +1,5 @@
 email:
-  ses:
-    region: "${AWS_REGION}"
-    from-email: "${SES_FROM_EMAIL}"
-    support-email: "${SES_SUPPORT_EMAIL}"
+  resend:
+    api-key: "${RESEND_API_KEY}"
+    from-email: "${RESEND_FROM_EMAIL}"
+    support-email: "${RESEND_SUPPORT_EMAIL}"
