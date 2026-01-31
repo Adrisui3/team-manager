@@ -10,7 +10,8 @@ import java.util.UUID;
 
 @Builder(toBuilder = true)
 public record User(UUID id, String email, String password, String name, String surname, LocalDateTime lastLogIn,
-                   Role role, boolean enabled, UserVerification verification) {
+                   Role role, boolean enabled, UserVerification verification, LocalDateTime createdAt,
+                   LocalDateTime updatedAt) {
 
     public User authenticate(String password, PasswordEncoder passwordEncoder) {
         if (!enabled()) {

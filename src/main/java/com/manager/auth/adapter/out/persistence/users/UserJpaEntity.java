@@ -32,6 +32,22 @@ public class UserJpaEntity {
 
     private boolean enabled;
 
+    @Column(nullable = false)
+    private LocalDateTime createdAt;
+
+    @Column(nullable = false)
+    private LocalDateTime updatedAt;
+
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private UserVerificationJpaEntity verification;
+
+    @PrePersist
+    public void prePersist() {
+        setCreatedAt(LocalDateTime.now());
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        setUpdatedAt(LocalDateTime.now());
+    }
 }

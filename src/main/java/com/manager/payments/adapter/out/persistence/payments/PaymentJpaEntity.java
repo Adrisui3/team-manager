@@ -8,6 +8,7 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Setter
@@ -34,10 +35,25 @@ public class PaymentJpaEntity {
     private LocalDate endDate;
 
     @Column(nullable = false)
+    private LocalDateTime createdAt;
+
+    private LocalDateTime updatedAt;
+
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Periodicity periodicity;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private PaymentStatus status;
+
+    @PrePersist
+    public void prePersist() {
+        setCreatedAt(LocalDateTime.now());
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        setUpdatedAt(LocalDateTime.now());
+    }
 }
