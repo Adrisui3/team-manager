@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Setter
@@ -41,10 +42,25 @@ public class PlayerJpaEntity {
     private Category category;
 
     @Column(nullable = false)
+    private LocalDateTime createdAt;
+
+    private LocalDateTime updatedAt;
+
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private PlayerGender gender;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private PlayerStatus status;
+
+    @PrePersist
+    public void prePersist() {
+        setCreatedAt(LocalDateTime.now());
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        setUpdatedAt(LocalDateTime.now());
+    }
 }
