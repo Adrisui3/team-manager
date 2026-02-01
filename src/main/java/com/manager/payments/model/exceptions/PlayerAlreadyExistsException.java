@@ -8,10 +8,6 @@ public class PlayerAlreadyExistsException extends GenericException {
         super(message, ErrorCode.ALREADY_EXISTS);
     }
 
-    public static PlayerAlreadyExistsException byEmail(String message) {
-        return new PlayerAlreadyExistsException("Player with email " + message + " already exists");
-    }
-
     public static PlayerAlreadyExistsException byPersonalId(String personalId) {
         return new PlayerAlreadyExistsException("Player with personal id " + personalId + " already exists");
     }
