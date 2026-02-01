@@ -185,10 +185,7 @@ public class PlayerController {
             @ApiResponse(responseCode = "200", description = "Player updated", useReturnTypeSchema = true),
             @ApiResponse(responseCode = "404", description = "Player not found", content = @Content(mediaType =
                     "application/json", schema = @Schema(implementation =
-                    ErrorResponse.class))),
-            @ApiResponse(responseCode = "409", description = "Player already exists with that email",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation =
-                            ErrorResponse.class)))
+                    ErrorResponse.class)))
     })
     @PutMapping("/{playerId}")
     public ResponseEntity<ResponseDto<PlayerDto>> updatePlayer(@PathVariable("playerId") UUID playerId,

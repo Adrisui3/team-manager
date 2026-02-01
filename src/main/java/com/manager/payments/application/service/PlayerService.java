@@ -44,10 +44,6 @@ public class PlayerService implements CreatePlayerUseCase, AssignPaymentToPlayer
         if (playerRepository.existsByPersonalId(requestDTO.personalId()))
             throw PlayerAlreadyExistsException.byPersonalId(requestDTO.personalId());
 
-        if (playerRepository.existsByEmail(requestDTO.email())) {
-            throw PlayerAlreadyExistsException.byEmail(requestDTO.email());
-        }
-
         Player newPlayer = Player.builder()
                 .personalId(requestDTO.personalId())
                 .name(requestDTO.name())
@@ -97,10 +93,6 @@ public class PlayerService implements CreatePlayerUseCase, AssignPaymentToPlayer
     public Player updatePlayer(UUID playerId, UpdatePlayerRequestDTO request) {
         Player player =
                 playerRepository.findById(playerId).orElseThrow(() -> PlayerNotFoundException.byId(playerId));
-
-        if (!request.email().equals(player.email()) && playerRepository.existsByEmail(request.email())) {
-            throw PlayerAlreadyExistsException.byEmail(request.email());
-        }
 
         Player updatedPlayer = player.toBuilder()
                 .name(request.name())
