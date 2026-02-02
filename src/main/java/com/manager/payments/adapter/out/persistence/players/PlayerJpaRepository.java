@@ -27,8 +27,17 @@ public interface PlayerJpaRepository extends JpaRepository<PlayerJpaEntity, UUID
                  and (:status is null or p.status = :status)
                  and (:gender is null or p.gender = :gender)
                  and (:category is null or p.category = :category)
+                 and (:hasPendingReceipt is null or :hasPendingReceipt = false or exists (
+                     select 1 from ReceiptJpaEntity r where r.player = p and r.status = 'PENDING'))
+                 and (:withoutPaymentAssigned is null or :withoutPaymentAssigned = false or not exists (
+                     select 1 from PlayerPaymentAssignmentJpaEntity a where a.player = p))
+                 and (:hasOverdueReceipt is null or :hasOverdueReceipt = false or exists (
+                     select 1 from ReceiptJpaEntity r where r.player = p and r.status = 'OVERDUE'))
             """)
     Page<PlayerJpaEntity> findAll(@Param("query") String query, @Param("status") PlayerStatus status,
                                   @Param("gender") PlayerGender gender, @Param("category") Category category,
+                                  @Param("hasPendingReceipt") Boolean hasPendingReceipt,
+                                  @Param("withoutPaymentAssigned") Boolean withoutPaymentAssigned,
+                                  @Param("hasOverdueReceipt") Boolean hasOverdueReceipt,
                                   Pageable pageable);
 }

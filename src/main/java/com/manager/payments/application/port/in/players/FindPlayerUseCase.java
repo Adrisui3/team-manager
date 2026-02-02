@@ -13,5 +13,7 @@ public interface FindPlayerUseCase {
 
     Player findById(UUID id);
 
-    Page<Player> findAll(String query, Category category, PlayerGender gender, PlayerStatus status, Pageable pageable);
+    Page<Player> findAll(String query, Category category, PlayerGender gender, PlayerStatus status,
+                         Boolean hasPendingReceipt, Boolean withoutPaymentAssigned, Boolean hasOverdueReceipt,
+                         Pageable pageable);
 }
