@@ -18,13 +18,13 @@ security:
 
 scheduled-jobs:
   billing:
-    cron: "0 */30 * * * *"
+    cron: "*/30 * * * * *"
 
   payments:
-    cron: "0 0 0 * * *"
+    cron: "0 * * * * *"
 
   receipts:
-    cron: "0 0 0 * * *"
+    cron: "0 * * * * *"
 
 management:
   endpoint:

@@ -59,8 +59,10 @@ public class PlayerRepositoryAdapter implements PlayerRepository {
 
     @Override
     public Page<Player> findAll(String query, Category category, PlayerGender gender, PlayerStatus status,
+                                Boolean hasPendingReceipt, Boolean withoutPaymentAssigned, Boolean hasOverdueReceipt,
                                 Pageable pageable) {
-        Page<PlayerJpaEntity> players = repository.findAll(query, status, gender, category, pageable);
+        Page<PlayerJpaEntity> players = repository.findAll(query, status, gender, category, hasPendingReceipt,
+                withoutPaymentAssigned, hasOverdueReceipt, pageable);
         return players.map(mapper::toPlayer);
     }
 }

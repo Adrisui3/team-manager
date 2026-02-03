@@ -115,8 +115,10 @@ public class PlayerService implements CreatePlayerUseCase, AssignPaymentToPlayer
 
     @Override
     public Page<Player> findAll(String query, Category category, PlayerGender gender, PlayerStatus status,
+                                Boolean hasPendingReceipt, Boolean withoutPaymentAssigned, Boolean hasOverdueReceipt,
                                 Pageable pageable) {
-        return playerRepository.findAll(query.trim().toLowerCase(Locale.ROOT), category, gender, status, pageable);
+        return playerRepository.findAll(query.trim().toLowerCase(Locale.ROOT), category, gender, status,
+                hasPendingReceipt, withoutPaymentAssigned, hasOverdueReceipt, pageable);
     }
 
     @Override

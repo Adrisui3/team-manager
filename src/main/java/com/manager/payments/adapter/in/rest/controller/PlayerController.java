@@ -58,7 +58,9 @@ public class PlayerController {
     private final GetPlayerPaymentsUseCase getPlayerPaymentsUseCase;
 
     @Operation(summary = "Get all players", description = "Supports pagination and query searching for personal ID, " +
-            "name and surname")
+            "name and surname. Optional filters: hasPendingReceipt (players with at least one pending receipt), " +
+            "withoutPaymentAssigned (players with no payment assigned), hasOverdueReceipt (players with at least one " +
+            "overdue receipt), category, gender, and status.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "List of players", useReturnTypeSchema = true)
     })
@@ -68,8 +70,15 @@ public class PlayerController {
                                                            @RequestParam(name = "category", required = false) Category category,
                                                            @RequestParam(name = "gender", required = false) PlayerGender gender,
                                                            @RequestParam(name = "status", required = false) PlayerStatus status,
+                                                           @RequestParam(name = "hasPendingReceipt",
+                                                                   required = false) Boolean hasPendingReceipt,
+                                                           @RequestParam(name = "withoutPaymentAssigned", required =
+                                                                   false) Boolean withoutPaymentAssigned,
+                                                           @RequestParam(name = "hasOverdueReceipt",
+                                                                   required = false) Boolean hasOverdueReceipt,
                                                            @ParameterObject Pageable pageable) {
-        Page<Player> players = findPlayerUseCase.findAll(query, category, gender, status, pageable);
+        Page<Player> players = findPlayerUseCase.findAll(query, category, gender, status, hasPendingReceipt,
+                withoutPaymentAssigned, hasOverdueReceipt, pageable);
         return ResponseEntity.ok(PageResponse.of(players.map(playerMapper::toPlayerDto)));
     }
 
