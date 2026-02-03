@@ -3,3 +3,13 @@ email:
     api-key: "${RESEND_API_KEY}"
     from-email: "${RESEND_FROM_EMAIL}"
     support-email: "${RESEND_SUPPORT_EMAIL}"
+
+scheduled-jobs:
+  billing:
+    cron: "0 0/30 * * * *"
+
+  payments:
+    cron: "0 0 0 * * *"
+
+  receipts:
+    cron: "0 0 0 * * *"
