@@ -7,11 +7,12 @@ import com.manager.auth.adapter.in.rest.dto.requests.UpdateUserStatusDto;
 import com.manager.auth.application.port.in.DeleteUserUseCase;
 import com.manager.auth.application.port.in.FindUserUseCase;
 import com.manager.auth.application.port.in.UpdateUserUseCase;
-import com.manager.auth.application.port.out.EmailService;
 import com.manager.auth.application.port.out.UserRepository;
 import com.manager.auth.model.exceptions.DisabledUserException;
 import com.manager.auth.model.exceptions.UserNotFound;
 import com.manager.auth.model.users.User;
+import com.manager.email.application.port.in.SendVerificationEmailUseCase;
+import com.manager.email.application.port.out.EmailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -32,6 +33,7 @@ public class UserService implements UpdateUserUseCase, DeleteUserUseCase, FindUs
     private final UserRepository repository;
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
+    private final SendVerificationEmailUseCase verificationEmailUseCase;
 
     @Override
     @Transactional
@@ -79,7 +81,8 @@ public class UserService implements UpdateUserUseCase, DeleteUserUseCase, FindUs
 
         User updatedUser = user.initializeVerification();
 
-        emailService.sendVerificationEmail(updatedUser.email(), updatedUser.verification().verificationCode());
+        verificationEmailUseCase.sendVerificationEmail(updatedUser.email(),
+                updatedUser.verification().verificationCode());
         repository.save(updatedUser);
     }
 
