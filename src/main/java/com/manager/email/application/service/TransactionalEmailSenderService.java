@@ -1,9 +1,9 @@
 package com.manager.email.application.service;
 
-import com.manager.auth.model.exceptions.EmailFailedException;
 import com.manager.email.application.port.out.EmailRepository;
 import com.manager.email.application.port.out.EmailService;
 import com.manager.email.model.Email;
+import com.manager.email.model.EmailFailedException;
 import com.manager.email.model.EmailStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
