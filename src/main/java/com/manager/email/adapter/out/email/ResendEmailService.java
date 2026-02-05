@@ -1,6 +1,6 @@
 package com.manager.email.adapter.out.email;
 
-import com.manager.auth.adapter.config.email.ResendConfigurationProperties;
+import com.manager.email.adapter.config.ResendConfigurationProperties;
 import com.manager.email.application.port.out.EmailService;
 import com.manager.email.model.Email;
 import com.manager.email.model.EmailFailedException;
