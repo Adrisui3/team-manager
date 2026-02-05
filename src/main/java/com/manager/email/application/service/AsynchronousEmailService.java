@@ -1,9 +1,9 @@
 package com.manager.email.application.service;
 
-import com.manager.auth.adapter.config.email.ResendConfigurationProperties;
 import com.manager.email.application.port.in.SendPendingEmailsUseCase;
 import com.manager.email.application.port.in.SendVerificationEmailUseCase;
 import com.manager.email.application.port.out.EmailRepository;
+import com.manager.email.application.port.out.EmailService;
 import com.manager.email.model.Email;
 import com.manager.email.model.EmailStatus;
 import jakarta.transaction.Transactional;
@@ -20,7 +20,7 @@ public class AsynchronousEmailService implements SendPendingEmailsUseCase, SendV
     private final EmailRepository repository;
     private final EmailTemplateService templateService;
     private final TransactionalEmailSenderService senderService;
-    private final ResendConfigurationProperties configuration;
+    private final EmailService emailService;
 
     @Override
     public void sendPendingEmails(LocalDateTime currentDate) {
@@ -35,7 +35,7 @@ public class AsynchronousEmailService implements SendPendingEmailsUseCase, SendV
         Email newEmail = Email.builder()
                 .toEmail(to)
                 .subject("Verification email")
-                .body(templateService.loadVerificationEmailTemplate(verificationCode, configuration.supportEmail()))
+                .body(templateService.loadVerificationEmailTemplate(verificationCode, emailService.getSupportEmail()))
                 .status(EmailStatus.PENDING)
                 .build();
 

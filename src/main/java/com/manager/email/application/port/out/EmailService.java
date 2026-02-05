@@ -6,4 +6,5 @@ public interface EmailService {
 
     void sendEmail(Email email);
 
+    String getSupportEmail();
 }

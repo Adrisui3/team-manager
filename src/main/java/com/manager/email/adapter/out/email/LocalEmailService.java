@@ -17,4 +17,9 @@ public class LocalEmailService implements EmailService {
     public void sendEmail(Email email) {
         log.info("Sending email to {} with subject {} and content {}", email.toEmail(), email.subject(), email.body());
     }
+
+    @Override
+    public String getSupportEmail() {
+        return "support@test.com";
+    }
 }

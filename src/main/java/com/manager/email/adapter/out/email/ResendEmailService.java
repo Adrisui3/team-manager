@@ -39,4 +39,9 @@ public class ResendEmailService implements EmailService {
             throw new EmailFailedException("Could not send email");
         }
     }
+
+    @Override
+    public String getSupportEmail() {
+        return configuration.supportEmail();
+    }
 }
