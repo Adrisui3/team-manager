@@ -22,6 +22,11 @@ public class EmailOutboxJpaRepositoryAdapter implements EmailRepository {
     }
 
     @Override
+    public int deleteExpired(LocalDateTime date) {
+        return repository.deleteExpired(date);
+    }
+
+    @Override
     public List<Email> findAllToBeSent(LocalDateTime targetDate) {
         List<EmailOutboxJpaEntity> emails = repository.findAllToBeSent(targetDate);
         return emails.stream().map(mapper::toDomain).toList();

@@ -9,6 +9,8 @@ public interface EmailRepository {
 
     void save(Email email);
 
+    int deleteExpired(LocalDateTime date);
+
     List<Email> findAllToBeSent(LocalDateTime targetDate);
 
 }

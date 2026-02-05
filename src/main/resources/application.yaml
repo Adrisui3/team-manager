@@ -28,7 +28,10 @@ scheduled-jobs:
 
   email:
     cron: "0 * * * * *"
-    retention: 30d
+
+  expired-emails:
+    cron: "0 * * * * *"
+    retention: 1h
 
 management:
   endpoint:
