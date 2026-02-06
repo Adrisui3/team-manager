@@ -13,4 +13,7 @@ public interface EmailRepository {
 
     List<Email> findAllToBeSent(LocalDateTime targetDate);
 
+    void deleteAll();
+
+    List<Email> findAll();
 }

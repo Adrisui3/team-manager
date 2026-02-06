@@ -31,4 +31,14 @@ public class EmailOutboxJpaRepositoryAdapter implements EmailRepository {
         List<EmailOutboxJpaEntity> emails = repository.findAllToBeSent(targetDate);
         return emails.stream().map(mapper::toDomain).toList();
     }
+
+    @Override
+    public void deleteAll() {
+        repository.deleteAll();
+    }
+
+    @Override
+    public List<Email> findAll() {
+        return repository.findAll().stream().map(mapper::toDomain).toList();
+    }
 }
