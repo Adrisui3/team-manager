@@ -1,6 +1,6 @@
 package com.manager.email.adapter.in.jobs;
 
-import com.manager.email.adapter.config.ExpiredEmailConfigurationProperties;
+import com.manager.email.adapter.config.EmailConfigurationProperties;
 import com.manager.email.application.port.in.DeleteExpiredEmailsUseCase;
 import com.manager.email.application.port.in.SendPendingEmailsUseCase;
 import lombok.RequiredArgsConstructor;
@@ -15,15 +15,15 @@ public class EmailScheduler {
 
     private final SendPendingEmailsUseCase sendPendingEmailsUseCase;
     private final DeleteExpiredEmailsUseCase deleteExpiredEmailsUseCase;
-    private final ExpiredEmailConfigurationProperties expiredEmailProperties;
+    private final EmailConfigurationProperties emailConfiguration;
 
     @Scheduled(cron = "${scheduled-jobs.email.cron}")
     public void sendPendingEmails() {
-        sendPendingEmailsUseCase.sendPendingEmails(LocalDateTime.now());
+        sendPendingEmailsUseCase.sendPendingEmails(LocalDateTime.now().minus(emailConfiguration.buffer()));
     }
 
     @Scheduled(cron = "${scheduled-jobs.expired-emails.cron}")
     public void deleteExpiredEmails() {
-        deleteExpiredEmailsUseCase.deleteExpiredEmails(LocalDateTime.now().minus(expiredEmailProperties.retention()));
+        deleteExpiredEmailsUseCase.deleteExpiredEmails(LocalDateTime.now().minus(emailConfiguration.retention()));
     }
 }

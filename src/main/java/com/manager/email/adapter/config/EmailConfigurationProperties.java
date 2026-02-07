@@ -7,6 +7,6 @@ import org.springframework.validation.annotation.Validated;
 import java.time.Duration;
 
 @Validated
-@ConfigurationProperties(prefix = "scheduled-jobs.expired-emails")
-public record ExpiredEmailConfigurationProperties(@NotNull Duration retention) {
+@ConfigurationProperties(prefix = "email")
+public record EmailConfigurationProperties(@NotNull Duration retention, @NotNull Duration buffer) {
 }

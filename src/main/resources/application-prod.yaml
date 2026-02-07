@@ -19,4 +19,3 @@ scheduled-jobs:
 
   expired-emails:
     cron: "0 0 0 * * *"
-    retention: 30d

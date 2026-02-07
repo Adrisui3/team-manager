@@ -27,8 +27,7 @@ public class AsynchronousEmailService implements SendPendingEmailsUseCase, SendV
     private final EmailService emailService;
 
     @Override
-    public void sendPendingEmails(LocalDateTime currentDate) {
-        LocalDateTime targetDate = currentDate.minusDays(1);
+    public void sendPendingEmails(LocalDateTime targetDate) {
         List<Email> pendingEmails = repository.findAllToBeSent(targetDate);
         pendingEmails.forEach(senderService::sendEmail);
     }
