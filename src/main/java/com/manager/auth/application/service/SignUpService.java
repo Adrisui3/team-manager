@@ -2,10 +2,11 @@ package com.manager.auth.application.service;
 
 import com.manager.auth.adapter.in.rest.dto.requests.RegisterUserRequestDto;
 import com.manager.auth.application.port.in.SignUpUserUseCase;
-import com.manager.auth.application.port.out.EmailService;
 import com.manager.auth.application.port.out.UserRepository;
 import com.manager.auth.model.exceptions.UserAlreadyExists;
 import com.manager.auth.model.users.User;
+import com.manager.email.application.port.in.SendVerificationEmailUseCase;
+import com.manager.email.application.port.out.EmailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +16,7 @@ public class SignUpService implements SignUpUserUseCase {
 
     private final UserRepository repository;
     private final EmailService emailService;
+    private final SendVerificationEmailUseCase verificationEmailUseCase;
 
     @Override
     public User signup(RegisterUserRequestDto request) {
@@ -30,7 +32,7 @@ public class SignUpService implements SignUpUserUseCase {
                 .build()
                 .initializeVerification();
 
-        emailService.sendVerificationEmail(user.email(), user.verification().verificationCode());
+        verificationEmailUseCase.sendVerificationEmail(user.email(), user.verification().verificationCode());
         return repository.save(user);
     }
 }

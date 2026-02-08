@@ -1,4 +1,4 @@
-package com.manager.auth.adapter.config.email;
+package com.manager.email.adapter.config;
 
 import com.resend.Resend;
 import lombok.RequiredArgsConstructor;

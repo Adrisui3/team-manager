@@ -26,6 +26,15 @@ scheduled-jobs:
   receipts:
     cron: "0 * * * * *"
 
+  email:
+    cron: "0 * * * * *"
+
+  expired-emails:
+    cron: "0 * * * * *"
+
+email:
+  retention: 30d
+
 management:
   endpoint:
     health:

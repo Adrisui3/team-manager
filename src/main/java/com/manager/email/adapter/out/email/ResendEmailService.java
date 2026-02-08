@@ -1,8 +1,9 @@
-package com.manager.auth.adapter.out.email;
+package com.manager.email.adapter.out.email;
 
-import com.manager.auth.adapter.config.email.ResendConfigurationProperties;
-import com.manager.auth.application.port.out.EmailService;
-import com.manager.auth.model.exceptions.EmailFailedException;
+import com.manager.email.adapter.config.ResendConfigurationProperties;
+import com.manager.email.application.port.out.EmailService;
+import com.manager.email.model.Email;
+import com.manager.email.model.EmailFailedException;
 import com.resend.Resend;
 import com.resend.core.exception.ResendException;
 import com.resend.services.emails.model.CreateEmailOptions;
@@ -22,17 +23,12 @@ public class ResendEmailService implements EmailService {
     private final ResendConfigurationProperties configuration;
 
     @Override
-    public String getSupportEmail() {
-        return configuration.supportEmail();
-    }
-
-    @Override
-    public void sendEmail(String to, String subject, String body) {
+    public void sendEmail(Email email) {
         CreateEmailOptions params = CreateEmailOptions.builder()
                 .from(configuration.fromEmail())
-                .to(to)
-                .subject(subject)
-                .html(body)
+                .to(email.toEmail())
+                .subject(email.subject())
+                .html(email.body())
                 .build();
 
         try {
@@ -42,5 +38,10 @@ public class ResendEmailService implements EmailService {
             log.error("Failed to send email via Resend", e);
             throw new EmailFailedException("Could not send email");
         }
+    }
+
+    @Override
+    public String getSupportEmail() {
+        return configuration.supportEmail();
     }
 }

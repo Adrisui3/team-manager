@@ -1,4 +1,4 @@
-package com.manager.auth.model.exceptions;
+package com.manager.email.model;
 
 import com.manager.shared.ErrorCode;
 import com.manager.shared.exception.GenericException;
