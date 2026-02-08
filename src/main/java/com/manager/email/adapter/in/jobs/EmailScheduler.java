@@ -19,7 +19,7 @@ public class EmailScheduler {
 
     @Scheduled(cron = "${scheduled-jobs.email.cron}")
     public void sendPendingEmails() {
-        sendPendingEmailsUseCase.sendPendingEmails(LocalDateTime.now().minus(emailConfiguration.buffer()));
+        sendPendingEmailsUseCase.sendPendingEmails();
     }
 
     @Scheduled(cron = "${scheduled-jobs.expired-emails.cron}")

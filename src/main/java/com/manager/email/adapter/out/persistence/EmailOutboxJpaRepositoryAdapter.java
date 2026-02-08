@@ -27,8 +27,8 @@ public class EmailOutboxJpaRepositoryAdapter implements EmailRepository {
     }
 
     @Override
-    public List<Email> findAllToBeSent(LocalDateTime targetDate) {
-        List<EmailOutboxJpaEntity> emails = repository.findAllToBeSent(targetDate);
+    public List<Email> findAllToBeSent() {
+        List<EmailOutboxJpaEntity> emails = repository.findAllToBeSent();
         return emails.stream().map(mapper::toDomain).toList();
     }
 

@@ -23,7 +23,7 @@ public interface EmailOutboxJpaRepository extends JpaRepository<EmailOutboxJpaEn
     @Query("""
             select e
             from EmailOutboxJpaEntity e
-            where :targetDate < e.createdAt and e.status in (com.manager.email.model.EmailStatus.PENDING, com.manager.email.model.EmailStatus.ERRORED)
+            where e.status in (com.manager.email.model.EmailStatus.PENDING, com.manager.email.model.EmailStatus.ERRORED)
             """)
-    List<EmailOutboxJpaEntity> findAllToBeSent(@Param("targetDate") LocalDateTime targetDate);
+    List<EmailOutboxJpaEntity> findAllToBeSent();
 }

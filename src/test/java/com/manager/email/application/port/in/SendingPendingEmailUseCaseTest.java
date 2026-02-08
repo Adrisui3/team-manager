@@ -16,7 +16,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -48,9 +47,9 @@ class SendingPendingEmailUseCaseTest {
                 .body("body")
                 .status(EmailStatus.PENDING)
                 .build();
-        when(repository.findAllToBeSent(any())).thenReturn(List.of(first));
+        when(repository.findAllToBeSent()).thenReturn(List.of(first));
 
-        useCase.sendPendingEmails(LocalDateTime.now());
+        useCase.sendPendingEmails();
 
         Email expectedSent = EmailGenerator.email()
                 .toEmail("first@test.com")
@@ -78,12 +77,12 @@ class SendingPendingEmailUseCaseTest {
                 .body("body")
                 .status(EmailStatus.PENDING)
                 .build();
-        when(repository.findAllToBeSent(any())).thenReturn(List.of(first));
+        when(repository.findAllToBeSent()).thenReturn(List.of(first));
         doThrow(new EmailFailedException(""))
                 .when(emailService)
                 .sendEmail(any());
 
-        useCase.sendPendingEmails(LocalDateTime.now());
+        useCase.sendPendingEmails();
 
         Email expectedSaved = EmailGenerator.email()
                 .toEmail("first@test.com")
@@ -108,12 +107,12 @@ class SendingPendingEmailUseCaseTest {
                 .body("body")
                 .status(EmailStatus.ERRORED)
                 .build();
-        when(repository.findAllToBeSent(any())).thenReturn(List.of(first));
+        when(repository.findAllToBeSent()).thenReturn(List.of(first));
         doThrow(new EmailFailedException(""))
                 .when(emailService)
                 .sendEmail(any());
 
-        useCase.sendPendingEmails(LocalDateTime.now());
+        useCase.sendPendingEmails();
 
         Email expectedSaved = EmailGenerator.email()
                 .toEmail("first@test.com")

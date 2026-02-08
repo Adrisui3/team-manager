@@ -8,5 +8,5 @@ import java.time.Duration;
 
 @Validated
 @ConfigurationProperties(prefix = "email")
-public record EmailConfigurationProperties(@NotNull Duration retention, @NotNull Duration buffer) {
+public record EmailConfigurationProperties(@NotNull Duration retention) {
 }

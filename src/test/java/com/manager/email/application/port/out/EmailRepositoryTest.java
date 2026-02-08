@@ -85,7 +85,7 @@ class EmailRepositoryTest {
         repository.save(thirdEmail);
         repository.save(fourthEmail);
 
-        List<Email> emails = repository.findAllToBeSent(targetTime);
+        List<Email> emails = repository.findAllToBeSent();
         assertThat(emails).hasSize(2).extracting(Email::toEmail)
                 .containsExactlyInAnyOrder("third@test.com", "fourth@test.com");
     }

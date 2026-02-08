@@ -11,7 +11,7 @@ public interface EmailRepository {
 
     int deleteExpired(LocalDateTime date);
 
-    List<Email> findAllToBeSent(LocalDateTime targetDate);
+    List<Email> findAllToBeSent();
 
     void deleteAll();
 

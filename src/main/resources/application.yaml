@@ -34,7 +34,6 @@ scheduled-jobs:
 
 email:
   retention: 30d
-  buffer: 1d
 
 management:
   endpoint:

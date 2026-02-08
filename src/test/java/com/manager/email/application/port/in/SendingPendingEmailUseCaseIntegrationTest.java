@@ -13,7 +13,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -49,7 +48,7 @@ class SendingPendingEmailUseCaseIntegrationTest {
                 .build();
         repository.save(pending);
 
-        useCase.sendPendingEmails(LocalDateTime.now().minusDays(1));
+        useCase.sendPendingEmails();
 
         Email expectedSent = EmailGenerator.email()
                 .toEmail("first@test.com")
@@ -85,7 +84,7 @@ class SendingPendingEmailUseCaseIntegrationTest {
                 .when(emailService)
                 .sendEmail(any());
 
-        useCase.sendPendingEmails(LocalDateTime.now().minusDays(1));
+        useCase.sendPendingEmails();
 
         Email expectedSaved = EmailGenerator.email()
                 .toEmail("first@test.com")
@@ -118,7 +117,7 @@ class SendingPendingEmailUseCaseIntegrationTest {
                 .when(emailService)
                 .sendEmail(any());
 
-        useCase.sendPendingEmails(LocalDateTime.now().minusDays(1));
+        useCase.sendPendingEmails();
 
         Email expectedSaved = EmailGenerator.email()
                 .toEmail("first@test.com")
