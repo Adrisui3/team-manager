@@ -1,10 +1,11 @@
 package com.manager.payments.adapter.in.rest.controller;
 
 import com.manager.payments.adapter.in.rest.dto.models.ReceiptDto;
+import com.manager.payments.adapter.in.rest.dto.request.UpdateReceiptRequestDTO;
 import com.manager.payments.adapter.out.persistence.receipts.ReceiptMapper;
 import com.manager.payments.application.port.in.receipts.DeleteReceiptUseCase;
 import com.manager.payments.application.port.in.receipts.FindReceiptUseCase;
-import com.manager.payments.application.port.in.receipts.UpdateReceiptStatusUseCase;
+import com.manager.payments.application.port.in.receipts.UpdateReceiptUseCase;
 import com.manager.payments.model.receipts.Receipt;
 import com.manager.payments.model.receipts.ReceiptStatus;
 import com.manager.shared.response.ErrorResponse;
@@ -16,6 +17,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
@@ -34,7 +36,7 @@ import java.util.UUID;
 public class ReceiptController {
 
     private final ReceiptMapper mapper;
-    private final UpdateReceiptStatusUseCase updateReceiptStatusUseCase;
+    private final UpdateReceiptUseCase updateReceiptUseCase;
     private final DeleteReceiptUseCase deleteReceiptUseCase;
     private final FindReceiptUseCase findReceiptUseCase;
 
@@ -71,16 +73,18 @@ public class ReceiptController {
         return ResponseEntity.ok(new ResponseDto<>(mapper.toReceiptDto(receipt)));
     }
 
-    @Operation(summary = "Update the status of a receipt")
+    @Operation(summary = "Update a receipt")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Receipt' status updated", useReturnTypeSchema = true),
+            @ApiResponse(responseCode = "200", description = "Receipt updated", useReturnTypeSchema = true),
             @ApiResponse(responseCode = "404", description = "Receipt not found", content = @Content(mediaType =
+                    "application/json", schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "500", description = "Invalid amount", content = @Content(mediaType =
                     "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     })
-    @PutMapping("/{receiptId}/update-status")
-    public ResponseEntity<ResponseDto<ReceiptDto>> updateReceiptStatus(@PathVariable("receiptId") UUID receiptId,
-                                                                       @RequestParam("newStatus") ReceiptStatus newStatus) {
-        Receipt updatedReceipt = updateReceiptStatusUseCase.updateStatus(receiptId, newStatus);
+    @PutMapping("/{receiptId}")
+    public ResponseEntity<ResponseDto<ReceiptDto>> updateReceipt(@PathVariable("receiptId") UUID receiptId,
+                                                                 @Valid @RequestBody UpdateReceiptRequestDTO request) {
+        Receipt updatedReceipt = updateReceiptUseCase.update(receiptId, request);
         return ResponseEntity.ok(new ResponseDto<>(mapper.toReceiptDto(updatedReceipt)));
     }
 
