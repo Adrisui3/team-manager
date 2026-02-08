@@ -29,11 +29,18 @@ public class TransactionalEmailSenderService {
                     .sentAt(LocalDateTime.now())
                     .build());
         } catch (EmailFailedException e) {
-            log.error("Email {} failed to be sent twice. Marking it as DISCARDED.", email.id());
+            EmailStatus updatedStatus;
+            if (email.status() == EmailStatus.ERRORED) {
+                log.error("Email {} failed to be sent twice. Marking it as DISCARDED.", email.id());
+                updatedStatus = EmailStatus.DISCARDED;
+            } else {
+                log.error("Email {} failed to be sent once. Marking it as ERRORED.", email.id());
+                updatedStatus = EmailStatus.ERRORED;
+            }
+
             repository.save(email.toBuilder()
-                    .status(EmailStatus.DISCARDED)
+                    .status(updatedStatus)
                     .build());
         }
     }
-
 }
