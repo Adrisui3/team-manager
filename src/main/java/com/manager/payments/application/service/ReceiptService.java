@@ -1,9 +1,10 @@
 package com.manager.payments.application.service;
 
+import com.manager.payments.adapter.in.rest.dto.request.UpdateReceiptRequestDTO;
 import com.manager.payments.application.port.in.receipts.DeleteReceiptUseCase;
 import com.manager.payments.application.port.in.receipts.FindReceiptUseCase;
 import com.manager.payments.application.port.in.receipts.ProcessOverdueReceiptsUseCase;
-import com.manager.payments.application.port.in.receipts.UpdateReceiptStatusUseCase;
+import com.manager.payments.application.port.in.receipts.UpdateReceiptUseCase;
 import com.manager.payments.application.port.out.ReceiptRepository;
 import com.manager.payments.model.exceptions.InvalidFilterIntervalException;
 import com.manager.payments.model.exceptions.InvalidFilterLimitsException;
@@ -27,7 +28,7 @@ import java.util.UUID;
 @Transactional
 @RequiredArgsConstructor
 @Slf4j
-public class ReceiptService implements ProcessOverdueReceiptsUseCase, UpdateReceiptStatusUseCase,
+public class ReceiptService implements ProcessOverdueReceiptsUseCase, UpdateReceiptUseCase,
         DeleteReceiptUseCase, FindReceiptUseCase {
 
     private final ReceiptRepository repository;
@@ -43,19 +44,9 @@ public class ReceiptService implements ProcessOverdueReceiptsUseCase, UpdateRece
     }
 
     @Override
-    public Receipt updateStatus(UUID receiptId, ReceiptStatus newStatus) {
+    public Receipt update(UUID receiptId, UpdateReceiptRequestDTO request) {
         Receipt receipt = repository.findById(receiptId).orElseThrow(() -> new ReceiptNotFoundException(receiptId));
-        LocalDate paymentDate;
-        if (!newStatus.equals(ReceiptStatus.PAID)) {
-            paymentDate = null;
-        } else {
-            paymentDate = receipt.status().equals(ReceiptStatus.PAID) ? receipt.paymentDate() : LocalDate.now();
-        }
-
-        Receipt updatedReceipt = receipt.toBuilder()
-                .status(newStatus)
-                .paymentDate(paymentDate)
-                .build();
+        Receipt updatedReceipt = receipt.update(request.amount(), request.expiryDate(), request.status());
 
         return repository.save(updatedReceipt);
     }
