@@ -27,11 +27,8 @@ public class BillingService implements IssueNewReceiptsUseCase {
 
     @Override
     public void issueNewReceipts(LocalDate date) {
-        log.info("Starting BillingJob for {}", date);
-        long tIni = System.currentTimeMillis();
         List<PlayerPaymentAssignment> assignments =
                 playerPaymentAssignmentRepository.findAllForBilling(date);
-        log.info("Processing {} player-payment assignments", assignments.size());
         for (PlayerPaymentAssignment assignment : assignments) {
             Predicate<Receipt> playerExists = switch (assignment.payment().periodicity()) {
                 case MONTHLY, QUARTERLY -> receiptRepository::existsByPlayerPaymentAndPeriod;
@@ -40,9 +37,8 @@ public class BillingService implements IssueNewReceiptsUseCase {
             Optional<Receipt> optionalReceipt = BillingProcessor.process(assignment, date, playerExists);
             optionalReceipt.ifPresent(receipt -> {
                 receiptRepository.save(receipt);
-                log.info("Generated receipt for assignment {}", assignment.id());
+                log.info("Generated receipt for player {}", assignment.player().id());
             });
         }
-        log.info("BillingJob finished in {} milliseconds", System.currentTimeMillis() - tIni);
     }
 }

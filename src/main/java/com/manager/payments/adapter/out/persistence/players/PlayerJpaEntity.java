@@ -29,14 +29,18 @@ public class PlayerJpaEntity {
     @Column(nullable = false)
     private String surname;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private String email;
+
+    private String secondaryEmail;
 
     @Column(nullable = false)
     private LocalDate birthDate;
 
     @Column(nullable = false)
     private String phoneNumber;
+
+    private String secondaryPhoneNumber;
 
     @Enumerated(EnumType.STRING)
     private Category category;
