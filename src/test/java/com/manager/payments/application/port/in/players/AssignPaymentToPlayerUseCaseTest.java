@@ -34,8 +34,9 @@ public class AssignPaymentToPlayerUseCaseTest {
     public void shouldAssignPaymentToPlayer() {
         //given
         UUID playerId = UUID.randomUUID();
-        Player player = new Player(playerId, "", "", "", "", LocalDate.now(), Category.SENIOR, PlayerStatus.ENABLED,
-                PlayerGender.MASCULINO, "999999999", LocalDateTime.now().minusDays(1), LocalDateTime.now());
+        Player player = new Player(playerId, "", "", "", "", null, LocalDate.now(), Category.SENIOR,
+                PlayerStatus.ENABLED,
+                PlayerGender.MASCULINO, "999999999", null, LocalDateTime.now().minusDays(1), LocalDateTime.now());
         PlayerRepository playerRepository = Mockito.mock(PlayerRepository.class);
         Mockito.when(playerRepository.findById(playerId)).thenReturn(Optional.of(player));
 
