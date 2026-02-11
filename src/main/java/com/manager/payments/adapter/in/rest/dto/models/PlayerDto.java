@@ -7,6 +7,7 @@ import com.manager.payments.model.players.PlayerStatus;
 import java.time.LocalDate;
 import java.util.UUID;
 
-public record PlayerDto(UUID id, String personalId, String name, String surname, String email, LocalDate birthDate,
-                        Category category, PlayerStatus status, PlayerGender gender, String phoneNumber) {
+public record PlayerDto(UUID id, String personalId, String name, String surname, String email, String secondaryEmail,
+                        LocalDate birthDate, Category category, PlayerStatus status, PlayerGender gender,
+                        String phoneNumber, String secondaryPhoneNumber) {
 }

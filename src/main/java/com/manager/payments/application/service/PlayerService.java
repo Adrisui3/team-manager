@@ -40,19 +40,21 @@ public class PlayerService implements CreatePlayerUseCase, AssignPaymentToPlayer
     private final ReceiptRepository receiptRepository;
 
     @Override
-    public Player createPlayer(CreatePlayerRequestDTO requestDTO) {
-        if (playerRepository.existsByPersonalId(requestDTO.personalId()))
-            throw PlayerAlreadyExistsException.byPersonalId(requestDTO.personalId());
+    public Player createPlayer(CreatePlayerRequestDTO request) {
+        if (playerRepository.existsByPersonalId(request.personalId()))
+            throw PlayerAlreadyExistsException.byPersonalId(request.personalId());
 
         Player newPlayer = Player.builder()
-                .personalId(requestDTO.personalId())
-                .name(requestDTO.name())
-                .surname(requestDTO.surname())
-                .email(requestDTO.email())
-                .birthDate(requestDTO.birthDate())
-                .phoneNumber(requestDTO.phoneNumber())
-                .category(requestDTO.category())
-                .gender(requestDTO.gender())
+                .personalId(request.personalId())
+                .name(request.name())
+                .surname(request.surname())
+                .email(request.email())
+                .secondaryEmail(request.secondaryEmail())
+                .birthDate(request.birthDate())
+                .phoneNumber(request.phoneNumber())
+                .secondaryPhoneNumber(request.secondaryPhoneNumber())
+                .category(request.category())
+                .gender(request.gender())
                 .status(PlayerStatus.ENABLED)
                 .build();
 
@@ -98,8 +100,10 @@ public class PlayerService implements CreatePlayerUseCase, AssignPaymentToPlayer
                 .name(request.name())
                 .surname(request.surname())
                 .email(request.email())
+                .secondaryEmail(request.secondaryEmail())
                 .birthDate(request.birthDate())
                 .phoneNumber(request.phoneNumber())
+                .secondaryPhoneNumber(request.secondaryPhoneNumber())
                 .category(request.category())
                 .status(request.status())
                 .gender(request.gender())
