@@ -30,4 +30,6 @@ public interface PaymentRepository {
     List<Payment> findAllExpired(LocalDate date);
 
     Page<Payment> findAll(String query, PaymentStatus status, Periodicity periodicity, Pageable pageable);
+
+    Page<Payment> findAllAvailableForPlayer(UUID userId, Pageable pageable);
 }
