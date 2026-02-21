@@ -36,4 +36,17 @@ public interface PaymentJpaRepository extends JpaRepository<PaymentJpaEntity, UU
                                    @Param("status") PaymentStatus status,
                                    @Param("periodicity") Periodicity periodicity,
                                    Pageable pageable);
+
+    @Query("""
+            select p
+            from PaymentJpaEntity p
+            where p.status != 'EXPIRED'
+              and not exists (
+                  select 1
+                  from PlayerPaymentAssignmentJpaEntity a
+                  where a.payment = p
+                    and a.player.id = :playerId
+              )
+            """)
+    Page<PaymentJpaEntity> findAllAvailableForPlayer(@Param("playerId") UUID playerId, Pageable pageable);
 }

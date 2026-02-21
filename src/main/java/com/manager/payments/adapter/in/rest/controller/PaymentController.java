@@ -58,6 +58,22 @@ public class PaymentController {
         return ResponseEntity.ok(PageResponse.of(payments.map(paymentMapper::toPaymentDto)));
     }
 
+    @Operation(summary = "Get all payments available for a user", description = "Support pagination via Spring Data's" +
+            " pagination")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "List of payments available for the user",
+                    useReturnTypeSchema = true),
+            @ApiResponse(responseCode = "404", description = "Player not found",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation =
+                            ErrorResponse.class)))
+    })
+    @GetMapping("/assignable/{playerId}")
+    public ResponseEntity<PageResponse<PaymentDto>> findAllAvailableForUser(@PathVariable("playerId") UUID playerId,
+                                                                            @ParameterObject Pageable pageable) {
+        Page<Payment> payments = findPaymentUseCase.findAllAvailableForPlayer(playerId, pageable);
+        return ResponseEntity.ok(PageResponse.of(payments.map(paymentMapper::toPaymentDto)));
+    }
+
     @Operation(summary = "Get payment by id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Payment found", useReturnTypeSchema = true),

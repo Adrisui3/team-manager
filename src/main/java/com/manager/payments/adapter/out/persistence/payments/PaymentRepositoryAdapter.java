@@ -78,4 +78,10 @@ public class PaymentRepositoryAdapter implements PaymentRepository {
         Page<PaymentJpaEntity> payments = repository.findAll(query, status, periodicity, pageable);
         return payments.map(mapper::toPayment);
     }
+
+    @Override
+    public Page<Payment> findAllAvailableForPlayer(UUID playerId, Pageable pageable) {
+        Page<PaymentJpaEntity> payments = repository.findAllAvailableForPlayer(playerId, pageable);
+        return payments.map(mapper::toPayment);
+    }
 }

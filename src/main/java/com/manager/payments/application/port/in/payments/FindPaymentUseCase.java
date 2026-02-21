@@ -13,4 +13,6 @@ public interface FindPaymentUseCase {
     Payment findById(UUID id);
 
     Page<Payment> findAll(String query, PaymentStatus status, Periodicity periodicity, Pageable pageable);
+
+    Page<Payment> findAllAvailableForPlayer(UUID playerId, Pageable pageable);
 }

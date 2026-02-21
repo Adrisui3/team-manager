@@ -4,8 +4,10 @@ import com.manager.payments.adapter.in.rest.dto.request.CreatePaymentRequestDTO;
 import com.manager.payments.adapter.in.rest.dto.request.UpdatePaymentRequestDTO;
 import com.manager.payments.application.port.in.payments.*;
 import com.manager.payments.application.port.out.PaymentRepository;
+import com.manager.payments.application.port.out.PlayerRepository;
 import com.manager.payments.model.exceptions.PaymentAlreadyExistsException;
 import com.manager.payments.model.exceptions.PaymentNotFoundException;
+import com.manager.payments.model.exceptions.PlayerNotFoundException;
 import com.manager.payments.model.payments.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,11 +30,12 @@ import java.util.UUID;
 public class PaymentService implements CreatePaymentUseCase, ProcessExpiredPaymentsUseCase, UpdatePaymentUseCase,
         FindPaymentUseCase, DeletePaymentUseCase {
 
-    private final PaymentRepository repository;
+    private final PaymentRepository paymentRepository;
+    private final PlayerRepository playerRepository;
 
     @Override
     public Payment createPayment(CreatePaymentRequestDTO requestDTO) {
-        if (repository.existsByCode(requestDTO.code()))
+        if (paymentRepository.existsByCode(requestDTO.code()))
             throw new PaymentAlreadyExistsException(requestDTO.code());
 
         Payment newPayment = PaymentFactory.build(requestDTO.code(),
@@ -40,41 +43,49 @@ public class PaymentService implements CreatePaymentUseCase, ProcessExpiredPayme
                 requestDTO.name(), requestDTO.description(), requestDTO.startDate(), requestDTO.endDate(),
                 requestDTO.periodicity());
 
-        return repository.save(newPayment);
+        return paymentRepository.save(newPayment);
     }
 
     @Override
     public void processExpiredPayments(LocalDate date) {
-        List<Payment> expiredPayments = repository.findAllExpired(date);
+        List<Payment> expiredPayments = paymentRepository.findAllExpired(date);
         List<Payment> processedPaymens = ExpiredPaymentProcessor.processExpiredPayments(expiredPayments);
         log.info("{} payments have been marked as EXPIRED", processedPaymens.size());
-        repository.saveAll(processedPaymens);
+        paymentRepository.saveAll(processedPaymens);
     }
 
     @Override
     public Payment updatePayment(UUID paymentId, UpdatePaymentRequestDTO request, LocalDate currentDate) {
         Payment payment =
-                repository.findById(paymentId).orElseThrow(() -> new PaymentNotFoundException(paymentId));
+                paymentRepository.findById(paymentId).orElseThrow(() -> new PaymentNotFoundException(paymentId));
         Payment updatedPayment = payment.update(request.name(), request.description(), request.status(), currentDate);
-        return repository.save(updatedPayment);
+        return paymentRepository.save(updatedPayment);
     }
 
     @Override
     public Payment findById(UUID id) {
-        return repository.findById(id).orElseThrow(() -> new PaymentNotFoundException(id));
+        return paymentRepository.findById(id).orElseThrow(() -> new PaymentNotFoundException(id));
     }
 
     @Override
     public Page<Payment> findAll(String query, PaymentStatus status, Periodicity periodicity, Pageable pageable) {
-        return repository.findAll(query.trim().toLowerCase(Locale.ROOT), status, periodicity, pageable);
+        return paymentRepository.findAll(query.trim().toLowerCase(Locale.ROOT), status, periodicity, pageable);
+    }
+
+    @Override
+    public Page<Payment> findAllAvailableForPlayer(UUID playerId, Pageable pageable) {
+        if (!playerRepository.existsById(playerId))
+            throw PlayerNotFoundException.byId(playerId);
+
+        return paymentRepository.findAllAvailableForPlayer(playerId, pageable);
     }
 
     @Override
     public void deleteById(UUID id) {
-        if (!repository.existsById(id)) {
+        if (!paymentRepository.existsById(id)) {
             throw new PaymentNotFoundException(id);
         }
 
-        repository.deleteById(id);
+        paymentRepository.deleteById(id);
     }
 }
