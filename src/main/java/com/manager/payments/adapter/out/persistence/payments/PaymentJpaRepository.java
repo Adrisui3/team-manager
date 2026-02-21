@@ -40,7 +40,7 @@ public interface PaymentJpaRepository extends JpaRepository<PaymentJpaEntity, UU
     @Query("""
             select p
             from PaymentJpaEntity p
-            where p.status = 'ACTIVE'
+            where p.status != 'EXPIRED'
               and not exists (
                   select 1
                   from PlayerPaymentAssignmentJpaEntity a
