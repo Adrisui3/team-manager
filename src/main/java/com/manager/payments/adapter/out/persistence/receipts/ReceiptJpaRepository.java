@@ -41,4 +41,12 @@ public interface ReceiptJpaRepository extends JpaRepository<ReceiptJpaEntity, UU
                                    @Param("startDate") LocalDate startDate,
                                    @Param("endDate") LocalDate endDate,
                                    Pageable pageable);
+
+    @Query("""
+            select r
+            from ReceiptJpaEntity r
+            where r.expiryDate between :startDate and :endDate
+            """)
+    List<ReceiptJpaEntity> findAllExpiringBetween(@Param("startDate") LocalDate startDate,
+                                                  @Param("endDate") LocalDate endDate);
 }
