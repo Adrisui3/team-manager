@@ -2,6 +2,7 @@ package com.manager.payments.application.service;
 
 import com.manager.payments.application.port.in.reports.GetFinancialReportUseCase;
 import com.manager.payments.application.port.out.ReceiptRepository;
+import com.manager.payments.model.exceptions.InvalidReportIntervalException;
 import com.manager.payments.model.players.Category;
 import com.manager.payments.model.receipts.Receipt;
 import com.manager.payments.model.receipts.ReceiptStatus;
@@ -25,6 +26,10 @@ public class ReportService implements GetFinancialReportUseCase {
 
     @Override
     public FinancialReport generateReport(LocalDate startDate, LocalDate endDate) {
+        if (startDate.isAfter(endDate)) {
+            throw new InvalidReportIntervalException();
+        }
+
         List<Receipt> receipts = receiptRepository.findAllExpiringBetween(startDate, endDate);
         List<Receipt> paidReceipts =
                 receipts.stream().filter(receipt -> receipt.status() == ReceiptStatus.PAID).toList();
@@ -35,13 +40,13 @@ public class ReportService implements GetFinancialReportUseCase {
         Map<ReceiptStatus, BigDecimal> summaryByStatus = buildSummaryByStatus(receipts);
         Map<Category, Map<ReceiptStatus, BigDecimal>> summaryByCategory = buildSummaryByCategory(receipts);
 
-        long averageDaysToPay = paidReceipts.stream()
-                .mapToLong(receipt -> ChronoUnit.DAYS.between(receipt.issuedDate(), receipt.paymentDate())).sum();
+        double averageDaysToPay = paidReceipts.stream()
+                .mapToLong(receipt -> ChronoUnit.DAYS.between(receipt.issuedDate(), receipt.paymentDate())).average().orElse(0.0);
 
         LocalDate currentDate = LocalDate.now();
-        long averageDaysDelay =
+        double averageDaysDelay =
                 receipts.stream().filter(receipt -> receipt.status() == ReceiptStatus.OVERDUE)
-                        .mapToLong(receipt -> ChronoUnit.DAYS.between(receipt.expiryDate(), currentDate)).sum();
+                        .mapToLong(receipt -> ChronoUnit.DAYS.between(receipt.expiryDate(), currentDate)).average().orElse(0.0);
 
         return FinancialReport.builder()
                 .averageDaysToPay(averageDaysToPay)
