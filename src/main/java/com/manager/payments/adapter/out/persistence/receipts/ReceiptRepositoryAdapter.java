@@ -90,4 +90,10 @@ public class ReceiptRepositoryAdapter implements ReceiptRepository {
         Page<ReceiptJpaEntity> receipts = repository.findAll(query, status, startDate, endDate, pageable);
         return receipts.map(mapper::toReceipt);
     }
+
+    @Override
+    public List<Receipt> findAllExpiringBetween(LocalDate startDate, LocalDate endDate) {
+        List<ReceiptJpaEntity> receipts = repository.findAllExpiringBetween(startDate, endDate);
+        return receipts.stream().map(mapper::toReceipt).toList();
+    }
 }

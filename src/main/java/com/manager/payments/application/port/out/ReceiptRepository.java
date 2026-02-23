@@ -34,4 +34,6 @@ public interface ReceiptRepository {
 
     Page<Receipt> findAll(String query, ReceiptStatus status, LocalDate startDate, LocalDate endDate,
                           Pageable pageable);
+
+    List<Receipt> findAllExpiringBetween(LocalDate startDate, LocalDate endDate);
 }
