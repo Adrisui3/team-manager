@@ -1,10 +1,9 @@
 package com.manager.payments.application.service;
 
+import com.manager.email.application.port.in.SendExpiredReceiptEmailUseCase;
+import com.manager.email.model.ExpiredReceiptEmailRequest;
 import com.manager.payments.adapter.in.rest.dto.request.UpdateReceiptRequestDTO;
-import com.manager.payments.application.port.in.receipts.DeleteReceiptUseCase;
-import com.manager.payments.application.port.in.receipts.FindReceiptUseCase;
-import com.manager.payments.application.port.in.receipts.ProcessOverdueReceiptsUseCase;
-import com.manager.payments.application.port.in.receipts.UpdateReceiptUseCase;
+import com.manager.payments.application.port.in.receipts.*;
 import com.manager.payments.application.port.out.ReceiptRepository;
 import com.manager.payments.model.exceptions.InvalidFilterIntervalException;
 import com.manager.payments.model.exceptions.InvalidFilterLimitsException;
@@ -29,9 +28,10 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Slf4j
 public class ReceiptService implements ProcessOverdueReceiptsUseCase, UpdateReceiptUseCase,
-        DeleteReceiptUseCase, FindReceiptUseCase {
+        DeleteReceiptUseCase, FindReceiptUseCase, NotifyExpiredReceiptUseCase {
 
     private final ReceiptRepository repository;
+    private final SendExpiredReceiptEmailUseCase sendExpiredReceiptEmailUseCase;
 
     @Override
     public void processOverdueReceipts(LocalDate date) {
@@ -75,5 +75,27 @@ public class ReceiptService implements ProcessOverdueReceiptsUseCase, UpdateRece
         }
 
         return repository.findAll(query.trim().toLowerCase(Locale.ROOT), status, startDate, endDate, pageable);
+    }
+
+    @Override
+    public void notifyExpiredReceipts(List<UUID> expiredReceiptsIds) {
+        expiredReceiptsIds.forEach(receiptId -> {
+            try {
+                notifyExpiredReceipt(receiptId);
+            } catch (ReceiptNotFoundException e) {
+                log.error("Receipt with id {} was not found", receiptId);
+            }
+        });
+    }
+
+    private void notifyExpiredReceipt(UUID receiptId) {
+        Receipt receipt = repository.findById(receiptId).orElseThrow(() -> new ReceiptNotFoundException(receiptId));
+        if (receipt.status() != ReceiptStatus.OVERDUE) {
+            log.warn("Skipping notification for receipt {}, status: {}", receipt.id(), receipt.status());
+            return;
+        }
+
+        ExpiredReceiptEmailRequest request = ExpiredReceiptEmailRequest.buildFromReceipt(receipt);
+        sendExpiredReceiptEmailUseCase.sendExpiredReceiptEmail(request);
     }
 }

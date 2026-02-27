@@ -1,12 +1,14 @@
 package com.manager.email.application.service;
 
 import com.manager.email.application.port.in.DeleteExpiredEmailsUseCase;
+import com.manager.email.application.port.in.SendExpiredReceiptEmailUseCase;
 import com.manager.email.application.port.in.SendPendingEmailsUseCase;
 import com.manager.email.application.port.in.SendVerificationEmailUseCase;
 import com.manager.email.application.port.out.EmailRepository;
 import com.manager.email.application.port.out.EmailService;
 import com.manager.email.model.Email;
 import com.manager.email.model.EmailStatus;
+import com.manager.email.model.ExpiredReceiptEmailRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +21,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class AsynchronousEmailService implements SendPendingEmailsUseCase, SendVerificationEmailUseCase,
-        DeleteExpiredEmailsUseCase {
+        DeleteExpiredEmailsUseCase, SendExpiredReceiptEmailUseCase {
 
     private final EmailRepository repository;
     private final EmailTemplateService templateService;
@@ -52,5 +54,18 @@ public class AsynchronousEmailService implements SendPendingEmailsUseCase, SendV
         if (deleted > 0) {
             log.info("Deleting {} expired emails older than {}", deleted, targetDate);
         }
+    }
+
+    @Override
+    @Transactional
+    public void sendExpiredReceiptEmail(ExpiredReceiptEmailRequest request) {
+        Email newEmail = Email.builder()
+                .toEmail(request.playerEmail())
+                .subject("Recibo vencido")
+                .body(templateService.loadExpiredReceiptEmailTemplate(request, emailService.getSupportEmail()))
+                .status(EmailStatus.PENDING)
+                .build();
+
+        repository.save(newEmail);
     }
 }

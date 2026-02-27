@@ -5,6 +5,7 @@ import com.manager.payments.adapter.in.rest.dto.request.UpdateReceiptRequestDTO;
 import com.manager.payments.adapter.out.persistence.receipts.ReceiptMapper;
 import com.manager.payments.application.port.in.receipts.DeleteReceiptUseCase;
 import com.manager.payments.application.port.in.receipts.FindReceiptUseCase;
+import com.manager.payments.application.port.in.receipts.NotifyExpiredReceiptUseCase;
 import com.manager.payments.application.port.in.receipts.UpdateReceiptUseCase;
 import com.manager.payments.model.receipts.Receipt;
 import com.manager.payments.model.receipts.ReceiptStatus;
@@ -27,6 +28,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 @Tag(name = "Receipts", description = "Receipts management endpoints")
@@ -39,6 +41,7 @@ public class ReceiptController {
     private final UpdateReceiptUseCase updateReceiptUseCase;
     private final DeleteReceiptUseCase deleteReceiptUseCase;
     private final FindReceiptUseCase findReceiptUseCase;
+    private final NotifyExpiredReceiptUseCase notifyExpiredReceiptUseCase;
 
     @Operation(summary = "Get all receipts", description = "Supports pagination via Spring Data's pageable")
     @ApiResponses(value = {
@@ -98,5 +101,15 @@ public class ReceiptController {
     public ResponseEntity<ResponseDto<String>> deleteReceipt(@PathVariable("receiptId") UUID receiptId) {
         deleteReceiptUseCase.deleteReceipt(receiptId);
         return ResponseEntity.ok(new ResponseDto<>("Receipt with id " + receiptId + " has been deleted"));
+    }
+
+    @Operation(summary = "Sends email notification to the players assigned to expired receipts")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Notifications sent", useReturnTypeSchema = true)
+    })
+    @PostMapping("/notify-expired")
+    public ResponseEntity<ResponseDto<String>> notifyExpiredReceipts(@RequestBody List<UUID> expiredReceiptIds) {
+        notifyExpiredReceiptUseCase.notifyExpiredReceipts(expiredReceiptIds);
+        return ResponseEntity.ok(new ResponseDto<>("Notifications sent for expired, existing receipts"));
     }
 }
