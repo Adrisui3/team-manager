@@ -24,7 +24,6 @@ import java.util.Locale;
 import java.util.UUID;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 @Slf4j
 public class ReceiptService implements ProcessOverdueReceiptsUseCase, UpdateReceiptUseCase,
@@ -34,6 +33,7 @@ public class ReceiptService implements ProcessOverdueReceiptsUseCase, UpdateRece
     private final SendExpiredReceiptEmailUseCase sendExpiredReceiptEmailUseCase;
 
     @Override
+    @Transactional
     public void processOverdueReceipts(LocalDate date) {
         List<Receipt> overdueReceipts = repository.findAllExpired(date);
         List<Receipt> processedReceipts = OverdueReceiptProcessor.process(overdueReceipts);
@@ -42,6 +42,7 @@ public class ReceiptService implements ProcessOverdueReceiptsUseCase, UpdateRece
     }
 
     @Override
+    @Transactional
     public Receipt update(UUID receiptId, UpdateReceiptRequestDTO request) {
         Receipt receipt = repository.findById(receiptId).orElseThrow(() -> new ReceiptNotFoundException(receiptId));
         Receipt updatedReceipt = receipt.update(request.amount(), request.expiryDate(), request.status());
@@ -50,6 +51,7 @@ public class ReceiptService implements ProcessOverdueReceiptsUseCase, UpdateRece
     }
 
     @Override
+    @Transactional
     public void deleteReceipt(UUID receiptId) {
         if (!repository.existsById(receiptId)) {
             throw new ReceiptNotFoundException(receiptId);
@@ -59,6 +61,7 @@ public class ReceiptService implements ProcessOverdueReceiptsUseCase, UpdateRece
     }
 
     @Override
+    @Transactional
     public Receipt findById(UUID id) {
         return repository.findById(id).orElseThrow(() -> new ReceiptNotFoundException(id));
     }

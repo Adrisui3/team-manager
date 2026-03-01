@@ -19,6 +19,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
@@ -108,7 +110,7 @@ public class ReceiptController {
             @ApiResponse(responseCode = "200", description = "Notifications sent", useReturnTypeSchema = true)
     })
     @PostMapping("/notify-expired")
-    public ResponseEntity<ResponseDto<String>> notifyExpiredReceipts(@RequestBody List<UUID> expiredReceiptIds) {
+    public ResponseEntity<ResponseDto<String>> notifyExpiredReceipts(@RequestBody @Valid @NotEmpty List<@NotNull UUID> expiredReceiptIds) {
         notifyExpiredReceiptUseCase.notifyExpiredReceipts(expiredReceiptIds);
         return ResponseEntity.ok(new ResponseDto<>("Notifications sent for expired, existing receipts"));
     }
