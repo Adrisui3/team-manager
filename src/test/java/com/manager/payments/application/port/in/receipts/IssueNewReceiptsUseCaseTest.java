@@ -2,158 +2,139 @@ package com.manager.payments.application.port.in.receipts;
 
 import com.manager.payments.application.port.out.PlayerPaymentAssignmentRepository;
 import com.manager.payments.application.port.out.ReceiptRepository;
-import com.manager.payments.application.service.BillingService;
+import com.manager.payments.generator.PaymentGenerator;
+import com.manager.payments.generator.PlayerGenerator;
+import com.manager.payments.generator.ReceiptGenerator;
 import com.manager.payments.model.assignments.PlayerPaymentAssignment;
 import com.manager.payments.model.payments.Payment;
-import com.manager.payments.model.payments.PaymentStatus;
-import com.manager.payments.model.payments.Periodicity;
 import com.manager.payments.model.players.Player;
 import com.manager.payments.model.receipts.Receipt;
+import com.manager.payments.model.receipts.ReceiptStatus;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Mockito;
+import org.mockito.Captor;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.UUID;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-public class IssueNewReceiptsUseCaseTest {
+@SpringBootTest
+@ActiveProfiles("test")
+@ExtendWith(MockitoExtension.class)
+class IssueNewReceiptsUseCaseTest {
+
+    @MockitoBean
+    private PlayerPaymentAssignmentRepository playerPaymentAssignmentRepository;
+
+    @MockitoBean
+    private ReceiptRepository receiptRepository;
+
+    @Autowired
+    private IssueNewReceiptsUseCase issueNewReceiptsUseCase;
+
+    @Captor
+    private ArgumentCaptor<Receipt> captor;
 
     @Test
     void shouldIssueOneCompleteReceipt() {
-        // given
-        Player player = Mockito.mock(Player.class);
-
-        LocalDate startDate = LocalDate.of(2025, 9, 1);
-        LocalDate endDate = LocalDate.of(2026, 6, 30);
         LocalDate today = LocalDate.of(2025, 9, 1);
-        Payment payment = Payment.builder()
-                .id(UUID.randomUUID())
-                .code("CODE")
+        Player player = PlayerGenerator.player().build();
+        Payment payment = PaymentGenerator.payment()
+                .endDate(LocalDate.of(2026, 6, 30))
                 .amount(BigDecimal.valueOf(50).setScale(2, RoundingMode.HALF_UP))
-                .startDate(startDate)
-                .endDate(endDate)
-                .periodicity(Periodicity.MONTHLY)
-                .status(PaymentStatus.ACTIVE)
                 .build();
-        PlayerPaymentAssignment playerPaymentAssignment = PlayerPaymentAssignment.builder()
+        PlayerPaymentAssignment assignment = PlayerPaymentAssignment.builder()
                 .player(player)
                 .payment(payment)
                 .build();
-        PlayerPaymentAssignmentRepository playerPaymentAssignmentRepository =
-                Mockito.mock(PlayerPaymentAssignmentRepository.class);
-        Mockito.when(playerPaymentAssignmentRepository.findAllForBilling(any())).thenReturn(List.of(playerPaymentAssignment));
 
-        ReceiptRepository receiptRepository = Mockito.mock(ReceiptRepository.class);
-        Mockito.when(receiptRepository.existsByPlayerPaymentAndPeriod(any())).thenReturn(false);
+        when(playerPaymentAssignmentRepository.findAllForBilling(any())).thenReturn(List.of(assignment));
+        when(receiptRepository.existsByPlayerPaymentAndPeriod(any())).thenReturn(false);
 
-        IssueNewReceiptsUseCase issueNewReceiptsUseCase = new BillingService(playerPaymentAssignmentRepository,
-                receiptRepository);
-
-        // when
         issueNewReceiptsUseCase.issueNewReceipts(today);
 
-        // then
-        ArgumentCaptor<Receipt> receiptsCaptor = ArgumentCaptor.forClass(Receipt.class);
-        verify(receiptRepository).save(receiptsCaptor.capture());
-        verify(receiptRepository, times(1)).existsByPlayerPaymentAndPeriod(any());
+        Receipt expected = ReceiptGenerator.receipt()
+                .code("12345678-PAY-001-092025")
+                .amount(BigDecimal.valueOf(50).setScale(2, RoundingMode.HALF_UP))
+                .issuedDate(LocalDate.of(2025, 9, 1))
+                .expiryDate(LocalDate.of(2025, 9, 16))
+                .periodStartDate(LocalDate.of(2025, 9, 1))
+                .periodEndDate(LocalDate.of(2025, 9, 30))
+                .status(ReceiptStatus.PENDING)
+                .player(player)
+                .payment(payment)
+                .build();
 
-        Receipt receipt = receiptsCaptor.getValue();
-        assertThat(receipt.amount()).isEqualTo(payment.amount());
-        assertThat(receipt.periodStartDate()).isEqualTo(LocalDate.of(2025, 9, 1));
-        assertThat(receipt.periodEndDate()).isEqualTo(LocalDate.of(2025, 9, 30));
+        verify(receiptRepository).save(captor.capture());
+        verify(receiptRepository, times(1)).existsByPlayerPaymentAndPeriod(any());
+        assertThat(captor.getValue()).usingRecursiveComparison().ignoringFields("createdAt").isEqualTo(expected);
     }
 
     @Test
     void shouldIssueHalfAReceipt() {
-        // given
-        Player player = Mockito.mock(Player.class);
-
-        LocalDate startDate = LocalDate.of(2025, 9, 1);
-        LocalDate endDate = LocalDate.of(2026, 6, 30);
         LocalDate today = LocalDate.of(2025, 9, 16);
-        Payment payment = Payment.builder()
-                .id(UUID.randomUUID())
-                .code("CODE")
+        Player player = PlayerGenerator.player().build();
+        Payment payment = PaymentGenerator.payment()
+                .endDate(LocalDate.of(2026, 6, 30))
                 .amount(BigDecimal.valueOf(50).setScale(2, RoundingMode.HALF_UP))
-                .startDate(startDate)
-                .endDate(endDate)
-                .periodicity(Periodicity.MONTHLY)
-                .status(PaymentStatus.ACTIVE)
                 .build();
-
-        PlayerPaymentAssignment playerPaymentAssignment = PlayerPaymentAssignment.builder()
+        PlayerPaymentAssignment assignment = PlayerPaymentAssignment.builder()
                 .player(player)
                 .payment(payment)
                 .build();
-        PlayerPaymentAssignmentRepository playerPaymentAssignmentRepository =
-                Mockito.mock(PlayerPaymentAssignmentRepository.class);
-        Mockito.when(playerPaymentAssignmentRepository.findAllForBilling(any())).thenReturn(List.of(playerPaymentAssignment));
 
-        ReceiptRepository receiptRepository = Mockito.mock(ReceiptRepository.class);
-        Mockito.when(receiptRepository.existsByPlayerPaymentAndPeriod(any())).thenReturn(false);
+        when(playerPaymentAssignmentRepository.findAllForBilling(any())).thenReturn(List.of(assignment));
+        when(receiptRepository.existsByPlayerPaymentAndPeriod(any())).thenReturn(false);
 
-        IssueNewReceiptsUseCase issueNewReceiptsUseCase = new BillingService(playerPaymentAssignmentRepository,
-                receiptRepository);
-
-        // when
         issueNewReceiptsUseCase.issueNewReceipts(today);
 
-        // then
-        ArgumentCaptor<Receipt> receiptsCaptor = ArgumentCaptor.forClass(Receipt.class);
-        verify(receiptRepository).save(receiptsCaptor.capture());
-        verify(receiptRepository, times(1)).existsByPlayerPaymentAndPeriod(any());
+        Receipt expected = ReceiptGenerator.receipt()
+                .code("12345678-PAY-001-092025")
+                .amount(BigDecimal.valueOf(25).setScale(2, RoundingMode.HALF_UP))
+                .issuedDate(LocalDate.of(2025, 9, 16))
+                .expiryDate(LocalDate.of(2025, 10, 1))
+                .periodStartDate(LocalDate.of(2025, 9, 1))
+                .periodEndDate(LocalDate.of(2025, 9, 30))
+                .status(ReceiptStatus.PENDING)
+                .player(player)
+                .payment(payment)
+                .build();
 
-        Receipt receipt = receiptsCaptor.getValue();
-        assertThat(receipt.amount().doubleValue()).isEqualTo(payment.amount().doubleValue() / 2);
-        assertThat(receipt.periodStartDate()).isEqualTo(LocalDate.of(2025, 9, 1));
-        assertThat(receipt.periodEndDate()).isEqualTo(LocalDate.of(2025, 9, 30));
+        verify(receiptRepository).save(captor.capture());
+        verify(receiptRepository, times(1)).existsByPlayerPaymentAndPeriod(any());
+        assertThat(captor.getValue()).usingRecursiveComparison().ignoringFields("createdAt").isEqualTo(expected);
     }
 
     @Test
     void shouldNotIssueRepeatedReceipts() {
-        // given
-        Player player = Mockito.mock(Player.class);
-
-        LocalDate startDate = LocalDate.of(2025, 9, 1);
-        LocalDate endDate = LocalDate.of(2026, 6, 30);
         LocalDate today = LocalDate.of(2025, 11, 16);
-        Payment payment = Payment.builder()
-                .id(UUID.randomUUID())
-                .code("CODE")
+        Player player = PlayerGenerator.player().build();
+        Payment payment = PaymentGenerator.payment()
+                .endDate(LocalDate.of(2026, 6, 30))
                 .amount(BigDecimal.valueOf(50).setScale(2, RoundingMode.HALF_UP))
-                .startDate(startDate)
-                .endDate(endDate)
-                .periodicity(Periodicity.MONTHLY)
-                .status(PaymentStatus.ACTIVE)
                 .build();
-
-        PlayerPaymentAssignment playerPaymentAssignment = PlayerPaymentAssignment.builder()
+        PlayerPaymentAssignment assignment = PlayerPaymentAssignment.builder()
                 .player(player)
                 .payment(payment)
                 .build();
-        PlayerPaymentAssignmentRepository playerPaymentAssignmentRepository =
-                Mockito.mock(PlayerPaymentAssignmentRepository.class);
-        Mockito.when(playerPaymentAssignmentRepository.findAllForBilling(any())).thenReturn(List.of(playerPaymentAssignment));
 
-        ReceiptRepository receiptRepository = Mockito.mock(ReceiptRepository.class);
-        Mockito.when(receiptRepository.existsByPlayerPaymentAndPeriod(any())).thenReturn(true);
+        when(playerPaymentAssignmentRepository.findAllForBilling(any())).thenReturn(List.of(assignment));
+        when(receiptRepository.existsByPlayerPaymentAndPeriod(any())).thenReturn(true);
 
-        IssueNewReceiptsUseCase issueNewReceiptsUseCase = new BillingService(playerPaymentAssignmentRepository,
-                receiptRepository);
-
-        // when
         issueNewReceiptsUseCase.issueNewReceipts(today);
 
-        // then
         verify(receiptRepository, never()).save(any());
         verify(receiptRepository, times(1)).existsByPlayerPaymentAndPeriod(any());
     }
-
 }
