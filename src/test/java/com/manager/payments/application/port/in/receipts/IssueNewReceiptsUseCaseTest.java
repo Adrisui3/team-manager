@@ -32,7 +32,7 @@ import static org.mockito.Mockito.*;
 @SpringBootTest
 @ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
-public class IssueNewReceiptsUseCaseTest {
+class IssueNewReceiptsUseCaseTest {
 
     @MockitoBean
     private PlayerPaymentAssignmentRepository playerPaymentAssignmentRepository;

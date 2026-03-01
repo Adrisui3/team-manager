@@ -23,7 +23,7 @@ import static org.mockito.Mockito.when;
 @SpringBootTest
 @ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
-public class SendVerificationEmailUseCaseTest {
+class SendVerificationEmailUseCaseTest {
 
     @MockitoBean
     private EmailRepository repository;
@@ -41,7 +41,7 @@ public class SendVerificationEmailUseCaseTest {
     private ArgumentCaptor<Email> captor;
 
     @Test
-    public void shouldSendSaveVerificationEmail() {
+    void shouldSendSaveVerificationEmail() {
         String to = "test@test.com";
         String verificationCode = "12345";
 

@@ -29,7 +29,7 @@ import static org.mockito.Mockito.when;
 @SpringBootTest
 @ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
-public class AssignPaymentToPlayerUseCaseTest {
+class AssignPaymentToPlayerUseCaseTest {
 
     @MockitoBean
     private PlayerRepository playerRepository;
@@ -47,7 +47,7 @@ public class AssignPaymentToPlayerUseCaseTest {
     private AssignPaymentToPlayerUseCase assignPaymentToPlayerUseCase;
 
     @Test
-    public void shouldAssignPaymentToPlayer() {
+    void shouldAssignPaymentToPlayer() {
         UUID playerId = UUID.randomUUID();
         Player player = PlayerGenerator.player().id(playerId).build();
         when(playerRepository.findById(playerId)).thenReturn(Optional.of(player));
@@ -65,7 +65,7 @@ public class AssignPaymentToPlayerUseCaseTest {
     }
 
     @Test
-    public void shouldFailIfAssignmentAlreadyExists() {
+    void shouldFailIfAssignmentAlreadyExists() {
         UUID playerId = UUID.randomUUID();
         Player player = PlayerGenerator.player().id(playerId).build();
         when(playerRepository.findById(playerId)).thenReturn(Optional.of(player));

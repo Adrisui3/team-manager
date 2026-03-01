@@ -25,7 +25,7 @@ import static org.mockito.Mockito.when;
 @SpringBootTest
 @ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
-public class SendExpiredReceiptEmailUseCaseTest {
+class SendExpiredReceiptEmailUseCaseTest {
 
     @MockitoBean
     private EmailRepository repository;
@@ -43,7 +43,7 @@ public class SendExpiredReceiptEmailUseCaseTest {
     private ArgumentCaptor<Email> captor;
 
     @Test
-    public void shouldSaveExpiredReceiptEmailForPeriodicPayment() {
+    void shouldSaveExpiredReceiptEmailForPeriodicPayment() {
         ExpiredReceiptEmailRequest request = ExpiredReceiptEmailRequestGenerator.periodicRequest().build();
 
         when(emailService.getSupportEmail()).thenReturn("support@test.com");
@@ -63,7 +63,7 @@ public class SendExpiredReceiptEmailUseCaseTest {
     }
 
     @Test
-    public void shouldSaveExpiredReceiptEmailForUniquePayment() {
+    void shouldSaveExpiredReceiptEmailForUniquePayment() {
         ExpiredReceiptEmailRequest request = ExpiredReceiptEmailRequestGenerator.uniqueRequest().build();
 
         when(emailService.getSupportEmail()).thenReturn("support@test.com");

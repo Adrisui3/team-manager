@@ -13,6 +13,10 @@ public final class ExpiredReceiptEmailRequestGenerator {
         this.builder = ExpiredReceiptEmailRequest.builder();
     }
 
+    public static ExpiredReceiptEmailRequestGenerator request() {
+        return new ExpiredReceiptEmailRequestGenerator();
+    }
+
     public static ExpiredReceiptEmailRequestGenerator periodicRequest() {
         ExpiredReceiptEmailRequestGenerator generator = new ExpiredReceiptEmailRequestGenerator();
         generator.playerName("John Doe");
