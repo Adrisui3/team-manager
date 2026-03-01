@@ -1,38 +1,31 @@
-package com.manager.auth.application.service;
+package com.manager.auth.application.service.users;
 
 import com.manager.auth.adapter.in.rest.dto.requests.ChangeUserPasswordRequestDto;
 import com.manager.auth.adapter.in.rest.dto.requests.SetUserPasswordRequestDto;
 import com.manager.auth.adapter.in.rest.dto.requests.UpdateUserRequestDto;
 import com.manager.auth.adapter.in.rest.dto.requests.UpdateUserStatusDto;
-import com.manager.auth.application.port.in.DeleteUserUseCase;
-import com.manager.auth.application.port.in.FindUserUseCase;
 import com.manager.auth.application.port.in.UpdateUserUseCase;
 import com.manager.auth.application.port.out.UserRepository;
 import com.manager.auth.model.exceptions.DisabledUserException;
 import com.manager.auth.model.exceptions.UserNotFound;
 import com.manager.auth.model.users.User;
 import com.manager.email.application.port.in.SendVerificationEmailUseCase;
-import com.manager.email.application.port.out.EmailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Locale;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class UserService implements UpdateUserUseCase, DeleteUserUseCase, FindUserUseCase {
+public class UpdateUserService implements UpdateUserUseCase {
 
     private final UserRepository repository;
     private final PasswordEncoder passwordEncoder;
-    private final EmailService emailService;
     private final SendVerificationEmailUseCase verificationEmailUseCase;
 
     @Override
@@ -92,25 +85,5 @@ public class UserService implements UpdateUserUseCase, DeleteUserUseCase, FindUs
         User user = repository.findById(userId).orElseThrow(() -> UserNotFound.byId(userId));
         User updatedUser = user.changePassword(request.oldPassword(), request.newPassword(), passwordEncoder);
         repository.save(updatedUser);
-    }
-
-    @Override
-    @Transactional
-    public void deleteUser(UUID userId) {
-        if (!repository.existsById(userId)) {
-            throw UserNotFound.byId(userId);
-        }
-
-        repository.deleteById(userId);
-    }
-
-    @Override
-    public Page<User> findAll(String query, Pageable pageable) {
-        return repository.findAll(query.trim().toLowerCase(Locale.ROOT), pageable);
-    }
-
-    @Override
-    public User findById(UUID id) {
-        return repository.findById(id).orElseThrow(() -> UserNotFound.byId(id));
     }
 }

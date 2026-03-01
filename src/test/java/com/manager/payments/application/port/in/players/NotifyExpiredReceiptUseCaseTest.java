@@ -1,9 +1,6 @@
 package com.manager.payments.application.port.in.players;
 
-import com.manager.email.application.port.in.DeleteExpiredEmailsUseCase;
 import com.manager.email.application.port.in.SendExpiredReceiptEmailUseCase;
-import com.manager.email.application.port.in.SendPendingEmailsUseCase;
-import com.manager.email.application.port.in.SendVerificationEmailUseCase;
 import com.manager.email.generator.ExpiredReceiptEmailRequestGenerator;
 import com.manager.email.model.ExpiredReceiptEmailRequest;
 import com.manager.payments.application.port.in.receipts.NotifyExpiredReceiptUseCase;
@@ -40,15 +37,6 @@ class NotifyExpiredReceiptUseCaseTest {
 
     @MockitoBean
     private SendExpiredReceiptEmailUseCase sendExpiredReceiptEmailUseCase;
-
-    @MockitoBean
-    private SendVerificationEmailUseCase sendVerificationEmailUseCase;
-
-    @MockitoBean
-    private SendPendingEmailsUseCase sendPendingEmailsUseCase;
-
-    @MockitoBean
-    private DeleteExpiredEmailsUseCase deleteExpiredEmailsUseCase;
 
     @Autowired
     private NotifyExpiredReceiptUseCase notifyExpiredReceiptUseCase;

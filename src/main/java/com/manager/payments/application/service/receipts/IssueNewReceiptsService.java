@@ -1,4 +1,4 @@
-package com.manager.payments.application.service;
+package com.manager.payments.application.service.receipts;
 
 import com.manager.payments.application.port.in.receipts.IssueNewReceiptsUseCase;
 import com.manager.payments.application.port.out.PlayerPaymentAssignmentRepository;
@@ -20,7 +20,7 @@ import java.util.function.Predicate;
 @Transactional
 @RequiredArgsConstructor
 @Slf4j
-public class BillingService implements IssueNewReceiptsUseCase {
+public class IssueNewReceiptsService implements IssueNewReceiptsUseCase {
 
     private final PlayerPaymentAssignmentRepository playerPaymentAssignmentRepository;
     private final ReceiptRepository receiptRepository;

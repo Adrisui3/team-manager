@@ -1,4 +1,4 @@
-package com.manager.payments.application.service;
+package com.manager.payments.application.service.reports;
 
 import com.manager.payments.application.port.in.reports.GetFinancialReportUseCase;
 import com.manager.payments.application.port.out.ReceiptRepository;
@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class ReportService implements GetFinancialReportUseCase {
+public class GenerateFinancialReportService implements GetFinancialReportUseCase {
 
     private final ReceiptRepository receiptRepository;
 
