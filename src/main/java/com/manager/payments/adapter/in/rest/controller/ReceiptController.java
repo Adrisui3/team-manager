@@ -1,12 +1,12 @@
 package com.manager.payments.adapter.in.rest.controller;
 
 import com.manager.payments.adapter.in.rest.dto.models.ReceiptDto;
+import com.manager.payments.adapter.in.rest.dto.models.ReceiptMatchDto;
 import com.manager.payments.adapter.in.rest.dto.request.UpdateReceiptRequestDTO;
 import com.manager.payments.adapter.out.persistence.receipts.ReceiptMapper;
-import com.manager.payments.application.port.in.receipts.DeleteReceiptUseCase;
-import com.manager.payments.application.port.in.receipts.FindReceiptUseCase;
-import com.manager.payments.application.port.in.receipts.NotifyExpiredReceiptUseCase;
-import com.manager.payments.application.port.in.receipts.UpdateReceiptUseCase;
+import com.manager.payments.adapter.out.persistence.receipts.ReceiptMatchMapper;
+import com.manager.payments.application.port.in.receipts.*;
+import com.manager.payments.model.movements.ReceiptMatch;
 import com.manager.payments.model.receipts.Receipt;
 import com.manager.payments.model.receipts.ReceiptStatus;
 import com.manager.shared.response.ErrorResponse;
@@ -26,8 +26,10 @@ import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -44,6 +46,8 @@ public class ReceiptController {
     private final DeleteReceiptUseCase deleteReceiptUseCase;
     private final FindReceiptUseCase findReceiptUseCase;
     private final NotifyExpiredReceiptUseCase notifyExpiredReceiptUseCase;
+    private final ParseMovementsUseCase parseMovementsUseCase;
+    private final ReceiptMatchMapper receiptMatchMapper;
 
     @Operation(summary = "Get all receipts", description = "Supports pagination via Spring Data's pageable")
     @ApiResponses(value = {
@@ -113,5 +117,19 @@ public class ReceiptController {
     public ResponseEntity<ResponseDto<String>> notifyExpiredReceipts(@RequestBody @Valid @NotEmpty List<@NotNull UUID> expiredReceiptIds) {
         notifyExpiredReceiptUseCase.notifyExpiredReceipts(expiredReceiptIds);
         return ResponseEntity.ok(new ResponseDto<>("Notifications sent for expired, existing receipts"));
+    }
+
+    @Operation(summary = "Parses movements and marks matching receipts as paid")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "File processed", useReturnTypeSchema = true),
+            @ApiResponse(responseCode = "400", description = "The file is empty or has a wrong format", content =
+            @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "500", description = "Unexpected parsing error", content =
+            @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    @PutMapping(value = "/parse-movements", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ResponseDto<List<ReceiptMatchDto>>> parseMovements(@RequestParam("file") MultipartFile file) {
+        List<ReceiptMatch> matches = parseMovementsUseCase.parseMovements(file);
+        return ResponseEntity.ok(new ResponseDto<>(matches.stream().map(receiptMatchMapper::toReceiptMatchDto).toList()));
     }
 }

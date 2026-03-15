@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface ReceiptJpaRepository extends JpaRepository<ReceiptJpaEntity, UUID> {
@@ -49,4 +50,11 @@ public interface ReceiptJpaRepository extends JpaRepository<ReceiptJpaEntity, UU
             """)
     List<ReceiptJpaEntity> findAllExpiringBetween(@Param("startDate") LocalDate startDate,
                                                   @Param("endDate") LocalDate endDate);
+
+    @Query("""
+            select r
+            from ReceiptJpaEntity r
+            where r.code = :code and r.status != 'PAID'
+            """)
+    Optional<ReceiptJpaEntity> findUnpaidByCode(@Param("code") String code);
 }

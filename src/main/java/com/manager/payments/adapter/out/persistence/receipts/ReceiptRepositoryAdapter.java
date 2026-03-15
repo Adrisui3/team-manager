@@ -96,4 +96,9 @@ public class ReceiptRepositoryAdapter implements ReceiptRepository {
         List<ReceiptJpaEntity> receipts = repository.findAllExpiringBetween(startDate, endDate);
         return receipts.stream().map(mapper::toReceipt).toList();
     }
+
+    @Override
+    public Optional<Receipt> findUnpaidByCode(String code) {
+        return repository.findUnpaidByCode(code).map(mapper::toReceipt);
+    }
 }
