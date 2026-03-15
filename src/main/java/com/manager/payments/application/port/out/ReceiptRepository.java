@@ -36,4 +36,6 @@ public interface ReceiptRepository {
                           Pageable pageable);
 
     List<Receipt> findAllExpiringBetween(LocalDate startDate, LocalDate endDate);
+
+    Optional<Receipt> findUnpaidByCode(String code);
 }
