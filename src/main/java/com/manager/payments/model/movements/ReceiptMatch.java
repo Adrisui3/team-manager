@@ -14,7 +14,7 @@ public record ReceiptMatch(
         return ReceiptMatch.builder()
                 .receipt(receipt)
                 .movement(movement)
-                .amountCorrect(receipt.amount().equals(movement.amount()))
+                .amountCorrect(receipt.amount().compareTo(movement.amount()) == 0)
                 .build();
     }
 }

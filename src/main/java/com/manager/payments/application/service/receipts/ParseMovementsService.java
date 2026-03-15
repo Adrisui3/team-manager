@@ -21,7 +21,6 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -52,6 +51,7 @@ public class ParseMovementsService implements ParseMovementsUseCase {
             });
         }
 
+        log.info("Found {} matches out of {} bank movements", matches.size(), movements.size());
         return List.copyOf(matches);
     }
 
@@ -74,7 +74,8 @@ public class ParseMovementsService implements ParseMovementsUseCase {
             throw new EmptyFileException();
         }
 
-        if (!Objects.requireNonNull(file.getOriginalFilename()).endsWith(".csv")) {
+        String filename = file.getOriginalFilename();
+        if (filename == null || !filename.endsWith(".csv")) {
             throw new InvalidFileFormatException();
         }
     }
