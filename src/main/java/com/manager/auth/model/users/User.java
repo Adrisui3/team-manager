@@ -2,6 +2,7 @@ package com.manager.auth.model.users;
 
 import com.manager.auth.model.exceptions.*;
 import com.manager.auth.model.roles.Role;
+import com.manager.payments.model.players.Player;
 import lombok.Builder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -11,7 +12,7 @@ import java.util.UUID;
 @Builder(toBuilder = true)
 public record User(UUID id, String email, String password, String name, String surname, LocalDateTime lastLogIn,
                    Role role, boolean enabled, UserVerification verification, LocalDateTime createdAt,
-                   LocalDateTime updatedAt) {
+                   LocalDateTime updatedAt, Player player) {
 
     public User authenticate(String password, PasswordEncoder passwordEncoder) {
         if (!enabled()) {

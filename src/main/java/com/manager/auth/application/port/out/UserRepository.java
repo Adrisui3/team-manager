@@ -22,4 +22,6 @@ public interface UserRepository {
     Page<User> findAll(String query, Pageable pageable);
 
     void deleteById(UUID id);
+
+    Optional<UUID> findUserIdByPlayerId(UUID playerId);
 }

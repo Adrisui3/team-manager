@@ -9,6 +9,7 @@ import com.manager.auth.adapter.in.security.AuthenticatedUserProvider;
 import com.manager.auth.adapter.out.persistence.mapper.UserMapper;
 import com.manager.auth.application.port.in.DeleteUserUseCase;
 import com.manager.auth.application.port.in.FindUserUseCase;
+import com.manager.auth.application.port.in.LinkPlayerToUserUseCase;
 import com.manager.auth.application.port.in.UpdateUserUseCase;
 import com.manager.auth.model.users.User;
 import com.manager.shared.response.ErrorResponse;
@@ -42,6 +43,7 @@ public class UserController {
     private final UpdateUserUseCase updateUserUseCase;
     private final DeleteUserUseCase deleteUserUseCase;
     private final FindUserUseCase findUserUseCase;
+    private final LinkPlayerToUserUseCase linkPlayerToUserUseCase;
 
     @Operation(summary = "Get authenticated user")
     @ApiResponses(value = {
@@ -164,6 +166,40 @@ public class UserController {
                                                                  @Valid @RequestBody UpdateUserStatusDto request) {
         User updatedUser = updateUserUseCase.updateUserStatus(userId, request);
         return ResponseEntity.ok(new ResponseDto<>(mapper.toUserDto(updatedUser)));
+    }
+
+    @Operation(summary = "Link a player to a user", description = "Only users with ADMIN role can perform this action.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Player linked successfully", useReturnTypeSchema = true),
+            @ApiResponse(responseCode = "404", description = "User or player not found",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation =
+                            ErrorResponse.class))),
+            @ApiResponse(responseCode = "409", description = "Player is already assigned to another user",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation =
+                            ErrorResponse.class)))
+    })
+    @PutMapping("/{userId}/player/{playerId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ResponseDto<String>> linkPlayerToUser(@PathVariable("userId") UUID userId,
+                                                                @PathVariable("playerId") UUID playerId) {
+        linkPlayerToUserUseCase.linkPlayerToUser(userId, playerId);
+        return ResponseEntity.ok(new ResponseDto<>("Player linked successfully"));
+    }
+
+    @Operation(summary = "Unlink a player from a user", description = "Only users with ADMIN role can perform this " +
+            "action.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Player unlinked successfully", useReturnTypeSchema =
+                    true),
+            @ApiResponse(responseCode = "404", description = "User not found",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation =
+                            ErrorResponse.class)))
+    })
+    @DeleteMapping("/{userId}/player")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ResponseDto<String>> unlinkPlayerFromUser(@PathVariable("userId") UUID userId) {
+        linkPlayerToUserUseCase.unlinkPlayerToUser(userId);
+        return ResponseEntity.ok(new ResponseDto<>("Player unlinked successfully"));
     }
 
     @Operation(summary = "Delete a user", description = "Only users with ADMIN role can perform this action.")

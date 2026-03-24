@@ -54,4 +54,9 @@ public class UserRepositoryAdapter implements UserRepository {
     public void deleteById(UUID id) {
         repository.deleteById(id);
     }
+
+    @Override
+    public Optional<UUID> findUserIdByPlayerId(UUID playerId) {
+        return repository.findUserIdByPlayerId(playerId);
+    }
 }

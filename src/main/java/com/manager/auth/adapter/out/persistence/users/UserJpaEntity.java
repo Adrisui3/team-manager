@@ -1,6 +1,7 @@
 package com.manager.auth.adapter.out.persistence.users;
 
 import com.manager.auth.model.roles.Role;
+import com.manager.payments.adapter.out.persistence.players.PlayerJpaEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -37,6 +38,9 @@ public class UserJpaEntity {
 
     @Column(nullable = false)
     private LocalDateTime updatedAt;
+
+    @OneToOne(cascade = CascadeType.PERSIST)
+    private PlayerJpaEntity player;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private UserVerificationJpaEntity verification;

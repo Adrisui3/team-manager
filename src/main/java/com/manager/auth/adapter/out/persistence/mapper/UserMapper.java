@@ -3,11 +3,12 @@ package com.manager.auth.adapter.out.persistence.mapper;
 import com.manager.auth.adapter.in.rest.dto.models.UserDto;
 import com.manager.auth.adapter.out.persistence.users.UserJpaEntity;
 import com.manager.auth.model.users.User;
+import com.manager.payments.adapter.out.persistence.players.PlayerMapper;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 
-@Mapper(componentModel = "spring", uses = {UserVerificationMapper.class})
+@Mapper(componentModel = "spring", uses = {UserVerificationMapper.class, PlayerMapper.class})
 public interface UserMapper {
 
     User toUser(UserJpaEntity userJpaEntity);

@@ -6,7 +6,6 @@ import com.manager.auth.application.port.out.UserRepository;
 import com.manager.auth.model.exceptions.UserAlreadyExists;
 import com.manager.auth.model.users.User;
 import com.manager.email.application.port.in.SendVerificationEmailUseCase;
-import com.manager.email.application.port.out.EmailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +14,6 @@ import org.springframework.stereotype.Service;
 public class SignUpService implements SignUpUserUseCase {
 
     private final UserRepository repository;
-    private final EmailService emailService;
     private final SendVerificationEmailUseCase verificationEmailUseCase;
 
     @Override
