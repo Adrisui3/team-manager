@@ -30,7 +30,7 @@ public class LinkPlayerToUserService implements LinkPlayerToUserUseCase {
 
         Optional<UUID> existingUserId = userRepository.findUserIdByPlayerId(player.id());
         if (existingUserId.isPresent()) {
-            throw new PlayerAlreadyAssignedToUserException(playerId, userId);
+            throw new PlayerAlreadyAssignedToUserException(playerId, existingUserId.get());
         }
 
         userRepository.save(user.toBuilder().player(player).build());
