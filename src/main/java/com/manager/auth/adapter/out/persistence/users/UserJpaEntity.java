@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -39,8 +40,8 @@ public class UserJpaEntity {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
-    @OneToOne(cascade = CascadeType.PERSIST)
-    private PlayerJpaEntity player;
+    @OneToMany(mappedBy = "userId", fetch = FetchType.EAGER)
+    private List<PlayerJpaEntity> players;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private UserVerificationJpaEntity verification;

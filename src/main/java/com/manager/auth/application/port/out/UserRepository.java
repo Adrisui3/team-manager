@@ -23,5 +23,4 @@ public interface UserRepository {
 
     void deleteById(UUID id);
 
-    Optional<UUID> findUserIdByPlayerId(UUID playerId);
 }

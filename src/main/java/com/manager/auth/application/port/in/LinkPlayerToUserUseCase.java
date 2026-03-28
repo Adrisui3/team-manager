@@ -6,6 +6,6 @@ public interface LinkPlayerToUserUseCase {
 
     void linkPlayerToUser(UUID userId, UUID playerId);
 
-    void unlinkPlayerToUser(UUID userId);
+    void unlinkPlayerToUser(UUID playerId);
 
 }

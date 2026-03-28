@@ -24,10 +24,4 @@ public interface UserJpaRepository extends JpaRepository<UserJpaEntity, UUID> {
             """)
     Page<UserJpaEntity> findAll(@Param("query") String query, Pageable pageable);
 
-    @Query("""
-            select u.id
-            from UserJpaEntity u
-            where u.player.id = :playerId
-            """)
-    Optional<UUID> findUserIdByPlayerId(@Param("playerId") UUID playerId);
 }

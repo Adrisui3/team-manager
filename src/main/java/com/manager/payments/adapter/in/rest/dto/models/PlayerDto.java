@@ -9,5 +9,5 @@ import java.util.UUID;
 
 public record PlayerDto(UUID id, String personalId, String name, String surname, String email, String secondaryEmail,
                         LocalDate birthDate, Category category, PlayerStatus status, PlayerGender gender,
-                        String phoneNumber, String secondaryPhoneNumber) {
+                        String phoneNumber, String secondaryPhoneNumber, UUID userId) {
 }
