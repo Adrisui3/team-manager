@@ -27,6 +27,14 @@ public class UserAuthorization {
         return isCurrentUser(targetUserId, authenticatedUser);
     }
 
+    public boolean canRetrievePlayerData(UUID targetPlayerId) {
+        User authenticatedUser = authenticatedUserProvider.getAuthenticatedUser();
+        return switch (authenticatedUser.role()) {
+            case ADMIN, COACH -> true;
+            case PLAYER -> authenticatedUser.players().stream().anyMatch(player -> player.id().equals(targetPlayerId));
+        };
+    }
+
     private boolean isCurrentUser(UUID targetUserId, User authenticatedUser) {
         return authenticatedUser.id().equals(targetUserId);
     }

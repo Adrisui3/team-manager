@@ -26,6 +26,7 @@ import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -36,6 +37,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/v1/payments")
 @RequiredArgsConstructor
+@PreAuthorize("hasAnyRole('ADMIN', 'COACH')")
 public class PaymentController {
 
     private final CreatePaymentUseCase createPaymentUseCase;
@@ -58,18 +60,18 @@ public class PaymentController {
         return ResponseEntity.ok(PageResponse.of(payments.map(paymentMapper::toPaymentDto)));
     }
 
-    @Operation(summary = "Get all payments available for a user", description = "Support pagination via Spring Data's" +
-            " pagination")
+    @Operation(summary = "Get all payments available for a player", description = "Support pagination via Spring " +
+            "Data's pagination")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "List of payments available for the user",
+            @ApiResponse(responseCode = "200", description = "List of payments available for the player",
                     useReturnTypeSchema = true),
             @ApiResponse(responseCode = "404", description = "Player not found",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation =
                             ErrorResponse.class)))
     })
     @GetMapping("/assignable/{playerId}")
-    public ResponseEntity<PageResponse<PaymentDto>> findAllAvailableForUser(@PathVariable("playerId") UUID playerId,
-                                                                            @ParameterObject Pageable pageable) {
+    public ResponseEntity<PageResponse<PaymentDto>> findAllAvailableForPlayer(@PathVariable("playerId") UUID playerId,
+                                                                              @ParameterObject Pageable pageable) {
         Page<Payment> payments = findPaymentUseCase.findAllAvailableForPlayer(playerId, pageable);
         return ResponseEntity.ok(PageResponse.of(payments.map(paymentMapper::toPaymentDto)));
     }

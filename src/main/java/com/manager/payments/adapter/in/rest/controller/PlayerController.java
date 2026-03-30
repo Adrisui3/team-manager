@@ -34,6 +34,7 @@ import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -43,6 +44,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/v1/players")
 @RequiredArgsConstructor
+@PreAuthorize("hasAnyRole('ADMIN', 'COACH')")
 public class PlayerController {
 
     private final PlayerPaymentAssignmentMapper playerPaymentAssignmentMapper;
@@ -89,6 +91,7 @@ public class PlayerController {
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation =
                             ErrorResponse.class)))
     })
+    @PreAuthorize("@authz.canRetrievePlayerData(#playerId)")
     @GetMapping("/{playerId}")
     public ResponseEntity<ResponseDto<PlayerDto>> getPlayer(@PathVariable("playerId") UUID playerId) {
         Player player = findPlayerUseCase.findById(playerId);
@@ -102,6 +105,7 @@ public class PlayerController {
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation =
                             ErrorResponse.class)))
     })
+    @PreAuthorize("@authz.canRetrievePlayerData(#playerId)")
     @GetMapping("/{playerId}/receipts")
     public ResponseEntity<PageResponse<ReceiptDto>> getPlayerReceipts(@PathVariable("playerId") UUID playerId,
                                                                       @RequestParam(name = "status",
@@ -151,6 +155,7 @@ public class PlayerController {
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation =
                             ErrorResponse.class))),
     })
+    @PreAuthorize("@authz.canRetrievePlayerData(#playerId)")
     @GetMapping("/{playerId}/payments")
     public ResponseEntity<PageResponse<PaymentDto>> getPlayerPayments(@PathVariable("playerId") UUID playerId,
                                                                       @ParameterObject Pageable pageable) {
