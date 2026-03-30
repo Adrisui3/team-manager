@@ -20,10 +20,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @Tag(name = "Authentication management endpoints")
 @RestController
@@ -46,6 +45,24 @@ public class AuthenticationController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ResponseDto<UserDto>> registerUser(@Valid @RequestBody RegisterUserRequestDto registerUserRequestDto) {
         User registeredUser = signUpUserUseCase.signup(registerUserRequestDto);
+        return ResponseEntity.ok(new ResponseDto<>(userMapper.toUserDto(registeredUser)));
+    }
+
+    @Operation(summary = "Create a user from an existing player",
+            description = "Only users with ADMIN or COACH role can perform this action")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User created from player", useReturnTypeSchema = true),
+            @ApiResponse(responseCode = "404", description = "Player not found",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation =
+                            ErrorResponse.class))),
+            @ApiResponse(responseCode = "409", description = "User already exists or player already assigned to a user",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation =
+                            ErrorResponse.class)))
+    })
+    @PostMapping("/signup/player/{playerId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'COACH')")
+    public ResponseEntity<ResponseDto<UserDto>> signupFromPlayer(@PathVariable UUID playerId) {
+        User registeredUser = signUpUserUseCase.signupFromPlayer(playerId);
         return ResponseEntity.ok(new ResponseDto<>(userMapper.toUserDto(registeredUser)));
     }
 
