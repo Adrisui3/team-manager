@@ -195,7 +195,7 @@ public class UserController {
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation =
                             ErrorResponse.class)))
     })
-    @DeleteMapping("/{userId}/player/{playerId}")
+    @DeleteMapping("/player/{playerId}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ResponseDto<String>> unlinkPlayerFromUser(@PathVariable("playerId") UUID playerId) {
         linkPlayerToUserUseCase.unlinkPlayerToUser(playerId);
