@@ -13,10 +13,12 @@ import com.manager.payments.model.exceptions.PlayerNotFoundException;
 import com.manager.payments.model.players.Player;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class SignUpService implements SignUpUserUseCase {
 
@@ -61,8 +63,10 @@ public class SignUpService implements SignUpUserUseCase {
                 .enabled(false)
                 .build()
                 .initializeVerification();
+        User savedUser = repository.save(user);
 
         verificationEmailUseCase.sendVerificationEmail(user.email(), user.verification().verificationCode());
-        return repository.save(user);
+        playerRepository.save(player.toBuilder().userId(savedUser.id()).build());
+        return savedUser;
     }
 }
