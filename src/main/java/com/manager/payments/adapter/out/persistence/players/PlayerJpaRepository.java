@@ -15,8 +15,6 @@ public interface PlayerJpaRepository extends JpaRepository<PlayerJpaEntity, UUID
 
     boolean existsByPersonalId(String personalId);
 
-    boolean existsByEmail(String email);
-
     @Query("""
               select p
               from PlayerJpaEntity p

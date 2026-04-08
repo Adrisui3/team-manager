@@ -54,4 +54,5 @@ public class UserRepositoryAdapter implements UserRepository {
     public void deleteById(UUID id) {
         repository.deleteById(id);
     }
+
 }

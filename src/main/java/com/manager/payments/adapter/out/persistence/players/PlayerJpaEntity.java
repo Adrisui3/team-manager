@@ -58,6 +58,8 @@ public class PlayerJpaEntity {
     @Enumerated(EnumType.STRING)
     private PlayerStatus status;
 
+    private UUID userId;
+
     @PrePersist
     public void prePersist() {
         setCreatedAt(LocalDateTime.now());

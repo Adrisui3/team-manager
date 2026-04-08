@@ -20,8 +20,6 @@ public interface PlayerRepository {
 
     boolean existsByPersonalId(String personalId);
 
-    boolean existsByEmail(String email);
-
     void deleteById(UUID id);
 
     Page<Player> findAll(String query, Category category, PlayerGender gender, PlayerStatus status,

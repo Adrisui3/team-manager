@@ -23,4 +23,5 @@ public interface UserJpaRepository extends JpaRepository<UserJpaEntity, UUID> {
                    or lower(u.surname) like concat(concat('%', :query), '%')
             """)
     Page<UserJpaEntity> findAll(@Param("query") String query, Pageable pageable);
+
 }

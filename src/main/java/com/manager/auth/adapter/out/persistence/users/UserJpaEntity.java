@@ -1,11 +1,13 @@
 package com.manager.auth.adapter.out.persistence.users;
 
 import com.manager.auth.model.roles.Role;
+import com.manager.payments.adapter.out.persistence.players.PlayerJpaEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -37,6 +39,9 @@ public class UserJpaEntity {
 
     @Column(nullable = false)
     private LocalDateTime updatedAt;
+
+    @OneToMany(mappedBy = "userId", fetch = FetchType.EAGER)
+    private List<PlayerJpaEntity> players;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private UserVerificationJpaEntity verification;

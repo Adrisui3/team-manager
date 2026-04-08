@@ -44,11 +44,6 @@ public class PlayerRepositoryAdapter implements PlayerRepository {
     }
 
     @Override
-    public boolean existsByEmail(String email) {
-        return repository.existsByEmail(email);
-    }
-
-    @Override
     public void deleteById(UUID id) {
         if (!repository.existsById(id)) {
             throw PlayerNotFoundException.byId(id);
