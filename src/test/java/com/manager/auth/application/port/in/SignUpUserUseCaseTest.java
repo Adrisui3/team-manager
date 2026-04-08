@@ -49,9 +49,12 @@ class SignUpUserUseCaseTest {
     @Captor
     private ArgumentCaptor<User> captor;
 
+    @Captor
+    private ArgumentCaptor<Player> playerCaptor;
+
     @BeforeEach
     void setUp() {
-        clearInvocations(userRepository);
+        clearInvocations(userRepository, playerRepository);
     }
 
     @Test
@@ -60,7 +63,11 @@ class SignUpUserUseCaseTest {
 
         when(playerRepository.findById(player.id())).thenReturn(Optional.of(player));
         when(userRepository.existsByEmail(player.email())).thenReturn(false);
-        when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        UUID generatedUserId = UUID.randomUUID();
+        when(userRepository.save(any(User.class))).thenAnswer(invocation -> {
+            User u = invocation.getArgument(0);
+            return u.toBuilder().id(generatedUserId).build();
+        });
 
         signUpUserUseCase.signupFromPlayer(player.id());
 
@@ -84,6 +91,9 @@ class SignUpUserUseCaseTest {
 
         verify(sendVerificationEmailUseCase).sendVerificationEmail(
                 eq(player.email()), eq(savedUser.verification().verificationCode()));
+
+        verify(playerRepository).save(playerCaptor.capture());
+        assertThat(playerCaptor.getValue().userId()).isEqualTo(generatedUserId);
     }
 
     @Test
@@ -96,6 +106,7 @@ class SignUpUserUseCaseTest {
                 .isInstanceOf(PlayerNotFoundException.class);
 
         verify(userRepository, never()).save(any());
+        verify(playerRepository, never()).save(any());
     }
 
     @Test
@@ -109,6 +120,7 @@ class SignUpUserUseCaseTest {
                 .isInstanceOf(PlayerAlreadyAssignedToUserException.class);
 
         verify(userRepository, never()).save(any());
+        verify(playerRepository, never()).save(any());
     }
 
     @Test
@@ -122,5 +134,6 @@ class SignUpUserUseCaseTest {
                 .isInstanceOf(UserAlreadyExists.class);
 
         verify(userRepository, never()).save(any());
+        verify(playerRepository, never()).save(any());
     }
 }

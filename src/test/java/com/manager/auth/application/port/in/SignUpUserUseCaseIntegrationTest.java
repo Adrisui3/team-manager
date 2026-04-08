@@ -67,6 +67,9 @@ class SignUpUserUseCaseIntegrationTest {
 
         verify(sendVerificationEmailUseCase).sendVerificationEmail(
                 result.email(), result.verification().verificationCode());
+
+        Player updatedPlayer = playerRepository.findById(player.id()).orElseThrow();
+        assertThat(updatedPlayer.userId()).isEqualTo(result.id());
     }
 
     @Test
@@ -75,6 +78,8 @@ class SignUpUserUseCaseIntegrationTest {
 
         assertThatThrownBy(() -> signUpUserUseCase.signupFromPlayer(nonExistentPlayerId))
                 .isInstanceOf(PlayerNotFoundException.class);
+
+        assertThat(playerRepository.findById(nonExistentPlayerId)).isEmpty();
     }
 
     @Test
@@ -85,6 +90,9 @@ class SignUpUserUseCaseIntegrationTest {
 
         assertThatThrownBy(() -> signUpUserUseCase.signupFromPlayer(player.id()))
                 .isInstanceOf(PlayerAlreadyAssignedToUserException.class);
+
+        Player unchangedPlayer = playerRepository.findById(player.id()).orElseThrow();
+        assertThat(unchangedPlayer.userId()).isEqualTo(user.id());
     }
 
     @Test
@@ -95,5 +103,8 @@ class SignUpUserUseCaseIntegrationTest {
 
         assertThatThrownBy(() -> signUpUserUseCase.signupFromPlayer(player.id()))
                 .isInstanceOf(UserAlreadyExists.class);
+
+        Player unchangedPlayer = playerRepository.findById(player.id()).orElseThrow();
+        assertThat(unchangedPlayer.userId()).isNull();
     }
 }
